@@ -12,7 +12,7 @@ import {
 
 const Products = () => {
   const navigate = useNavigate();
-  
+
   const products = [
     {
       id: 1,
@@ -62,14 +62,15 @@ const Products = () => {
             Our Products
           </h1>
           <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto">
-            High-quality pharmacy supplies with competitive tier pricing for your business
+            High-quality pharmacy supplies with competitive tier pricing for
+            your business
           </p>
         </div>
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
-            <Card 
+            <Card
               key={product.id}
               className="group relative overflow-hidden hover:shadow-xl transition-all duration-300 animate-scale-in"
             >
@@ -78,7 +79,7 @@ const Products = () => {
                   {product.category}
                 </Badge>
               </div>
-              
+
               <div className="p-6 space-y-6">
                 <div className="relative h-48 bg-gray-100 rounded-lg overflow-hidden">
                   <img
@@ -101,7 +102,9 @@ const Products = () => {
                       <Package className="w-4 h-4" />
                       Base Price
                     </span>
-                    <span className="font-semibold">${product.pricing.base}</span>
+                    <span className="font-semibold">
+                      ${product.pricing.base}
+                    </span>
                   </div>
 
                   <TooltipProvider>
@@ -120,16 +123,19 @@ const Products = () => {
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Min. Quantity: {product.minQuantity[`tier${tier}`]} units</p>
+                            <p>
+                              Min. Quantity:{" "}
+                              {product.minQuantity[`tier${tier}`]} units
+                            </p>
                           </TooltipContent>
                         </Tooltip>
                       ))}
                     </div>
                   </TooltipProvider>
 
-                  <Button 
+                  <Button
                     className="w-full bg-emerald-600 hover:bg-emerald-700 transition-all duration-300"
-                    onClick={() => navigate('/login?tab=signup')}
+                    onClick={() => navigate("/login?tab=signup")}
                   >
                     <Tag className="w-4 h-4 mr-2" />
                     Sign Up Now

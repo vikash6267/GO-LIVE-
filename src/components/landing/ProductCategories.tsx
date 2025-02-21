@@ -4,17 +4,20 @@ import { useNavigate } from "react-router-dom";
 
 const ProductCategories = () => {
   const navigate = useNavigate();
-  
+
   return (
     <section className="py-16 sm:py-20 md:py-24 bg-gradient-to-b from-white to-emerald-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 sm:mb-16">
-          <span className="text-emerald-600 font-semibold tracking-wider uppercase text-sm">Product Portfolio</span>
+          <span className="text-emerald-600 font-semibold tracking-wider uppercase text-sm">
+            Product Portfolio
+          </span>
           <h2 className="text-3xl sm:text-4xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-emerald-700 to-emerald-500 bg-clip-text text-transparent">
             Your Trusted Pharmacy Supply Partner
           </h2>
           <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
-            We provide high-quality products that enable pharmacies to deliver exceptional care to their patients.
+            We provide high-quality products that enable pharmacies to deliver
+            exceptional care to their patients.
           </p>
         </div>
 
@@ -47,7 +50,9 @@ const ProductCategories = () => {
 
         <div className="text-center mt-12 sm:mt-16">
           <Button
-            onClick={() => navigate("/signup")}
+            onClick={() =>
+              navigate("/login", { state: { defaultTab: "signup" } })
+            }
             className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white px-6 sm:px-8 py-5 sm:py-6 h-auto text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
           >
             Sign Up Now
@@ -58,19 +63,26 @@ const ProductCategories = () => {
   );
 };
 
-const ProductCard = ({ imageSrc, title, description, price }: { 
+const ProductCard = ({
+  imageSrc,
+  title,
+  description,
+  price,
+}: {
   imageSrc: string;
-  title: string; 
+  title: string;
   description: string;
   price: string;
 }) => (
   <div className="bg-white rounded-2xl p-6 sm:p-8 shadow-lg relative group overflow-hidden hover:shadow-xl transition-all duration-300">
     <div className="mb-6">
-      <div className="relative w-full h-40 sm:h-48 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center 
+      <div
+        className="relative w-full h-40 sm:h-48 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 flex items-center justify-center 
         before:absolute before:inset-0 before:bg-emerald-500/5 before:opacity-0 before:transition-opacity before:duration-300 group-hover:before:opacity-100
-        group-hover:shadow-lg transition-all duration-500 ease-in-out">
-        <img 
-          src={imageSrc} 
+        group-hover:shadow-lg transition-all duration-500 ease-in-out"
+      >
+        <img
+          src={imageSrc}
           alt={title}
           className="w-32 h-32 sm:w-40 sm:h-40 object-contain transform transition-all duration-500 ease-in-out group-hover:scale-110 group-hover:brightness-105"
         />

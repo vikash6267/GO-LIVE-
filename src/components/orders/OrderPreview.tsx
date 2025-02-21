@@ -1,0 +1,98 @@
+import { OrderFormValues } from "./schemas/orderSchema";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { Eye, Truck } from "lucide-react";
+import { OrderCustomerInfo } from "./details/OrderCustomerInfo";
+import { OrderItemsList } from "./details/OrderItemsList";
+import { OrderPaymentInfo } from "./details/OrderPaymentInfo";
+import { OrderTotals } from "./details/OrderTotals";
+import { getTrackingUrl } from "./utils/shippingUtils";
+
+interface OrderPreviewProps {
+  orderData: Partial<OrderFormValues>;
+}
+
+export function OrderPreview({ orderData }: OrderPreviewProps) {
+  // Ensure we have default values for all potentially undefined properties
+  const safeOrderData = {
+    customerInfo: orderData.customerInfo || {
+      name: "",
+      email: "",
+      phone: "",
+      type: "Pharmacy",
+      address: { street: "", city: "", state: "", zipCode: "" }
+    },
+    items: orderData.items || [],
+    shipping: orderData.shipping || {
+      method: "FedEx",
+      cost: 12.00,
+      trackingNumber: "",
+      estimatedDelivery: ""
+    },
+    payment: orderData.payment || {
+      method: "card",
+      notes: ""
+    },
+    specialInstructions: orderData.specialInstructions || ""
+  };
+
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="secondary" size="lg" className="w-[200px]">
+          <Eye className="mr-2 h-4 w-4" />
+          Preview Order
+        </Button>
+      </SheetTrigger>
+      <SheetContent className="w-full md:max-w-3xl overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Order Preview</SheetTitle>
+          <SheetDescription>Review your order details before submission</SheetDescription>
+        </SheetHeader>
+
+        <div className="mt-6 space-y-6">
+          <OrderCustomerInfo customerInfo={safeOrderData.customerInfo} />
+          <OrderItemsList items={safeOrderData.items} />
+          
+          <div className="space-y-2">
+            <h3 className="font-semibold flex items-center gap-2">
+              <Truck className="h-4 w-4" />
+              Shipping Details
+            </h3>
+            <p>Method: {safeOrderData.shipping?.method}</p>
+            {safeOrderData.shipping?.trackingNumber && (
+              <p>
+                Tracking: 
+                <a 
+                  href={getTrackingUrl(safeOrderData.shipping.method, safeOrderData.shipping.trackingNumber)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-2 text-blue-600 hover:underline"
+                >
+                  {safeOrderData.shipping.trackingNumber}
+                </a>
+              </p>
+            )}
+          </div>
+          
+          <OrderPaymentInfo 
+            payment={safeOrderData.payment}
+            specialInstructions={safeOrderData.specialInstructions}
+          />
+          <OrderTotals 
+            items={safeOrderData.items}
+            paymentMethod={safeOrderData.payment.method}
+            shipping={safeOrderData.shipping}
+          />
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+}

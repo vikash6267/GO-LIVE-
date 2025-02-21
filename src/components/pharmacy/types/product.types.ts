@@ -1,0 +1,53 @@
+
+export interface ProductSpecifications {
+  dimensions?: string;
+  material?: string;
+  compatibility?: string[];
+  safetyInfo?: string;
+  usageGuidelines?: string;
+}
+
+export interface CustomizationOption {
+  type: 'text' | 'logo';
+  label: string;
+  description?: string;
+  price?: number;
+  maxLength?: number;
+}
+
+export interface ProductSize {
+  size_value: string;
+  size_unit: string;
+  price: number;
+  pricePerCase: number;
+  stock: number;
+}
+
+export interface ProductDetails {
+  id: string | number;
+  name: string;
+  description: string;
+  price: number;
+  base_price: number;
+  offer: string;
+  image: string;
+  image_url: string;
+  endsIn: string;
+  productId: string;
+  category: string;
+  stock?: number;
+  minOrder?: number;
+  specifications?: ProductSpecifications;
+  customization?: {
+    allowed: boolean;
+    options?: CustomizationOption[];
+    basePrice?: number;
+  };
+  sizes?: ProductSize[];
+  quantityPerCase?: number;
+  tierPricing?: {
+    tier1: { quantity: string; price: number };
+    tier2: { quantity: string; price: number };
+    tier3: { quantity: string; price: number };
+  };
+}

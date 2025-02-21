@@ -30,7 +30,7 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
   const [isValidating, setIsValidating] = useState(false);
   const userProfile = useSelector(selectUserProfile);
   const { cartItems } = useCart();
-
+console.log(cartItems)
   // Initialize form with user profile data
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
@@ -52,7 +52,7 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
           zipCode: userProfile?.zip_code || "",
         },
       },
-      items: [{ productId: "", quantity: 1, price: 0, notes: "" }],
+      items:cartItems ,
       shipping: {
         method: "FedEx",
         cost: 12.00,
@@ -227,6 +227,7 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
   
   
   const addCartItemsToOrder = () => {
+    console.log(cartItems)
     if (cartItems.length === 0) {
       toast({
         title: "Cart is empty",
@@ -237,8 +238,10 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
     }
   
     const validCartItems = cartItems.filter(
-      (item) => item.productId && item.quantity > 0
+      (item) => item.productId 
     );
+  console.log(validCartItems)
+
   
     if (validCartItems.length === 0) {
       toast({
@@ -248,15 +251,25 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
       });
       return;
     }
-  
     const newOrderItems = validCartItems.map((item) => ({
       productId: item.productId,
       quantity: item.quantity,
       price: item.price,
       notes: item.notes || "",
+      sizes: item.sizes
+        ? item.sizes.map((size) => ({
+            id: size.id,
+            price: size.price,
+            quantity: size.quantity,
+            size_unit: size.size_unit,
+            size_value: size.size_value,
+          }))
+        : [],
     }));
-    form.setValue("items", []);
-    setOrderItems([]);
+  
+    form.setValue("items", []); // Reset form items
+    setOrderItems([]); // Reset state order items
+  
     form.setValue("items", [...form.getValues("items"), ...newOrderItems]);
     setOrderItems((prevOrderItems) => [
       ...prevOrderItems,
@@ -264,15 +277,24 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
     ]);
   };
   
+  
 
   const addOrderItem = () => {
     setOrderItems([...orderItems, { id: orderItems.length + 1 }]);
+  
     const currentItems = form.getValues("items") || [];
     form.setValue("items", [
       ...currentItems,
-      { productId: "", quantity: 1, price: 0, notes: "" },
+      {
+        productId: "",
+        quantity: 1,
+        price: 0,
+        notes: "",
+        sizes: [{ id: "", price: 0, quantity: 1, size_unit: "", size_value: "" }], // Default size entry
+      },
     ]);
   };
+  
 
   const removeOrderItem = (index: number) => {
     if (orderItems.length > 1) {
@@ -300,7 +322,7 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
         
         <OrderItemsSection 
           onAddCartData={addCartItemsToOrder}
-          orderItems={orderItems}
+          orderItems={cartItems}
           form={form}
           onAddItem={addOrderItem}
           onRemoveItem={removeOrderItem}

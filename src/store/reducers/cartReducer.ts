@@ -8,6 +8,8 @@ const initialState: CartState = {
 export const cartReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(addToCart, (state, action) => {
+
+     
       const existingItem = state.items.find(item => item.productId === action.payload.productId);
       if (existingItem) {
         existingItem.quantity += 1;
@@ -19,9 +21,16 @@ export const cartReducer = createReducer(initialState, (builder) => {
       state.items = state.items.filter(item => item.productId !== action.payload);
     })
     .addCase(updateQuantity, (state, action) => {
-      const item = state.items.find(item => item.productId === action.payload.productId);
-      if (item) {
-        item.quantity = action.payload.quantity;
+      const { productId, sizeId, quantity } = action.payload;
+
+      // 🛒 **Product ko find karo**
+      const product = state.items.find((item) => item.productId === productId);
+      if (product) {
+        // 📏 **Size ko find karo**
+        const size = product.sizes.find((size) => size.id === sizeId);
+        if (size) {
+          size.quantity = +quantity; // ✅ **Size ka quantity update karo**
+        }
       }
     })
     .addCase(clearCart, (state) => {

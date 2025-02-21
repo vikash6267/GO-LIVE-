@@ -15,10 +15,20 @@ const customerInfoSchema = z.object({
   address: addressSchema,
 });
 
+const sizeSchema = z.object({
+  id: z.string().min(1, "Size ID is required"),
+  price: z.number().min(0, "Price must be a positive number"),
+  quantity: z.number().min(0, "Quantity must be at least 0"),
+  size_unit: z.string().min(1, "Size unit is required"),
+  size_value: z.string().min(1, "Size value is required"),
+});
+
 const orderItemSchema = z.object({
   productId: z.string().min(1, "Product ID is required"),
+  name: z.string().min(1, "Product name is required"),
   quantity: z.number().min(1, "Quantity must be at least 1"),
   price: z.number().min(0, "Price must be a positive number"),
+  sizes: z.array(sizeSchema).optional(), // Add sizes as an array of size objects
   notes: z.string().optional(),
 });
 

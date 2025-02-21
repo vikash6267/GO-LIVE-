@@ -22,6 +22,7 @@ interface InvoicePreviewProps {
       description: string;
       quantity: number;
       rate: number;
+      sizes:any[],
       amount: number;
     }>;
     subtotal?: number;

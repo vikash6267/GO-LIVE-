@@ -28,18 +28,17 @@ export const CartDrawer = () => {
     );
     return sum + itemTotal;
   }, 0);
-  
 
-
-  useEffect(()=>{
-console.log(cartItems)
-  },[])
+  useEffect(() => {
+    console.log(cartItems);
+  }, []);
 
   const handleQuantityChange = async (
     productId: string,
-    newQuantity: number
+    newQuantity: number,
+    sizeId: string
   ) => {
-    const success = await updateQuantity(productId, newQuantity);
+    const success = await updateQuantity(productId, newQuantity, sizeId);
     if (!success) {
       toast({
         title: "Error",
@@ -147,53 +146,72 @@ console.log(cartItems)
                     <div className="flex-1">
                       <h3 className="font-medium">{item.name}</h3>
                       <p className="text-sm text-gray-500">
-                      {/* ${item.sizes
+                        {/* ${item.sizes
   .reduce((sum, size) => sum + size.price * size.quantity, 0)
   .toFixed(2)} */}
-
                       </p>
                       <div>
-  {item.sizes
-  .filter((size) => size.quantity > 0) // ✅ Sirf non-zero quantity wale sizes dikhaye
-  .map((size) => (
-    <div key={size.id} className="border p-2 mb-2 rounded">
-      <p><strong>Size:</strong> {size.size_value} {size.size_unit}</p>
-      <p><strong>Price per Unit:</strong> ₹{size.price.toFixed(2)}</p>
-      <p><strong>Total Price:</strong> ₹{(size.quantity * size.price).toFixed(2)}</p>
-    </div>
-  ))}
+                        {item.sizes
+                          .filter((size) => size.quantity > 0) // ✅ Sirf non-zero quantity wale sizes dikhaye
+                          .map((size) => (
+                            <div
+                              key={size.id}
+                              className="border p-2 mb-2 rounded"
+                            >
+                              <p>
+                                <strong>Size:</strong> {size.size_value}{" "}
+                                {size.size_unit}
+                              </p>
+                              <p>
+                                <strong>Price per Unit:</strong> ₹
+                                {size.price.toFixed(2)}
+                              </p>
+                              <p>
+                                <strong>Total Price:</strong> ₹
+                                {(size.quantity * size.price).toFixed(2)}
+                              </p>
 
-</div>
+                              <div className="flex items-center gap-2 mt-2">
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() =>
+                                    handleQuantityChange(
+                                      item.productId,
+                                      (item.sizes.find((s) => s.id === size.id)
+                                        ?.quantity || 0) - 1, // Default 0 if size not found
 
-                      <div className="flex items-center gap-2 mt-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() =>
-                            handleQuantityChange(
-                              item.productId,
-                              item.quantity - 1
-                            )
-                          }
-                          disabled={item.quantity <= 1}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="w-8 text-center">{item.quantity}</span>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() =>
-                            handleQuantityChange(
-                              item.productId,
-                              item.quantity + 1
-                            )
-                          }
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
+                                      size.id
+                                    )
+                                  }
+                                  disabled={item.quantity <= 1}
+                                >
+                                  <Minus className="h-4 w-4" />
+                                </Button>
+                                <span className="w-8 text-center">
+                                  {item.sizes.find((s) => s.id === size.id)
+                                    ?.quantity || "N/A"}
+                                </span>
+
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() =>
+                                    handleQuantityChange(
+                                      item.productId,
+                                      (item.sizes.find((s) => s.id === size.id)
+                                        ?.quantity || 0) + 1, // Default 0 if size not found
+                                      size.id
+                                    )
+                                  }
+                                >
+                                  <Plus className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
                       </div>
                     </div>
                     <Button

@@ -27,10 +27,10 @@ export const useCart = () => {
     }
   };
 
-  const updateQuantity = async (productId: string, quantity: number) => {
+  const updateQuantity = async (productId: string, quantity: number,sizeId: string) => {
     try {
       if (quantity < 1) return false;
-      dispatch(updateQuantityAction(productId, quantity));
+      dispatch(updateQuantityAction(productId, quantity,sizeId));
       return true;
     } catch (error) {
       console.error('Error updating quantity:', error);

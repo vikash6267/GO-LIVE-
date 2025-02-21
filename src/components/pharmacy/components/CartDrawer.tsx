@@ -10,7 +10,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const CartDrawer = () => {
@@ -20,9 +20,15 @@ export const CartDrawer = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const total = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
-  const handleQuantityChange = async (productId: string, newQuantity: number) => {
+  const handleQuantityChange = async (
+    productId: string,
+    newQuantity: number
+  ) => {
     const success = await updateQuantity(productId, newQuantity);
     if (!success) {
       toast({
@@ -53,31 +59,30 @@ export const CartDrawer = () => {
     setIsProcessing(true);
     try {
       // Format cart items for order
-      const orderItems = cartItems.map(item => ({
+      const orderItems = cartItems.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
         price: item.price,
-        notes: item.notes || ''
+        notes: item.notes || "",
       }));
-
       // Store order items in localStorage for the order page
-      localStorage.setItem('pendingOrderItems', JSON.stringify(orderItems));
-      
+      localStorage.setItem("pendingOrderItems", JSON.stringify(orderItems));
+
       // Clear the cart
       await clearCart();
-      
+
       // Close the drawer
       setIsOpen(false);
-      
+
       // Navigate to order page
-      navigate('/pharmacy/order');
-      
+      navigate("/pharmacy/order");
+
       toast({
         title: "Cart Transferred",
         description: "Your cart items have been transferred to a new order",
       });
     } catch (error) {
-      console.error('Checkout error:', error);
+      console.error("Checkout error:", error);
       toast({
         title: "Error",
         description: "Failed to process checkout",
@@ -104,33 +109,47 @@ export const CartDrawer = () => {
         <SheetHeader>
           <SheetTitle>Shopping Cart</SheetTitle>
         </SheetHeader>
-        
+
         <div className="flex flex-col h-full">
           <ScrollArea className="flex-1 -mx-6 px-6">
             {cartItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-[50vh] text-center">
                 <ShoppingCart className="h-12 w-12 text-gray-400 mb-4" />
-                <p className="text-lg font-medium text-gray-900">Your cart is empty</p>
-                <p className="text-sm text-gray-500">Add items to get started</p>
+                <p className="text-lg font-medium text-gray-900">
+                  Your cart is empty
+                </p>
+                <p className="text-sm text-gray-500">
+                  Add items to get started
+                </p>
               </div>
             ) : (
               <div className="space-y-4 mt-4">
                 {cartItems.map((item) => (
-                  <div key={item.productId} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                    <img 
-                      src={item.image} 
+                  <div
+                    key={item.productId}
+                    className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
+                  >
+                    <img
+                      src={item.image}
                       alt={item.name}
                       className="w-16 h-16 object-cover rounded-md"
                     />
                     <div className="flex-1">
                       <h3 className="font-medium">{item.name}</h3>
-                      <p className="text-sm text-gray-500">${item.price.toFixed(2)}</p>
+                      <p className="text-sm text-gray-500">
+                        ${item.price.toFixed(2)}
+                      </p>
                       <div className="flex items-center gap-2 mt-2">
                         <Button
                           variant="outline"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
+                          onClick={() =>
+                            handleQuantityChange(
+                              item.productId,
+                              item.quantity - 1
+                            )
+                          }
                           disabled={item.quantity <= 1}
                         >
                           <Minus className="h-4 w-4" />
@@ -140,7 +159,12 @@ export const CartDrawer = () => {
                           variant="outline"
                           size="icon"
                           className="h-8 w-8"
-                          onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
+                          onClick={() =>
+                            handleQuantityChange(
+                              item.productId,
+                              item.quantity + 1
+                            )
+                          }
                         >
                           <Plus className="h-4 w-4" />
                         </Button>
@@ -159,14 +183,14 @@ export const CartDrawer = () => {
               </div>
             )}
           </ScrollArea>
-          
+
           {cartItems.length > 0 && (
             <div className="border-t mt-6 pt-6 space-y-4">
               <div className="flex justify-between text-lg font-medium">
                 <span>Total</span>
                 <span>${total.toFixed(2)}</span>
               </div>
-              <Button 
+              <Button
                 className="w-full bg-green-600 hover:bg-green-700 text-white"
                 onClick={handleCheckout}
                 disabled={isProcessing}

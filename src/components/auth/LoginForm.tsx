@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -10,7 +9,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { supabase } from "@/supabaseClient";
 import { useDispatch } from "react-redux";
 import { setUserProfile } from "../../store/actions/userAction";
-
+import { Eye, EyeOff } from "lucide-react";
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,6 +19,7 @@ export const LoginForm = () => {
   const location = useLocation();
   const { toast } = useToast();
   const dispatch = useDispatch();
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
@@ -61,15 +61,16 @@ export const LoginForm = () => {
       }
 
       console.log("Starting login process for email:", email);
-      
+
       // Clear any existing session data
       sessionStorage.clear();
 
       // Step 1: Authenticate with Supabase
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: email.trim().toLowerCase(),
-        password,
-      });
+      const { data: authData, error: authError } =
+        await supabase.auth.signInWithPassword({
+          email: email.trim().toLowerCase(),
+          password,
+        });
 
       if (authError) {
         console.error("Authentication error:", authError);
@@ -81,31 +82,44 @@ export const LoginForm = () => {
         throw new Error("Authentication failed");
       }
 
-      console.log("Authentication successful, user ID:", authData.session.user.id);
+      console.log(
+        "Authentication successful, user ID:",
+        authData.session.user.id
+      );
 
       // Step 2: Fetch user profile with error handling
       try {
         const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
+          .from("profiles")
           .select()
-          .eq('id', authData.session.user.id)
+          .eq("id", authData.session.user.id)
           .maybeSingle();
 
         if (profileError) {
           console.error("Profile fetch error:", profileError);
-          throw new Error(`Failed to fetch user profile: ${profileError.message}`);
+          throw new Error(
+            `Failed to fetch user profile: ${profileError.message}`
+          );
         }
 
         if (!profileData) {
-          console.error("No profile found for user ID:", authData.session.user.id);
+          console.error(
+            "No profile found for user ID:",
+            authData.session.user.id
+          );
           throw new Error("User profile not found. Please contact support.");
         }
 
         console.log("Profile fetched successfully:", profileData);
 
-        if (profileData.status !== 'active') {
-          console.error("User account is not active. Status:", profileData.status);
-          throw new Error("Your account is not active. Please contact support.");
+        if (profileData.status !== "active") {
+          console.error(
+            "User account is not active. Status:",
+            profileData.status
+          );
+          throw new Error(
+            "Your account is not active. Please contact support."
+          );
         }
 
         // Step 3: Set session data
@@ -131,18 +145,17 @@ export const LoginForm = () => {
           group: "/group/dashboard",
         };
 
-        const redirectPath = dashboardRoutes[profileData.type as keyof typeof dashboardRoutes];
+        const redirectPath =
+          dashboardRoutes[profileData.type as keyof typeof dashboardRoutes];
         if (redirectPath) {
           navigate(redirectPath, { replace: true });
         } else {
           throw new Error(`Invalid user type: ${profileData.type}`);
         }
-
       } catch (profileError: any) {
         console.error("Profile fetch error:", profileError);
         throw new Error(`Failed to load user profile: ${profileError.message}`);
       }
-
     } catch (error: any) {
       console.error("Login error:", error);
       const errorMessage = error.message || "An error occurred during login";
@@ -179,20 +192,29 @@ export const LoginForm = () => {
         />
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 relative">
         <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          placeholder="Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          disabled={isLoading}
-          minLength={6}
-        />
+        <div className="relative">
+          <Input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            disabled={isLoading}
+            minLength={6}
+            className="pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
       </div>
-
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? "Signing in..." : "Sign In"}
       </Button>

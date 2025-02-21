@@ -20,10 +20,20 @@ export const CartDrawer = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const total = cartItems.reduce((sum, item) => {
+    // ✅ Har size ki price * quantity ka sum calculate karega
+    const itemTotal = item.sizes.reduce(
+      (sizeSum, size) => sizeSum + size.price * size.quantity,
+      0
+    );
+    return sum + itemTotal;
+  }, 0);
+  
+
+
+  useEffect(()=>{
+console.log(cartItems)
+  },[])
 
   const handleQuantityChange = async (
     productId: string,
@@ -137,8 +147,24 @@ export const CartDrawer = () => {
                     <div className="flex-1">
                       <h3 className="font-medium">{item.name}</h3>
                       <p className="text-sm text-gray-500">
-                        ${item.price.toFixed(2)}
+                      {/* ${item.sizes
+  .reduce((sum, size) => sum + size.price * size.quantity, 0)
+  .toFixed(2)} */}
+
                       </p>
+                      <div>
+  {item.sizes
+  .filter((size) => size.quantity > 0) // ✅ Sirf non-zero quantity wale sizes dikhaye
+  .map((size) => (
+    <div key={size.id} className="border p-2 mb-2 rounded">
+      <p><strong>Size:</strong> {size.size_value} {size.size_unit}</p>
+      <p><strong>Price per Unit:</strong> ₹{size.price.toFixed(2)}</p>
+      <p><strong>Total Price:</strong> ₹{(size.quantity * size.price).toFixed(2)}</p>
+    </div>
+  ))}
+
+</div>
+
                       <div className="flex items-center gap-2 mt-2">
                         <Button
                           variant="outline"

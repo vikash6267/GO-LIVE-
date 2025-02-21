@@ -16,6 +16,7 @@ export interface CustomizationOption {
 }
 
 export interface ProductSize {
+  id: string;
   size_value: string;
   size_unit: string;
   price: number;

@@ -152,23 +152,25 @@ export const updateProductService = async (productId: string, data: ProductFormV
     //     throw sizesError;
     //   }
     // }
-
-
     //Please use number to store DB 
+
     const sizesData = data.sizes.map(size => ({
       product_id: productId,
       size_value: size.size_value || "0",
       size_unit: size.size_unit || "unit",
       price: size.price || 0,
       stock: Number(size.stock) || 0, // Convert to Integer
-      price_per_case: size.price || 0,
-      quantity_per_case: Number(size.pricePerCase) || 1, // Ensure it's a number
+      price_per_case: Number(size.pricePerCase) || 0,
+      quantity_per_case: Number(size.stock) || 1, // Ensure it's a number
       rolls_per_case: Number(size.rolls_per_case) || 1, // Convert to Integer
       shipping_cost: size.shipping_cost || 15,
       
     }));
     
+    console.log(sizesData)
     
+
+
     const { error: sizesError } = await supabase
       .from("product_sizes")
       .insert(sizesData)

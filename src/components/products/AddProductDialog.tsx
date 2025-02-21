@@ -66,8 +66,8 @@ export function AddProductDialog({
     try {
       await onSubmit(values);
       form.reset();
-      onProductAdded();
-      onOpenChange(false);
+      // onProductAdded();
+      // onOpenChange(false);
     } catch (error) {
       console.error("Error submitting product:", error);
     }

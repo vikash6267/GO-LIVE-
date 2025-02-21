@@ -20,13 +20,15 @@ import { useState } from "react";
 interface ProductDialogProps {
   product: ProductDetails;
   isInCart: boolean;
-  quantity: number;
-  onIncreaseQuantity: () => void; // Add this
-  onDecreaseQuantity: () => void; // Add this
+  quantity: { [key: string]: number };
+  onIncreaseQuantity: (id:string) => void; // Add this
+  onDecreaseQuantity: (id:string) => void; // Add this
   isAddingToCart: boolean;
   customizations: Record<string, string>;
   onCustomizationChange: (customizations: Record<string, string>) => void;
   onAddToCart: () => void;
+  setSelectedSizes: (sizeIds: string[]) => void;
+  selectedSizes:string[]
 }
 
 export const ProductDialog = ({
@@ -38,8 +40,9 @@ export const ProductDialog = ({
   onDecreaseQuantity,
   onCustomizationChange,
   onAddToCart,
+  setSelectedSizes,
+  selectedSizes
 }: ProductDialogProps) => {
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
 
   return (
     <DialogContent className="max-w-4xl max-h-[90vh]">

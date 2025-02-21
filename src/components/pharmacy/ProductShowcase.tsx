@@ -48,6 +48,7 @@ const ProductShowcase = () => {
           },
           quantityPerCase: item.quantity_per_case || 0,
           sizes: item.product_sizes?.map((size: any) => ({
+            id:size.id,
             size_value: size.size_value,
             size_unit: size.size_unit,
             price: size.price,

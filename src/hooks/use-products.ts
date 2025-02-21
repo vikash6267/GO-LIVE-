@@ -73,7 +73,6 @@ export const useProducts = () => {
   const handleUpdateProduct = async (data: ProductFormValues) => {
     if (!editingProduct) return;
 
-  
     try {
       await updateProductService(editingProduct.id, data);
       toast({ title: "Success", description: "Product updated successfully." });

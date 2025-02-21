@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
@@ -21,25 +20,42 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const { toast } = useToast();
   const { addToCart, cartItems } = useCart();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const [customizations, setCustomizations] = useState<Record<string, string>>({});
+  const [customizations, setCustomizations] = useState<Record<string, string>>(
+    {}
+  );
+  const [quantity, setQuantity] = useState(1); // Quantity state
   const navigate = useNavigate();
 
-  // Convert product.id to string for comparison
-  const isInCart = cartItems.some(item => item.productId === product.id.toString());
-  const stockStatus = product.stock && product.stock < 10 ? "Low Stock" : "In Stock";
+  const isInCart = cartItems.some(
+    (item) => item.productId === product.id.toString()
+  );
+  const stockStatus =
+    product.stock && product.stock < 10 ? "Low Stock" : "In Stock";
+
+  const handleIncreaseQuantity = (): void => {
+    if (product.stock > quantity) {
+      setQuantity((prev: number) => prev + 1);
+    }
+  };
+
+  const handleDecreaseQuantity = (): void => {
+    if (quantity > 1) {
+      setQuantity((prev: number) => prev - 1);
+    }
+  };
 
   const handleAddToCart = async () => {
     setIsAddingToCart(true);
-    
+
     try {
-      // Check if user is logged in
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
-        navigate('/login');
+        navigate("/login");
         return;
       }
 
-      // Check stock availability
       if (product.stock < 1) {
         throw new Error("Product is out of stock");
       }
@@ -51,9 +67,9 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         name: product.name,
         price: product.price,
         image: imageUrl,
-        quantity: 1,
+        quantity: quantity,
         customizations,
-        notes: '',
+        notes: "",
       };
 
       const success = await addToCart(cartItem);
@@ -77,7 +93,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       console.error("Error adding to cart:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to add item to cart. Please try again.",
+        description:
+          error.message || "Failed to add item to cart. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -96,7 +113,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               offer={product.offer}
               stockStatus={stockStatus}
             />
-            
+
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg font-semibold mb-1">{product.name}</h3>
@@ -120,6 +137,9 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         customizations={customizations}
         onCustomizationChange={setCustomizations}
         onAddToCart={handleAddToCart}
+        quantity={quantity}
+        onIncreaseQuantity={handleIncreaseQuantity} // Pass increase function
+        onDecreaseQuantity={handleDecreaseQuantity} // Pass decrease function
       />
     </Dialog>
   );

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ProductDetails } from "../../types/product.types";
@@ -10,39 +9,29 @@ interface ProductSizeOptionsProps {
   product: ProductDetails;
   selectedSizes?: string[];
   onSizeSelect?: (sizeId: string[]) => void;
+  quantity: number; // Now a single number
+  onIncreaseQuantity: () => void; // No sizeId required
+  onDecreaseQuantity: () => void; // No sizeId required
 }
 
 export const ProductSizeOptions = ({
+  quantity,
+  onIncreaseQuantity,
+  onDecreaseQuantity,
   product,
   selectedSizes = [],
   onSizeSelect,
 }: ProductSizeOptionsProps) => {
-  const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
-
   const handleSizeToggle = (sizeId: string) => {
     if (selectedSizes.includes(sizeId)) {
       onSizeSelect?.(selectedSizes.filter((s) => s !== sizeId));
-      setQuantities((prev) => {
-        const updated = { ...prev };
-        delete updated[sizeId]; // Remove quantity when unselected
-        return updated;
-      });
     } else {
       onSizeSelect?.([...selectedSizes, sizeId]);
-      setQuantities((prev) => ({ ...prev, [sizeId]: 1 })); // Default quantity 1 on select
     }
-  };
-
-  const handleQuantityChange = (sizeId: string, change: number) => {
-    setQuantities((prev) => {
-      const newQuantity = Math.max(1, (prev[sizeId] || 1) + change); // Ensure min 1
-      return { ...prev, [sizeId]: newQuantity };
-    });
   };
 
   const quantityPerCase = product.quantityPerCase || 0;
 
-  // If no sizes are defined, show base price option
   if (!product.sizes || product.sizes.length === 0) {
     return (
       <Card className="p-4 hover:shadow-md transition-shadow">
@@ -76,8 +65,7 @@ export const ProductSizeOptions = ({
     <div className="space-y-3">
       {product.sizes.map((size, index) => {
         const sizeId = `${size.size_value}-${size.size_unit}`;
-        const quantity = quantities[sizeId] || 1;
-        const totalPrice = size.price * quantity;
+        const totalPrice = size.price * quantity; // Using single quantity
 
         return (
           <Card key={index} className="p-4 hover:shadow-md transition-shadow">
@@ -111,7 +99,8 @@ export const ProductSizeOptions = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleQuantityChange(sizeId, -1)}
+                  onClick={onDecreaseQuantity} // Fixed function execution
+                  disabled={quantity <= 1}
                 >
                   -
                 </Button>
@@ -119,7 +108,7 @@ export const ProductSizeOptions = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => handleQuantityChange(sizeId, 1)}
+                  onClick={onIncreaseQuantity} // Fixed function execution
                 >
                   +
                 </Button>

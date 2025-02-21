@@ -25,8 +25,6 @@ export function UsersContainer({
   onStatusChange,
   onSelectionChange,
 }: UsersContainerProps) {
-
-  
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
@@ -43,8 +41,8 @@ export function UsersContainer({
             onStatusChange={onStatusChange}
           />
 
-          <div className="rounded-md border">
-            <UsersTable 
+          <div className="rounded-md border ">
+            <UsersTable
               users={users}
               selectedUsers={selectedUsers}
               onSelectionChange={onSelectionChange}

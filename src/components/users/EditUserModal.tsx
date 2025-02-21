@@ -5,6 +5,7 @@ import { useEditUserForm } from "./hooks/useEditUserForm";
 import { useEffect } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface EditUserModalProps {
   user: {
@@ -25,6 +26,8 @@ export function EditUserModal({
   onOpenChange,
   onUserUpdated,
 }: EditUserModalProps) {
+  const queryClient = useQueryClient(); // ✅ Query Client
+
   const { form, onSubmit, fetchUserData, formState } = useEditUserForm({
     userId: user.id,
     initialName: user.name,
@@ -34,6 +37,8 @@ export function EditUserModal({
     onSuccess: () => {
       console.log('EditUserModal: onSuccess callback triggered');
       onUserUpdated();
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+
       onOpenChange(false);
     },
     onClose: () => {

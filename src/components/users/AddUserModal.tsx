@@ -14,6 +14,7 @@ import { SharedUserForm } from "./forms/SharedUserForm";
 import { supabase } from "@/supabaseClient";
 import { useState } from "react";
 import { v4 as uuidv4 } from 'uuid';
+import { useQueryClient } from "@tanstack/react-query";
 
 interface AddUserModalProps {
   open: boolean;
@@ -26,6 +27,8 @@ export function AddUserModal({
   onOpenChange,
   onUserAdded,
 }: AddUserModalProps) {
+  const queryClient = useQueryClient(); // ✅ Query Client
+
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -127,7 +130,7 @@ export function AddUserModal({
   const tempUserData = await response.json();
   console.log(tempUserData);
   if(!tempUserData?.id){
-    throw new Error('Failed to create user');
+    throw new Error(tempUserData.msg || "Failed To Create Custmore");
   }
 
       // Generate a new UUID for the user
@@ -197,6 +200,7 @@ export function AddUserModal({
         title: "Success",
         description: `${values.firstName} ${values.lastName} has been created successfully`,
       });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
       
       form.reset();
       onUserAdded();

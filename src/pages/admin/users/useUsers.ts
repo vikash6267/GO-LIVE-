@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/supabaseClient";
 import { User } from "@/components/users/UsersTable";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 async function fetchUsers() {
   console.log('Starting fetchUsers function...');
@@ -87,6 +87,7 @@ export function useUsers() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const queryClient = useQueryClient();
 
   const { data: users = [], isLoading, error } = useQuery({
     queryKey: ['users'],
@@ -137,6 +138,33 @@ export function useUsers() {
   });
 
   
+  // Update User Mutation
+  type UserUpdate = {
+    id: string;
+    name?: string;
+    email?: string;
+    type?: string;
+    status?: string;
+    role?: string;
+    phone?: string;
+  };
+  
+  const updateUserMutation = useMutation({
+    mutationFn: async (updatedUser: UserUpdate) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update(updatedUser)
+        .eq("id", updatedUser.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+
+    },
+  });
+  
+
+
   return {
     users: filteredUsers,
     isLoading,
@@ -149,5 +177,6 @@ export function useUsers() {
     setSearchTerm,
     setFilterType,
     setFilterStatus,
+    updateUserMutation
   };
 }

@@ -30,7 +30,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const navigate = useNavigate();
 
 
- 
   const isInCart = cartItems.some(
     (item) => item.productId === product.id.toString()
   );
@@ -71,10 +70,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           throw new Error("Product is out of stock");
         }
     
-        const imageUrl = product.image_url || product.image;
+        const imageUrl =   product.images[0] || product.image_url;
         console.log("Selected Sizes:", selectedSizes);
     
-        // ✅ Update sizes array based on selected sizes and their quantity
+      
         const updatedSizes = product.sizes
           .filter((size) => selectedSizes.includes(`${size.size_value}-${size.size_unit}`)) // ✅ Correct filtering
           .map((size) => ({
@@ -91,6 +90,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           name: product.name,
           price: totalPrice, // ✅ Corrected price calculation
           image: imageUrl,
+          shipping_cost: product.shipping_cost || 0,
           sizes: updatedSizes, // ✅ Updated sizes with correct quantity
           quantity: updatedSizes.reduce((total, size) => total + size.quantity, 0), // ✅ Total quantity sum
           customizations,
@@ -136,7 +136,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer">
           <CardContent className="p-6">
             <ProductImage
-              image={product.image_url || product.image}
+              image={ product.images[0] || product.image }
               name={product.name}
               offer={product.offer}
               stockStatus={stockStatus}
@@ -148,11 +148,11 @@ export const ProductCard = ({ product }: ProductCardProps) => {
                 <p className="text-gray-600 text-sm">{product.description}</p>
               </div>
 
-              <ProductPricing
+              {/* <ProductPricing
                 basePrice={product.base_price || product.price}
                 offer={product.offer}
                 tierPricing={product.tierPricing}
-              />
+              /> */}
             </div>
           </CardContent>
         </Card>

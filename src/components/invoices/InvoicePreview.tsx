@@ -18,15 +18,17 @@ interface InvoicePreviewProps {
       email: string;
     };
     items?: Array<{
-      id: string;
+      name: string;
       description: string;
       quantity: number;
-      rate: number;
-      sizes:any[],
+      price: number;
+
+      sizes: any[];
       amount: number;
     }>;
     subtotal?: number;
     tax?: number;
+    payment_status: string;
     total?: number;
   };
 }
@@ -35,6 +37,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
   const { toast } = useToast();
   const settings: SettingsFormValues = defaultValues;
 
+  console.log(invoice);
   if (!invoice) {
     toast({
       title: "Error",
@@ -51,20 +54,28 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
   }
 
   return (
-    <SheetContent className="w-[800px] sm:w-[900px] overflow-y-auto">
+    <SheetContent className="min-w-[800px] sm:min-w-[900px] overflow-y-auto min-w-[30vw]">
       <div className="space-y-8 p-6">
         {/* Header Section */}
         <div className="flex justify-between">
           <div>
             {settings.logo && (
-              <img src={settings.logo} alt="Business Logo" className="h-12 mb-4" />
+              <img
+                src={settings.logo}
+                alt="Business Logo"
+                className="h-12 mb-4"
+              />
             )}
             {settings.showBusinessAddress && (
               <div className="text-sm mt-2">
-                <p className="font-semibold">{settings.businessName || 'Company Name'}</p>
+                <p className="font-semibold">
+                  {/* {settings.businessName || "Company Name"} */}
+                </p>
                 <p>{settings.address}</p>
                 {settings.suite && <p>{settings.suite}</p>}
-                <p>{settings.city}, {settings.state} {settings.zipCode}</p>
+                <p>
+                  {settings.city}, {settings.state} {settings.zipCode}
+                </p>
                 {settings.phone && <p>Phone: {settings.phone}</p>}
                 {settings.email && <p>Email: {settings.email}</p>}
               </div>
@@ -72,11 +83,19 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
           </div>
           <div className="text-right">
             <SheetTitle className="text-3xl mb-4">Invoice</SheetTitle>
-            <p style={{ color: settings.invoiceAccentColor || '#2563eb' }} className="font-medium">
-              {settings.invoicePrefix || 'INV'}-{invoice.id}
+            <p
+              style={{ color: settings.invoiceAccentColor || "#2563eb" }}
+              className="font-medium"
+            >
+              {settings.invoicePrefix || "INV"}-{invoice.id}
             </p>
-            <p className="mt-4 text-sm text-muted-foreground">Balance Due</p>
-            <p className="text-xl font-bold">${invoice.total?.toFixed(2) || '0.00'}</p>
+            <p className="mt-4 text-sm text-muted-foreground">
+             {invoice.payment_status === "paid" ? <span>Paid</span> : <span>Balance Due</span> } 
+
+            </p>
+            <p className="text-xl font-bold">
+              ${invoice.total?.toFixed(2) || "0.00"}
+            </p>
           </div>
         </div>
 
@@ -87,63 +106,88 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
           <div>
             <h3 className="font-semibold mb-2">Bill To</h3>
             <div className="text-sm space-y-1">
-              <p>{invoice.customerInfo?.name || 'N/A'}</p>
-              <p>{invoice.customerInfo?.phone || 'N/A'}</p>
-              <p>EMAIL: {invoice.customerInfo?.email || 'N/A'}</p>
+              <p>{invoice.customerInfo?.name || "N/A"}</p>
+              <p>{invoice.customerInfo?.phone || "N/A"}</p>
+              <p>EMAIL: {invoice.customerInfo?.email || "N/A"}</p>
             </div>
           </div>
           <div>
             <h3 className="font-semibold mb-2">Ship To</h3>
             <div className="text-sm space-y-1">
-              <p>{invoice.shippingInfo?.name || 'N/A'}</p>
-              <p>{invoice.shippingInfo?.phone || 'N/A'}</p>
-              <p>EMAIL: {invoice.shippingInfo?.email || 'N/A'}</p>
+              <p>{invoice.shippingInfo?.name || "N/A"}</p>
+              <p>{invoice.shippingInfo?.phone || "N/A"}</p>
+              <p>EMAIL: {invoice.shippingInfo?.email || "N/A"}</p>
             </div>
           </div>
         </div>
 
         {/* Items Table */}
-        <div className="space-y-4">
-          <div className="p-2 grid grid-cols-12 gap-4 bg-muted text-sm font-medium">
-            <div className="col-span-1">#</div>
-            <div className="col-span-5">Description</div>
-            <div className="col-span-2 text-right">Qty</div>
-            <div className="col-span-2 text-right">Rate</div>
-            <div className="col-span-2 text-right">Amount</div>
-          </div>
-          {invoice.items?.map((item) => (
-            <div key={item.id} className="p-2 grid grid-cols-12 gap-4 text-sm border-b">
-              <div className="col-span-1">{item.id}</div>
-              <div className="col-span-5">{item.description}</div>
-              <div className="col-span-2 text-right">{item.quantity}</div>
-              <div className="col-span-2 text-right">${item.rate.toFixed(2)}</div>
-              <div className="col-span-2 text-right">${item.amount.toFixed(2)}</div>
+        <table className="w-full border-collapse border border-gray-300">
+  {/* Table Header */}
+  <thead className="bg-muted text-sm font-medium">
+    <tr>
+      <th className="border border-gray-300 p-2 text-left">Description</th>
+      <th className="border border-gray-300 p-2 text-left">Sizes</th>
+      <th className="border border-gray-300 p-2 text-right">Qty</th>
+      <th className="border border-gray-300 p-2 text-right">Rate</th>
+      <th className="border border-gray-300 p-2 text-right">Amount</th>
+    </tr>
+  </thead>
+
+  {/* Table Body */}
+  <tbody>
+    {invoice?.items?.map((item, index) => (
+      <tr key={index} className="border-b border-gray-300 text-sm">
+        {/* Description */}
+        <td className="border border-gray-300 p-2">{item.name}</td>
+
+        {/* Sizes */}
+        <td className="border border-gray-300 p-2">
+          {item.sizes?.map((size, sizeIndex) => (
+            <div key={sizeIndex}>
+              {size.size_value} {size.size_unit}
             </div>
           ))}
-        </div>
+        </td>
+
+        {/* Quantity */}
+        <td className="border border-gray-300 p-2 text-right">{item.quantity}</td>
+
+        {/* Price */}
+        <td className="border border-gray-300 p-2 text-right">${item.price}</td>
+
+        {/* Amount */}
+        <td className="border border-gray-300 p-2 text-right">
+          ${item.quantity * item.price}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
 
         {/* Totals */}
         <div className="flex justify-end">
           <div className="w-64 space-y-2">
             <div className="flex justify-between">
               <span>Sub Total</span>
-              <span>${invoice.subtotal?.toFixed(2) || '0.00'}</span>
+              <span>${invoice?.subtotal?.toFixed(2) || "0.00"}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Tax (6%)</span>
-              <span>${invoice.tax?.toFixed(2) || '0.00'}</span>
+              <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
             </div>
             <Separator />
             <div className="flex justify-between font-bold">
               <span>Total</span>
-              <span>${invoice.total?.toFixed(2) || '0.00'}</span>
+              <span>${invoice?.total?.toFixed(2) || "0.00"}</span>
             </div>
-            <div 
-              className="flex justify-between font-bold" 
-              style={{ color: settings.invoiceAccentColor || '#2563eb' }}
+            <div
+              className="flex justify-between font-bold"
+              style={{ color: settings.invoiceAccentColor || "#2563eb" }}
             >
-              <span>Balance Due</span>
-              <span>${invoice.total?.toFixed(2) || '0.00'}</span>
+             {invoice.payment_status === "paid" ? <span>Paid</span> : <span>Balance Due</span> } 
+              <span>${invoice?.total?.toFixed(2) || "0.00"}</span>
             </div>
           </div>
         </div>

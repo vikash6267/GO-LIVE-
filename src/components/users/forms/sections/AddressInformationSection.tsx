@@ -1,4 +1,4 @@
-
+import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { BaseUserFormData } from "../../schemas/sharedFormSchema";
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
@@ -11,6 +11,15 @@ interface AddressInformationSectionProps {
 }
 
 export function AddressInformationSection({ form }: AddressInformationSectionProps) {
+  const sameAsShipping = form.watch("sameAsShipping");
+  const billingAddress = form.watch("billingAddress");
+
+  useEffect(() => {
+    if (sameAsShipping) {
+      form.setValue("shippingAddress", billingAddress);
+    }
+  }, [sameAsShipping, billingAddress, form]);
+
   return (
     <Card>
       <CardHeader>
@@ -45,10 +54,8 @@ export function AddressInformationSection({ form }: AddressInformationSectionPro
           )}
         />
 
-        {!form.watch("sameAsShipping") && (
-          <AddressFields form={form} type="shipping" />
-        )}
-      </CardContent>
+        <AddressFields form={form} type="shipping" />
+              </CardContent>
     </Card>
   );
 }

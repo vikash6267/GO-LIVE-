@@ -46,11 +46,14 @@ export const OrderDetailsSheet = ({
   userRole = "pharmacy"
 }: OrderDetailsSheetProps) => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
+
   const { toast } = useToast();
   const [currentOrder, setCurrentOrder] = useState<OrderFormValues>(order);
 
   // Update currentOrder when order prop changes
   useEffect(() => {
+    console.log(order)
     setCurrentOrder(order);
   }, [order]);
 
@@ -88,60 +91,145 @@ export const OrderDetailsSheet = ({
     }
   };
 
+  // const handlePayNow = async () => {
+  //   try {
+  //     setIsProcessingPayment(true);
+
+  //     // Get Authorize.Net credentials from Supabase
+  //     const { data: credentials, error: credentialsError } = await supabase
+  //       .from('secrets')
+  //       .select('value')
+  //       .in('name', ['AUTHORIZE_NET_LOGIN_ID', 'AUTHORIZE_NET_TRANSACTION_KEY'])
+  //       .order('name');
+
+  //     if (credentialsError || !credentials || credentials.length !== 2) {
+  //       throw new Error('Failed to retrieve payment credentials');
+  //     }
+
+  //     const response = await processACHPayment({
+  //       accountType: 'checking',
+  //       accountName: currentOrder.customerInfo.name,
+  //       routingNumber: '122000661', // Test routing number
+  //       accountNumber: '1234567890', // Test account number
+  //       amount: parseFloat(currentOrder.total),
+  //       customerEmail: currentOrder.customerInfo.email,
+  //       customerName: currentOrder.customerInfo.name,
+  //       apiLoginId: credentials[0].value,
+  //       transactionKey: credentials[1].value,
+  //       testMode: true // Set to false in production
+  //     });
+
+  //     if (response.success) {
+  //       // Update order status in database
+  //       const { error: updateError } = await supabase
+  //         .from('orders')
+  //         .update({ 
+  //           status: 'paid',
+  //           updated_at: new Date().toISOString()
+  //         })
+  //         .eq('id', currentOrder.id);
+
+  //       if (updateError) throw updateError;
+
+  //       setCurrentOrder(prev => ({ ...prev, status: 'paid' }));
+
+  //       toast({
+  //         title: "Payment Successful",
+  //         description: `Transaction ID: ${response.transactionId}`,
+  //       });
+  //     } else {
+  //       throw new Error(response.error?.text || 'Payment failed');
+  //     }
+  //   } catch (error) {
+  //     console.error('Payment error:', error);
+  //     toast({
+  //       title: "Payment Failed",
+  //       description: error instanceof Error ? error.message : "Failed to process payment",
+  //       variant: "destructive",
+  //     });
+  //   } finally {
+  //     setIsProcessingPayment(false);
+  //   }
+  // };
+
+
+  useEffect(() => {
+    const loadRazorpayScript = () => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.async = true;
+      script.onload = () => setRazorpayLoaded(true);
+      document.body.appendChild(script);
+    };
+
+    loadRazorpayScript();
+  }, []);
+
+
   const handlePayNow = async () => {
     try {
       setIsProcessingPayment(true);
 
-      // Get Authorize.Net credentials from Supabase
-      const { data: credentials, error: credentialsError } = await supabase
-        .from('secrets')
-        .select('value')
-        .in('name', ['AUTHORIZE_NET_LOGIN_ID', 'AUTHORIZE_NET_TRANSACTION_KEY'])
-        .order('name');
-
-      if (credentialsError || !credentials || credentials.length !== 2) {
-        throw new Error('Failed to retrieve payment credentials');
+      console.log(currentOrder.id)
+      if (!razorpayLoaded) {
+        throw new Error("Razorpay SDK failed to load. Please refresh the page.");
       }
 
-      const response = await processACHPayment({
-        accountType: 'checking',
-        accountName: currentOrder.customerInfo.name,
-        routingNumber: '122000661', // Test routing number
-        accountNumber: '1234567890', // Test account number
-        amount: parseFloat(currentOrder.total),
-        customerEmail: currentOrder.customerInfo.email,
-        customerName: currentOrder.customerInfo.name,
-        apiLoginId: credentials[0].value,
-        transactionKey: credentials[1].value,
-        testMode: true // Set to false in production
-      });
+      if (!currentOrder) {
+        throw new Error("Order data is missing.");
+      }
 
-      if (response.success) {
-        // Update order status in database
-        const { error: updateError } = await supabase
-          .from('orders')
+      // Order Total Amount (in paisa)
+    
+      const options = {
+        key: "rzp_test_lQz64anllWjB83", // Razorpay Key
+        amount: parseFloat(currentOrder.total) * 100, // USD ke liye cents me amount
+        currency: "USD", // 🔹 INR ki jagah USD use karein
+        name: "Your Company Name",
+        description: `Payment for Order #${currentOrder.id}`,
+        handler: async function (response: any) {
+          console.log("Payment Successful:", response);
+      
+          // ✅ Order Status Update in Supabase
+          const { error } = await supabase
+          .from("orders")
           .update({ 
-            status: 'paid',
-            updated_at: new Date().toISOString()
+            payment_status: "paid", 
+            updated_at: new Date().toISOString() 
           })
-          .eq('id', currentOrder.id);
-
-        if (updateError) throw updateError;
-
-        setCurrentOrder(prev => ({ ...prev, status: 'paid' }));
-
-        toast({
-          title: "Payment Successful",
-          description: `Transaction ID: ${response.transactionId}`,
-        });
-      } else {
-        throw new Error(response.error?.text || 'Payment failed');
-      }
+          .eq("id", currentOrder.id);
+        
+        if (error) {
+          console.error("❌ Order update failed:", error.message);
+          return;
+        }
+        
+      
+          setCurrentOrder((prev: any) => ({ ...prev, status: "paid" }));
+      
+          toast({
+            title: "Payment Successful",
+            description: `Transaction ID: ${response.razorpay_payment_id}`,
+          });
+        },
+        prefill: {
+          name: currentOrder.customerInfo.name,
+          email: currentOrder.customerInfo.email,
+          contact: "9876543210",
+        },
+        theme: {
+          color: "#3399cc",
+        },
+      };
+      
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
+      
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error("Payment error:", error);
       toast({
         title: "Payment Failed",
-        description: error instanceof Error ? error.message : "Failed to process payment",
+        description: error.message || "Failed to process payment",
         variant: "destructive",
       });
     } finally {
@@ -190,7 +278,7 @@ export const OrderDetailsSheet = ({
 
             <OrderWorkflowStatus status={currentOrder.status} />
             
-            {currentOrder.status !== 'paid' && (
+            {currentOrder.payment_status !== 'paid' && (
               <div className="flex justify-end">
                 <Button
                   onClick={handlePayNow}

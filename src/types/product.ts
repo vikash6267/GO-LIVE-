@@ -7,6 +7,8 @@ export interface ProductSize {
   price: number;
   price_per_case: number;
   stock: number;
+  quantity_per_case: number; // ✅ Added this field
+
   created_at: string;
   updated_at: string;
 }
@@ -25,6 +27,7 @@ export interface Product {
   quantity_per_case?: number;
   shipping_cost?: number;
   size_unit?: string;
+  
   size_value?: number;
   base_price: number;
   image_url?: string;

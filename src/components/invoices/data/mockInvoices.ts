@@ -8,6 +8,7 @@ export const mockInvoices: Invoice[] = [
     amount: 243.80,
     status: "paid",
     due_date: "2024-02-20",
+    payment_status:"paid",
     order_id: "ORD-2024-001",
     items: [
       {
@@ -55,6 +56,8 @@ export const mockInvoices: Invoice[] = [
     invoice_number: "INV-2024-002",
     amount: 149.99,
     status: "pending",
+    payment_status:"paid",
+
     due_date: "2024-02-21",
     order_id: "ORD-2024-002",
     items: [

@@ -48,7 +48,7 @@ export function InvoiceTableContent({
               </TableCell>
               <TableCell>${invoice.amount.toFixed(2)}</TableCell>
               <TableCell>
-                <InvoiceStatusBadge status={invoice.status} />
+                <InvoiceStatusBadge status={invoice.payment_status} />
               </TableCell>
               <TableCell>{new Date(invoice.due_date).toLocaleDateString()}</TableCell>
               <TableCell onClick={(e) => e.stopPropagation()}>

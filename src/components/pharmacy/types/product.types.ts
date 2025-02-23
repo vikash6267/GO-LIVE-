@@ -20,6 +20,8 @@ export interface ProductSize {
   size_value: string;
   size_unit: string;
   price: number;
+  quantity_per_case: number;
+
   pricePerCase: number;
   stock: number;
 }
@@ -32,6 +34,9 @@ export interface ProductDetails {
   base_price: number;
   offer: string;
   image: string;
+  shipping_cost: number;
+
+  images: string[];
   image_url: string;
   endsIn: string;
   productId: string;

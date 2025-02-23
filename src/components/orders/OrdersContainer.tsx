@@ -47,6 +47,7 @@ export const OrdersContainer = ({
     handleConfirmOrder: confirmOrder
   } = useOrderManagement();
 
+  console.log(orders)
   const {
     statusFilter,
     searchQuery,

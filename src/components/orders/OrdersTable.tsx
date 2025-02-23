@@ -12,6 +12,7 @@ interface Order {
   date: string;
   total: string;
   status: string;
+  payment_status: string;
   shipping?: {
     method: "custom" | "FedEx";
     trackingNumber?: string;

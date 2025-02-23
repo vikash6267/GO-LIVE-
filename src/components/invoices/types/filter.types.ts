@@ -26,6 +26,8 @@ export interface FilterValues {
   dateTo?: string;
   amountMin?: number;
   amountMax?: number;
+    payment_status?: string; // Add this line
+
 }
 
 export const isValidFilterValues = (filters: unknown): filters is FilterValues => {

@@ -13,6 +13,7 @@ interface ProductImageProps {
 export const ProductImage = ({ image, name, offer, stockStatus }: ProductImageProps) => {
   const [imageUrl, setImageUrl] = useState<string>('/placeholder.svg');
 
+
   useEffect(() => {
     const loadImage = async () => {
       if (image && image !== '/placeholder.svg') {

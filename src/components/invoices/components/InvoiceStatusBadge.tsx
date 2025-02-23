@@ -15,7 +15,7 @@ export function InvoiceStatusBadge({ status }: InvoiceStatusBadgeProps) {
       label: "Paid",
       description: "Payment has been received"
     },
-    pending: {
+    unpaid: {
       color: "bg-yellow-500/20 text-yellow-600 border-yellow-500/20",
       icon: Clock,
       label: "Pending",

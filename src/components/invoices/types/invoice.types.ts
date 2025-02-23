@@ -3,11 +3,11 @@ import { Json } from "@/integrations/supabase/types";
 import { z } from "zod";
 
 export interface InvoiceItem {
-  id: string;
+  name: string;
   description: string;
   quantity: number;
   rate: number;
-  amount: number;
+  sizes: any[];
 }
 
 export interface CustomerInfo {
@@ -39,7 +39,7 @@ export type PaymentMethod = typeof PaymentMethodEnum[keyof typeof PaymentMethodE
 
 // Zod schema for runtime validation
 export const invoiceItemSchema = z.object({
-  id: z.string(),
+  name: z.string(),
   description: z.string(),
   quantity: z.number().positive(),
   rate: z.number().nonnegative(),
@@ -73,6 +73,7 @@ export const invoiceSchema = z.object({
   payment_notes: z.string().nullable(),
   due_date: z.string(),
   created_at: z.string().optional(),
+  payment_status: z.string(),
   updated_at: z.string().optional(),
   paid_at: z.string().nullable().optional(),
   items: z.union([z.array(invoiceItemSchema), z.any()]), // Handle Json type
@@ -140,6 +141,7 @@ export interface Invoice {
   payment_method: PaymentMethod;
   payment_notes: string | null;
   due_date: string;
+  payment_status: string | null;
   created_at?: string;
   updated_at?: string;
   paid_at?: string | null;

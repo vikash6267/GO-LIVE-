@@ -20,13 +20,14 @@ export const CartDrawer = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
+  const shipingCost = 15
   const total = cartItems.reduce((sum, item) => {
     // ✅ Har size ki price * quantity ka sum calculate karega
     const itemTotal = item.sizes.reduce(
       (sizeSum, size) => sizeSum + size.price * size.quantity,
       0
     );
-    return sum + itemTotal;
+    return sum + itemTotal + shipingCost;
   }, 0);
 
   useEffect(() => {
@@ -77,8 +78,6 @@ export const CartDrawer = () => {
       // Store order items in localStorage for the order page
       localStorage.setItem("pendingOrderItems", JSON.stringify(orderItems));
 
-      // Clear the cart
-      await clearCart();
 
       // Close the drawer
       setIsOpen(false);
@@ -139,16 +138,18 @@ export const CartDrawer = () => {
                     className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
                   >
                     <img
-                      src={item.image}
-                      alt={item.name}
+                      src={`https://cfyqeilfmodrbiamqgme.supabase.co/storage/v1/object/public/product-images/${item.image}`}
+                      alt={`${item.name}`}
                       className="w-16 h-16 object-cover rounded-md"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder.svg";
+                      }}
                     />
                     <div className="flex-1">
                       <h3 className="font-medium">{item.name}</h3>
                       <p className="text-sm text-gray-500">
-                        {/* ${item.sizes
-  .reduce((sum, size) => sum + size.price * size.quantity, 0)
-  .toFixed(2)} */}
+                       
                       </p>
                       <div>
                         {item.sizes
@@ -163,12 +164,12 @@ export const CartDrawer = () => {
                                 {size.size_unit}
                               </p>
                               <p>
-                                <strong>Price per Unit:</strong> ₹
-                                {size.price.toFixed(2)}
+                                <strong>Price per Case:</strong> 
+                                ${size.price.toFixed(2)}
                               </p>
                               <p>
-                                <strong>Total Price:</strong> ₹
-                                {(size.quantity * size.price).toFixed(2)}
+                                <strong>Total Price:</strong> 
+                                ${(size.quantity * size.price).toFixed(2)}
                               </p>
 
                               <div className="flex items-center gap-2 mt-2">
@@ -185,7 +186,8 @@ export const CartDrawer = () => {
                                       size.id
                                     )
                                   }
-                                  disabled={item.quantity <= 1}
+                                  disabled={(item.sizes.find((s) => s.id === size.id)?.quantity || 0) <= 1}
+
                                 >
                                   <Minus className="h-4 w-4" />
                                 </Button>
@@ -230,6 +232,10 @@ export const CartDrawer = () => {
 
           {cartItems.length > 0 && (
             <div className="border-t mt-6 pt-6 space-y-4">
+              <div className="flex justify-between text-lg font-medium">
+                <span>Shipping Cost</span>
+                <span>${shipingCost}</span>
+              </div>
               <div className="flex justify-between text-lg font-medium">
                 <span>Total</span>
                 <span>${total.toFixed(2)}</span>

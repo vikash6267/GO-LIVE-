@@ -28,6 +28,7 @@ const ProductShowcase = () => {
           throw error;
         }
 
+        console.log(productsData)
         // Map Supabase data to match ProductDetails
         const mappedProducts: ProductDetails[] = productsData.map((item) => ({
           id: item.id,
@@ -36,8 +37,10 @@ const ProductShowcase = () => {
           price: item.base_price || 0,
           base_price: item.base_price || 0,
           category: item.category || "",
+          shipping_cost: item.shipping_cost || "",
           stock: item.current_stock || 0,
           minOrder: item.min_stock || 0,
+          images: item.images ,
           image: item.image_url || item.image || '/placeholder.svg',
           image_url: item.image_url || item.image || '/placeholder.svg',
           offer: "",

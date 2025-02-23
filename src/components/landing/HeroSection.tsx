@@ -1,6 +1,9 @@
 import { Pill, Building2, Box, Truck, ShoppingBag, Clock, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import image1 from "../../assests/home/1.jpg"
+import image2 from "../../assests/home/2.jpg"
+import image3 from "../../assests/home/3.png"
 
 const HeroSection = () => {
   const navigate = useNavigate();
@@ -59,19 +62,26 @@ const HeroSection = () => {
         </div>
         
         <div className="container mx-auto px-4 relative z-20 py-12 sm:py-16 md:py-20">
-          <div className="inline-flex items-center bg-white/15 backdrop-blur-md rounded-full px-4 sm:px-6 py-2 sm:py-3 mb-8 sm:mb-12">
-            <div className="flex -space-x-2">
-              {[1, 2, 3].map((_, i) => (
-                <div 
-                  key={i} 
-                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-violet-500 border-2 border-white" 
-                />
-              ))}
-            </div>
-            <span className="ml-3 sm:ml-4 text-sm sm:text-base md:text-lg font-medium text-white">
-              Trusted by 150+ Pharmacies
-            </span>
-          </div>
+        <div className="inline-flex items-center bg-white/15 backdrop-blur-md rounded-full px-4 sm:px-6 py-2 sm:py-3 mb-8 sm:mb-12">
+  <div className="flex -space-x-2">
+    {[
+   image1,
+   image2,
+      image3
+    ].map((logo, i) => (
+      <img 
+        key={i} 
+        src={logo} 
+        alt={`Trusted Pharmacy ${i + 1}`} 
+        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white object-cover"
+      />
+    ))}
+  </div>
+  <span className="ml-3 sm:ml-4 text-sm sm:text-base md:text-lg font-medium text-white">
+    Trusted by 150+ Pharmacies
+  </span>
+</div>
+
 
           <div className="max-w-4xl space-y-8 mb-16">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight drop-shadow-lg">

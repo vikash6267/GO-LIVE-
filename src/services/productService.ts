@@ -71,7 +71,9 @@ export const addProductService = async (data: ProductFormValues) => {
       price_per_case: size.pricePerCase || 0,
       stock: size.stock || 0,
       rolls_per_case: size.rolls_per_case || 0,
-      shipping_cost: size.shipping_cost || 15
+      shipping_cost: size.shipping_cost || 15,
+      quantity_per_case: size.quantity_per_case || 0 // ✅ Added this field
+
     }));
 
     const { error: sizesError } = await supabase
@@ -154,18 +156,21 @@ export const updateProductService = async (productId: string, data: ProductFormV
     // }
     //Please use number to store DB 
 
+    console.log(data.sizes)
+
+    
     const sizesData = data.sizes.map(size => ({
       product_id: productId,
       size_value: size.size_value || "0",
       size_unit: size.size_unit || "unit",
-      price: size.price || 0,
-      stock: Number(size.stock) || 0, // Convert to Integer
+      price: Number(size.price) || 0,
+      stock: Number(size.stock) || 0,  
       price_per_case: Number(size.pricePerCase) || 0,
-      quantity_per_case: Number(size.stock) || 1, // Ensure it's a number
-      rolls_per_case: Number(size.rolls_per_case) || 1, // Convert to Integer
-      shipping_cost: size.shipping_cost || 15,
-      
+      quantity_per_case: Number(size.quantity_per_case) || 1, // ✅ Ensure conversion
+      rolls_per_case: Number(size.rolls_per_case) || 1,
+      shipping_cost: Number(size.shipping_cost) || 15, // ✅ Ensure conversion
     }));
+    
     
     console.log(sizesData)
     

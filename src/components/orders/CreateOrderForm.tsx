@@ -29,8 +29,8 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const userProfile = useSelector(selectUserProfile);
-  const { cartItems } = useCart();
-console.log(cartItems)
+  const { cartItems,clearCart } = useCart();
+  
   // Initialize form with user profile data
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
@@ -90,11 +90,15 @@ console.log(cartItems)
     return () => subscription.unsubscribe();
   }, [form, validateForm]);
 
+
+
   const onSubmit = async (data: OrderFormValues) => {
     try {
       setIsSubmitting(true);
       console.log("Starting order submission:", data);
   
+
+      
       // Validate order items
       validateOrderItems(data.items);
   
@@ -149,6 +153,7 @@ console.log(cartItems)
         total_amount: calculatedTotal,
         shipping_cost: data.shipping?.cost || 0,
         tax_amount: 0,
+        items:data.items,
         notes: data.specialInstructions,
         shipping_method: data.shipping?.method,
         tracking_number: data.shipping?.trackingNumber,
@@ -200,7 +205,7 @@ console.log(cartItems)
       // console.log("Stock updated successfully");
   
       // Reset form and local state
-      localStorage.removeItem("cart");
+      // localStorage.removeItem("cart");
   
       toast({
         title: "Order Created Successfully",
@@ -208,8 +213,9 @@ console.log(cartItems)
       });
   
       form.reset();
-      setOrderItems([{ id: 1 }]);
+      // setOrderItems([{ id: 1 }]);
       navigate("/pharmacy/orders");
+      await clearCart()
     } catch (error) {
       console.error("Order creation error:", error);
       toast({
@@ -321,11 +327,9 @@ console.log(cartItems)
         <CustomerSelectionField form={form} />
         
         <OrderItemsSection 
-          onAddCartData={addCartItemsToOrder}
           orderItems={cartItems}
           form={form}
-          onAddItem={addOrderItem}
-          onRemoveItem={removeOrderItem}
+          
         />
 
         <ShippingSection form={form} />

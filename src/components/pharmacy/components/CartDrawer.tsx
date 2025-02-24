@@ -20,7 +20,7 @@ export const CartDrawer = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
-  const shipingCost = 15
+  const shipingCost = 15;
   const total = cartItems.reduce((sum, item) => {
     // ✅ Har size ki price * quantity ka sum calculate karega
     const itemTotal = item.sizes.reduce(
@@ -78,12 +78,12 @@ export const CartDrawer = () => {
       // Store order items in localStorage for the order page
       localStorage.setItem("pendingOrderItems", JSON.stringify(orderItems));
 
-
       // Close the drawer
       setIsOpen(false);
 
       // Navigate to order page
       navigate("/pharmacy/order");
+      window.location.reload();
 
       toast({
         title: "Cart Transferred",
@@ -148,9 +148,7 @@ export const CartDrawer = () => {
                     />
                     <div className="flex-1">
                       <h3 className="font-medium">{item.name}</h3>
-                      <p className="text-sm text-gray-500">
-                       
-                      </p>
+                      <p className="text-sm text-gray-500"></p>
                       <div>
                         {item.sizes
                           .filter((size) => size.quantity > 0) // ✅ Sirf non-zero quantity wale sizes dikhaye
@@ -164,12 +162,12 @@ export const CartDrawer = () => {
                                 {size.size_unit}
                               </p>
                               <p>
-                                <strong>Price per Case:</strong> 
-                                ${size.price.toFixed(2)}
+                                <strong>Price per Case:</strong>$
+                                {size.price.toFixed(2)}
                               </p>
                               <p>
-                                <strong>Total Price:</strong> 
-                                ${(size.quantity * size.price).toFixed(2)}
+                                <strong>Total Price:</strong>$
+                                {(size.quantity * size.price).toFixed(2)}
                               </p>
 
                               <div className="flex items-center gap-2 mt-2">
@@ -186,8 +184,10 @@ export const CartDrawer = () => {
                                       size.id
                                     )
                                   }
-                                  disabled={(item.sizes.find((s) => s.id === size.id)?.quantity || 0) <= 1}
-
+                                  disabled={
+                                    (item.sizes.find((s) => s.id === size.id)
+                                      ?.quantity || 0) <= 1
+                                  }
                                 >
                                   <Minus className="h-4 w-4" />
                                 </Button>

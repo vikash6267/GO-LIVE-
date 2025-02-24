@@ -17,13 +17,25 @@ const HeroSection = () => {
             <div className="flex items-center space-x-4 sm:space-x-8">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/30 to-teal-300/30 rounded-full blur-lg transform scale-150"></div>
-                <div className="relative rounded-full p-2">
-                  <img 
-                    src="/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png" 
-                    alt="9rx Logo" 
-                    className="h-8 sm:h-10 relative z-10 drop-shadow-lg"
-                  />
-                </div>
+              
+              
+              
+                <img 
+  src="/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png" 
+  alt="9rx Logo" 
+  className="h-12 sm:h-16 relative z-10 contrast-200 "
+/>
+
+
+
+
+
+
+
+
+
+
+
               </div>
             </div>
             <div className="flex items-center space-x-3 sm:space-x-6">

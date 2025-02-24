@@ -32,6 +32,8 @@ export const SizeList = ({
     CATEGORY_CONFIGS.OTHER;
 
 
+
+    console.log(categoryConfig)
     console.log(sizes)
   return (
     <div className="space-y-2">

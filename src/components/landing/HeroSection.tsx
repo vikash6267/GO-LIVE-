@@ -1,9 +1,17 @@
-import { Pill, Building2, Box, Truck, ShoppingBag, Clock, Settings } from "lucide-react";
+import {
+  Pill,
+  Building2,
+  Box,
+  Truck,
+  ShoppingBag,
+  Clock,
+  Settings,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import image1 from "../../assests/home/1.jpg"
-import image2 from "../../assests/home/2.jpg"
-import image3 from "../../assests/home/3.png"
+import image1 from "../../assests/home/1.jpg";
+import image2 from "../../assests/home/2.jpg";
+import image3 from "../../assests/home/3.png";
 
 const HeroSection = () => {
   const navigate = useNavigate();
@@ -17,36 +25,25 @@ const HeroSection = () => {
             <div className="flex items-center space-x-4 sm:space-x-8">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/30 to-teal-300/30 rounded-full blur-lg transform scale-150"></div>
-              
-              
-              
-                <img 
-  src="/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png" 
-  alt="9rx Logo" 
-  className="h-12 sm:h-16 relative z-10 contrast-200 "
-/>
 
-
-
-
-
-
-
-
-
-
-
+                <img
+                  src="/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png"
+                  alt="9rx Logo"
+                  className="h-12 sm:h-16 relative z-10 contrast-200 "
+                />
               </div>
             </div>
             <div className="flex items-center space-x-3 sm:space-x-6">
               <Button
-                onClick={() => navigate("/login", { state: { defaultTab: "signup" } })}
-                variant="outline" 
+                onClick={() =>
+                  navigate("/login", { state: { defaultTab: "signup" } })
+                }
+                variant="outline"
                 className="hidden md:inline-flex border-emerald-600 text-emerald-600 hover:bg-emerald-50 transition-all duration-300 transform hover:scale-105"
               >
                 Sign Up
               </Button>
-              <Button 
+              <Button
                 className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base px-3 sm:px-4"
                 onClick={() => navigate("/login")}
               >
@@ -72,63 +69,67 @@ const HeroSection = () => {
           <div className="absolute inset-0 mix-blend-soft-light bg-gradient-to-br from-purple-900/10 via-blue-800/10 to-emerald-800/10"></div>
           <div className="absolute inset-0 mix-blend-overlay bg-gradient-radial from-white/10 via-transparent to-transparent"></div>
         </div>
-        
-        <div className="container mx-auto px-4 relative z-20 py-12 sm:py-16 md:py-20">
-        <div className="inline-flex items-center bg-white/15 backdrop-blur-md rounded-full px-4 sm:px-6 py-2 sm:py-3 mb-8 sm:mb-12">
-  <div className="flex -space-x-2">
-    {[
-   image1,
-   image2,
-      image3
-    ].map((logo, i) => (
-      <img 
-        key={i} 
-        src={logo} 
-        alt={`Trusted Pharmacy ${i + 1}`} 
-        className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white object-cover"
-      />
-    ))}
-  </div>
-  <span className="ml-3 sm:ml-4 text-sm sm:text-base md:text-lg font-medium text-white">
-    Trusted by 150+ Pharmacies
-  </span>
-</div>
 
+        <div className="container mx-auto px-4 relative z-20 py-12 sm:py-16 md:py-20">
+          <div className="inline-flex items-center bg-white/15 backdrop-blur-md rounded-full px-4 sm:px-6 py-2 sm:py-3 mb-8 sm:mb-12">
+            <div className="flex -space-x-2">
+              {[image1, image2, image3].map((logo, i) => (
+                <img
+                  key={i}
+                  src={logo}
+                  alt={`Trusted Pharmacy ${i + 1}`}
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white object-cover"
+                />
+              ))}
+            </div>
+            <span className="ml-3 sm:ml-4 text-sm sm:text-base md:text-lg font-medium text-white">
+              Trusted by 150+ Pharmacies
+            </span>
+          </div>
 
           <div className="max-w-4xl space-y-8 mb-16">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight drop-shadow-lg">
-              Elevate Your Pharmacy <br/>
-              <span className="text-teal-300 drop-shadow-lg">with Premium Supplies</span>
+              Elevate Your Pharmacy <br />
+              <span className="text-teal-300 drop-shadow-lg">
+                with Premium Supplies
+              </span>
             </h1>
 
             <p className="text-lg sm:text-xl text-gray-100 max-w-2xl drop-shadow">
-              Experience unmatched quality in pharmacy supplies and packaging solutions. 
-              Trusted by leading pharmacies nationwide for reliability and excellence.
+              Experience unmatched quality in pharmacy supplies and packaging
+              solutions. Trusted by leading pharmacies nationwide for
+              reliability and excellence.
             </p>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-12">
               <FeatureCard
                 icon={<Building2 className="w-6 h-6 text-white" />}
                 title="Industry Leader"
-                description="Top quality pharmacy supplies"
+                description="One of the Fastest growing Rx Supply Company"
                 bgColor="bg-emerald-700/40"
               />
               <FeatureCard
                 icon={<Box className="w-6 h-6 text-white" />}
                 title="Quality Assured"
-                description="Best quality"
+                description="Quality & Affordability Assured"
                 bgColor="bg-emerald-700/40"
               />
               <FeatureCard
                 icon={<Truck className="w-6 h-6 text-white" />}
-                title="Fast Delivery"
-                description="Same day shipping"
+                title="Best Quality"
+                description="Best Quality Supply at Affordable Pricing"
                 bgColor="bg-emerald-700/40"
               />
               <FeatureCard
                 icon={<Settings className="w-6 h-6 text-white" />}
-                title="Customization"
-                description="Personalized solutions"
+                title="Same Day Shipping"
+                description="Same Day Dispatch if the order is placed before 3.00pm EST"
+                bgColor="bg-emerald-700/40"
+              />
+              <FeatureCard
+                icon={<Settings className="w-6 h-6 text-white" />}
+                title="Personalized Solutions"
+                description="Personalized Solutions for your Rx Paper Bags, Rx Labels and many more Products"
                 bgColor="bg-emerald-700/40"
               />
             </div>
@@ -139,13 +140,20 @@ const HeroSection = () => {
   );
 };
 
-const FeatureCard = ({ icon, title, description, bgColor = "bg-blue-800/30" }: { 
-  icon: React.ReactNode; 
-  title: string; 
+const FeatureCard = ({
+  icon,
+  title,
+  description,
+  bgColor = "bg-blue-800/30",
+}: {
+  icon: React.ReactNode;
+  title: string;
   description: string;
   bgColor?: string;
 }) => (
-  <div className={`${bgColor} backdrop-blur-sm rounded-xl p-6 hover:bg-opacity-40 transition-all duration-300 group`}>
+  <div
+    className={`${bgColor} backdrop-blur-sm rounded-xl p-6 hover:bg-opacity-40 transition-all duration-300 group`}
+  >
     <div className="p-3 rounded-lg bg-teal-600/30 inline-block mb-4">
       {icon}
     </div>

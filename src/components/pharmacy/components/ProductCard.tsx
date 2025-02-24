@@ -23,7 +23,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const [customizations, setCustomizations] = useState<Record<string, string>>(
     {}
   );
-  const [quantity, setQuantity] = useState(1); // Quantity state
+  const [quantity, setQuantity] = useState(1);
   const navigate = useNavigate();
 
   const isInCart = cartItems.some(

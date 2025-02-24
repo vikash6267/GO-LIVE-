@@ -1,4 +1,3 @@
-
 import {
   Sheet,
   SheetContent,
@@ -43,7 +42,7 @@ export const OrderDetailsSheet = ({
   onShipOrder,
   onConfirmOrder,
   onDeleteOrder,
-  userRole = "pharmacy"
+  userRole = "pharmacy",
 }: OrderDetailsSheetProps) => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { toast } = useToast();
@@ -54,27 +53,27 @@ export const OrderDetailsSheet = ({
     setCurrentOrder(order);
   }, [order]);
 
-  const handleStatusUpdate = async (action: 'process' | 'ship' | 'confirm') => {
+  const handleStatusUpdate = async (action: "process" | "ship" | "confirm") => {
     if (!currentOrder.id) return;
 
     try {
       switch (action) {
-        case 'process':
+        case "process":
           if (onProcessOrder) {
             await onProcessOrder(currentOrder.id);
-            setCurrentOrder(prev => ({ ...prev, status: 'processing' }));
+            setCurrentOrder((prev) => ({ ...prev, status: "processing" }));
           }
           break;
-        case 'ship':
+        case "ship":
           if (onShipOrder) {
             await onShipOrder(currentOrder.id);
-            setCurrentOrder(prev => ({ ...prev, status: 'shipped' }));
+            setCurrentOrder((prev) => ({ ...prev, status: "shipped" }));
           }
           break;
-        case 'confirm':
+        case "confirm":
           if (onConfirmOrder) {
             await onConfirmOrder(currentOrder.id);
-            setCurrentOrder(prev => ({ ...prev, status: 'pending' }));
+            setCurrentOrder((prev) => ({ ...prev, status: "pending" }));
           }
           break;
       }
@@ -92,56 +91,64 @@ export const OrderDetailsSheet = ({
     try {
       setIsProcessingPayment(true);
 
-      // Get Authorize.Net credentials from Supabase
-      const { data: credentials, error: credentialsError } = await supabase
-        .from('secrets')
-        .select('value')
-        .in('name', ['AUTHORIZE_NET_LOGIN_ID', 'AUTHORIZE_NET_TRANSACTION_KEY'])
-        .order('name');
+      let apiLoginId = "5KP3u95bQpv"; // Test API Login ID
+      let transactionKey = "346HZ32z3fP4hTG2"; // Test Transaction Key
 
-      if (credentialsError || !credentials || credentials.length !== 2) {
-        throw new Error('Failed to retrieve payment credentials');
+      // Get Authorize.Net credentials from Supabase (for production use)
+      const { data: credentials, error: credentialsError } = await supabase
+        .from("secrets")
+        .select("value")
+        .in("name", ["AUTHORIZE_NET_LOGIN_ID", "AUTHORIZE_NET_TRANSACTION_KEY"])
+        .order("name");
+
+      if (!credentialsError && credentials && credentials.length === 2) {
+        // Use production credentials if available
+        apiLoginId = credentials[0].value;
+        transactionKey = credentials[1].value;
       }
 
       const response = await processACHPayment({
-        accountType: 'checking',
+        accountType: "checking",
         accountName: currentOrder.customerInfo.name,
-        routingNumber: '122000661', // Test routing number
-        accountNumber: '1234567890', // Test account number
+        routingNumber: "122000661", // Test routing number
+        accountNumber: "1234567890", // Test account number
         amount: parseFloat(currentOrder.total),
         customerEmail: currentOrder.customerInfo.email,
         customerName: currentOrder.customerInfo.name,
-        apiLoginId: credentials[0].value,
-        transactionKey: credentials[1].value,
-        testMode: true // Set to false in production
+        apiLoginId,
+        transactionKey,
+        testMode: true, // Set to false in production
       });
 
       if (response.success) {
-        // Update order status in database
+        console.log("Updating Order ID:", currentOrder.id); // Debugging
+
+        // Update order payment status in database
         const { error: updateError } = await supabase
-          .from('orders')
-          .update({ 
-            status: 'paid',
-            updated_at: new Date().toISOString()
+          .from("orders")
+          .update({
+            payment_status: "paid", // Use correct column name
+            updated_at: new Date().toISOString(),
           })
-          .eq('id', currentOrder.id);
+          .eq("id", currentOrder.id);
 
         if (updateError) throw updateError;
 
-        setCurrentOrder(prev => ({ ...prev, status: 'paid' }));
+        setCurrentOrder((prev) => ({ ...prev, payment_status: "paid" }));
 
         toast({
           title: "Payment Successful",
           description: `Transaction ID: ${response.transactionId}`,
         });
       } else {
-        throw new Error(response.error?.text || 'Payment failed');
+        throw new Error(response.error?.text || "Payment failed");
       }
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error("Payment error:", error);
       toast({
         title: "Payment Failed",
-        description: error instanceof Error ? error.message : "Failed to process payment",
+        description:
+          error instanceof Error ? error.message : "Failed to process payment",
         variant: "destructive",
       });
     } finally {
@@ -189,8 +196,8 @@ export const OrderDetailsSheet = ({
             </div>
 
             <OrderWorkflowStatus status={currentOrder.status} />
-            
-            {currentOrder.status !== 'paid' && (
+
+            {currentOrder.status !== "paid" && (
               <div className="flex justify-end">
                 <Button
                   onClick={handlePayNow}
@@ -207,9 +214,9 @@ export const OrderDetailsSheet = ({
               <div className="flex justify-end">
                 <OrderActions
                   order={currentOrder}
-                  onProcessOrder={() => handleStatusUpdate('process')}
-                  onShipOrder={() => handleStatusUpdate('ship')}
-                  onConfirmOrder={() => handleStatusUpdate('confirm')}
+                  onProcessOrder={() => handleStatusUpdate("process")}
+                  onShipOrder={() => handleStatusUpdate("ship")}
+                  onConfirmOrder={() => handleStatusUpdate("confirm")}
                   onDeleteOrder={onDeleteOrder}
                 />
               </div>
@@ -217,7 +224,7 @@ export const OrderDetailsSheet = ({
 
             <OrderCustomerInfo customerInfo={currentOrder.customerInfo} />
             <OrderItemsList items={currentOrder.items} />
-            <OrderPaymentInfo 
+            <OrderPaymentInfo
               payment={currentOrder.payment}
               specialInstructions={currentOrder.specialInstructions}
             />

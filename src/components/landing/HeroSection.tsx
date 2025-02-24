@@ -108,15 +108,15 @@ const HeroSection = () => {
                 description="One of the Fastest growing Rx Supply Company"
                 bgColor="bg-emerald-700/40"
               />
-              <FeatureCard
+              {/* <FeatureCard
                 icon={<Box className="w-6 h-6 text-white" />}
                 title="Quality Assured"
                 description="Quality & Affordability Assured"
                 bgColor="bg-emerald-700/40"
-              />
+              /> */}
               <FeatureCard
                 icon={<Truck className="w-6 h-6 text-white" />}
-                title="Best Quality"
+                title="Quality & Affordability Assured"
                 description="Best Quality Supply at Affordable Pricing"
                 bgColor="bg-emerald-700/40"
               />

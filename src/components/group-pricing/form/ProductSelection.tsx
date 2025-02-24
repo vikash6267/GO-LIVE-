@@ -1,11 +1,12 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Controller } from "react-hook-form";
+import Select from "react-select"; // react-select ka use kiya hai
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "../CreateGroupPricingDialog";
 
 interface ProductSelectionProps {
   form: UseFormReturn<FormValues>;
-  products: Array<{ id: string; name: string; }>;
+  products: Array<{ id: string; name: string }>;
 }
 
 export function ProductSelection({ form, products }: ProductSelectionProps) {
@@ -13,23 +14,31 @@ export function ProductSelection({ form, products }: ProductSelectionProps) {
     <FormField
       control={form.control}
       name="product"
-      render={({ field }) => (
+      render={() => (
         <FormItem>
           <FormLabel>Product</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a product" />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              {products.map((product) => (
-                <SelectItem key={product.id} value={product.id}>
-                  {product.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Controller
+            control={form.control}
+            name="product"
+            render={({ field }) => (
+              <Select
+                {...field}
+                isMulti
+                options={products.map((product) => ({
+                  id: product.id,
+                  name: product.name,
+                }))}
+                getOptionLabel={(e) => e.name}
+                getOptionValue={(e) => e.id}
+                onChange={(selected) =>
+                  field.onChange(selected.map((item) => item.id))
+                }
+                value={products.filter((product) =>
+                  field.value?.includes(product.id)
+                )}
+              />
+            )}
+          />
           <FormMessage />
         </FormItem>
       )}

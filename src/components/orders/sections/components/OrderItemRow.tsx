@@ -1,129 +1,63 @@
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Minus } from "lucide-react";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { OrderFormValues } from "../../schemas/orderSchema";
-import { useToast } from "@/hooks/use-toast";
 
 interface OrderItemRowProps {
   index: number;
   form: UseFormReturn<OrderFormValues>;
-  onRemoveItem: (index: number) => void;
-  onProductChange: (value: string, index: number) => void;
-  showRemoveButton: boolean;
+  products: any[];
 }
 
-export const OrderItemRow = ({ 
-  index, 
-  form, 
-  onRemoveItem, 
-  onProductChange,
-  showRemoveButton,
-  products 
-}) => {
-  const { toast } = useToast();
+export const OrderItemRow = ({ index, form, products }: OrderItemRowProps) => {
+  const allValues = form.getValues();
+  const selectedProductId = form.getValues(`items.${index}.productId`);
+  const selectedProduct = products.find((p) => p.id === selectedProductId);
 
+  
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-start p-4 border rounded-lg">
-      <FormField
-        control={form.control}
-        name={`items.${index}.productId`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Product</FormLabel>
-            <Select 
-          onValueChange={(value) => onProductChange(value, index)} 
-          value={form.getValues(`items.${index}.productId`)} // Ensure it matches the UUID
->
-  <FormControl>
-    <SelectTrigger>
-      <SelectValue placeholder="Select product" />
-    </SelectTrigger>
-  </FormControl>
-  <SelectContent>
-    {products.map((product) => (
-      <SelectItem 
-        key={product.id} 
-        value={product.id} // UUID as value
-      >
-        {product.name} (${product.base_price})
-      </SelectItem>
-    ))}
-  </SelectContent>
-</Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center p-4 border rounded-lg shadow-md">
+      {/* Product Name */}
+      <div>
+        <FormLabel className="text-gray-700 font-semibold">Product</FormLabel>
+        <p className="text-gray-900 font-medium">
+          {selectedProduct?.name || "N/A"}
+        </p>
+      </div>
 
-      {/* Quantity Field */}
-      <FormField
-        control={form.control}
-        name={`items.${index}.quantity`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Quantity</FormLabel>
-            <FormControl>
-              <Input 
-                type="number" 
-                {...field} 
-                onChange={(e) => {
-                  const value = parseInt(e.target.value);
-                  field.onChange(value);
-                  const currentItems = form.getValues('items');
-                  localStorage.setItem('cart', JSON.stringify(currentItems));
-                }} 
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {/* Quantity (Read-only) */}
+      <div>
+        <FormLabel className="text-gray-700 font-semibold">Quantity</FormLabel>
+        <p className="text-gray-900 font-medium">
+          {form.getValues(`items.${index}.quantity`) || "0"}
+        </p>
+      </div>
 
-      {/* Price Field */}
-      <FormField
-        control={form.control}
-        name={`items.${index}.price`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Price</FormLabel>
-            <FormControl>
-              <Input 
-                type="number" 
-                step="0.01"
-                {...field} 
-                disabled
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      {/* Sizes (Formatted Display) */}
+      {/* Display Sizes Properly */}
+      <div>
+        <FormLabel className="text-gray-700 font-semibold">Sizes</FormLabel>
+        <p className="text-gray-900 font-medium">
+          {Array.isArray(form.getValues(`items.${index}.sizes`))
+            ? form
+                .getValues(`items.${index}.sizes`)
+                .map((size) => `${size.size_value} ${size.size_unit}`) // Format size correctly
+                .join(", ")
+            : "N/A"}
+        </p>
+      </div>
 
-      <div className="flex items-end space-x-2">
-        {showRemoveButton && (
-          <Button
-            type="button"
-            variant="destructive"
-            size="icon"
-            className="mb-6"
-            onClick={() => {
-              onRemoveItem(index);
-              const currentItems = form.getValues('items');
-              currentItems.splice(index, 1);
-              localStorage.setItem('cart', JSON.stringify(currentItems));
-              
-              toast({
-                title: "Item Removed",
-                description: "Item removed from your cart successfully.",
-              });
-            }}
-          >
-            <Minus className="h-4 w-4" />
-          </Button>
-        )}
+      {/* Price (Read-only) */}
+      <div>
+        <FormLabel className="text-gray-700 font-semibold">Price</FormLabel>
+        <p className="text-gray-900 font-medium">
+          ${form.getValues(`items.${index}.price`) || "0.00"}
+        </p>
       </div>
     </div>
   );

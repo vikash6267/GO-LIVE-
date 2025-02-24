@@ -121,12 +121,12 @@ export const InventorySection = ({ form }: InventorySectionProps) => {
         </div>
       )}
 
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <div>
           <h4 className="text-base font-medium mb-4">Size Variations</h4>
           <SizeVariationField form={form} />
         </div>
-      </div>
+      </div> */}
     </Card>
   );
 };

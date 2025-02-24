@@ -9,9 +9,9 @@ interface ProductSizeOptionsProps {
   product: ProductDetails;
   selectedSizes?: string[];
   onSizeSelect?: (sizeId: string[]) => void;
-  quantity: number; // Now a single number
-  onIncreaseQuantity: () => void; // No sizeId required
-  onDecreaseQuantity: () => void; // No sizeId required
+  quantity: { [key: string]: number };
+  onIncreaseQuantity: (id:string) => void; // No sizeId required
+  onDecreaseQuantity: (id:string) => void; // No sizeId required
 }
 
 export const ProductSizeOptions = ({
@@ -64,8 +64,9 @@ export const ProductSizeOptions = ({
   return (
     <div className="space-y-3">
       {product.sizes.map((size, index) => {
+       
         const sizeId = `${size.size_value}-${size.size_unit}`;
-        const totalPrice = size.price * quantity; // Using single quantity
+        const totalPrice = size.price * quantity[size.id] || size.price; // Using single quantity
 
         return (
           <Card key={index} className="p-4 hover:shadow-md transition-shadow">
@@ -99,16 +100,16 @@ export const ProductSizeOptions = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={onDecreaseQuantity} // Fixed function execution
-                  disabled={quantity <= 1}
+                  onClick={()=>onDecreaseQuantity(size.id)} // Fixed function execution
+                  disabled={quantity[size.id] <= 1}
                 >
                   -
                 </Button>
-                <span className="text-lg font-medium">{quantity}</span>
+                <span className="text-lg font-medium">{quantity[size.id] || 1}</span>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={onIncreaseQuantity} // Fixed function execution
+                  onClick={()=>onIncreaseQuantity(size?.id)} // Fixed function execution
                 >
                   +
                 </Button>

@@ -15,18 +15,21 @@ import { ProductActions } from "./ProductActions";
 import { ProductSizeOptions } from "./ProductSizeOptions";
 import { ProductDetails } from "../../types/product.types";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProductDialogProps {
   product: ProductDetails;
   isInCart: boolean;
-  quantity: number;
-  onIncreaseQuantity: () => void; // Add this
-  onDecreaseQuantity: () => void; // Add this
+  quantity: { [key: string]: number };
+  onIncreaseQuantity: (id:string) => void; // Add this
+  onDecreaseQuantity: (id:string) => void; // Add this
   isAddingToCart: boolean;
   customizations: Record<string, string>;
   onCustomizationChange: (customizations: Record<string, string>) => void;
   onAddToCart: () => void;
+  setSelectedSizes: (sizeIds: string[]) => void;
+  selectedSizes:string[]
 }
 
 export const ProductDialog = ({
@@ -38,8 +41,42 @@ export const ProductDialog = ({
   onDecreaseQuantity,
   onCustomizationChange,
   onAddToCart,
+  setSelectedSizes,
+  selectedSizes
 }: ProductDialogProps) => {
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+
+
+  const [imageUrl, setImageUrl] = useState<string>('/placeholder.svg');
+
+    useEffect(() => {
+      const loadImage = async () => {
+        if (product.images[0] && product.images[0] !== '/placeholder.svg') {
+          try {
+            // If the image is already a full URL, use it directly
+            if (product.images[0].startsWith('http')) {
+              setImageUrl(product.images[0]);
+              return;
+            }
+  
+            // Get the public URL from Supabase storage
+            const { data } = supabase.storage
+              .from('product-images')
+              .getPublicUrl(product.images[0]);
+            
+            if (data?.publicUrl) {
+              console.log('Loading image from:', data.publicUrl); // Debug log
+              setImageUrl(data.publicUrl);
+            }
+          } catch (error) {
+            console.error('Error loading image:', error);
+            setImageUrl('/placeholder.svg');
+          }
+        }
+      };
+  
+      loadImage();
+    }, [product.images[0]]);
+
 
   return (
     <DialogContent className="max-w-4xl max-h-[90vh]">
@@ -53,7 +90,7 @@ export const ProductDialog = ({
           <div>
             <div className="aspect-square rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 flex items-center justify-center p-8 transition-all duration-300 group hover:from-emerald-100 hover:to-emerald-200/50">
               <img
-                src={product.image_url || product.image || "/placeholder.svg"}
+                src={imageUrl}
                 alt={product.name}
                 className="w-full h-full object-contain transform transition-transform duration-300 group-hover:scale-105"
                 onError={(e) => {

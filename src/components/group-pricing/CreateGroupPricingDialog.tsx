@@ -28,7 +28,7 @@ interface GroupPricingData {
   discount_type: "percentage" | "fixed";
   min_quantity: number;
   max_quantity: number;
-  product_id: string;
+  product_id: string[];
   group_ids: string[];
   status: string;
   updated_at: string;
@@ -42,10 +42,14 @@ const createFormSchema = (products: any[]) =>
     discountValue: z.coerce.number().min(0, "Discount must be at least 0"),
     minQuantity: z.coerce.number().min(1, "Minimum quantity must be at least 1"),
     maxQuantity: z.coerce.number().min(1, "Maximum quantity must be at least 1"),
-    product: z.string().min(1, "Product selection is required"),
+    
+    // ✅ Change product from `z.string()` to `z.array(z.string())`
+    product: z.array(z.string()).min(1, "At least one product must be selected"),
+    
     group: z.string().optional(),
     pharmacy: z.string().optional(),
-  }).refine(
+  })
+  .refine(
     (data) => {
       if (data.discountType === "percentage") {
         return data.discountValue <= 100;
@@ -56,14 +60,14 @@ const createFormSchema = (products: any[]) =>
       message: "Percentage discount cannot exceed 100%.",
       path: ["discountValue"],
     }
-  ).refine(
+  )
+  .refine(
     (data) => {
-      if (data.discountType === "fixed" && data.product) {
-        const selectedProduct = products.find(
-          (product) => product.id === data.product
-        );
-        if (!selectedProduct) return false;
-        return data.discountValue <= selectedProduct.base_price;
+      if (data.discountType === "fixed" && data.product.length > 0) {
+        return data.product.every((productId) => {
+          const selectedProduct = products.find((p) => p.id === productId);
+          return selectedProduct ? data.discountValue <= selectedProduct.base_price : false;
+        });
       }
       return true;
     },
@@ -72,6 +76,7 @@ const createFormSchema = (products: any[]) =>
       path: ["discountValue"],
     }
   );
+
 
 export type FormValues = z.infer<ReturnType<typeof createFormSchema>>;
 
@@ -96,10 +101,17 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
       discountValue: initialData?.discount || 0,
       minQuantity: initialData?.min_quantity || 1,
       maxQuantity: initialData?.max_quantity || 100,
-      product: initialData?.product_id || "",
+ 
+      product: Array.isArray(initialData?.product_id) 
+        ? initialData.product_id 
+        : initialData?.product_id 
+        ? [initialData.product_id] 
+        : [],
+    
       group: initialData?.group_ids?.[0] || "",
       pharmacy: initialData?.group_ids?.[1] || "",
     },
+    
   });
 
   const fetchData = async () => {
@@ -168,72 +180,92 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
   const handleSubmit = async (values: FormValues) => {
     console.log("Starting handleSubmit with values:", values);
     setLoading(true);
-
+  
     try {
-      const selectedProduct = products.find(
-        (product) => product.id === values.product
+      const selectedProducts = products.filter((product) =>
+        values.product.includes(product.id)
       );
-
-      console.log("Selected product:", selectedProduct);
-
-      if (!selectedProduct) {
-        throw new Error("Selected product not found.");
+  
+      if (!selectedProducts.length) {
+        throw new Error("Selected products not found.");
       }
-
-      const { base_price } = selectedProduct;
-      if (values.discountType === "fixed" && values.discountValue > base_price) {
-        throw new Error("Flat discount cannot exceed the product price.");
-      }
-
-      if (values.discountType === "percentage" && values.discountValue > 100) {
-        throw new Error("Percentage discount cannot exceed 100%.");
-      }
-
-      const discountValue =
-        values.discountType === "percentage"
-          ? values.discountValue
-          : (values.discountValue / base_price) * 100;
-
-      const groupPricingData: GroupPricingData = {
-        name: values.name,
-        discount: discountValue,
-        discount_type: values.discountType,
-        min_quantity: values.minQuantity,
-        max_quantity: values.maxQuantity,
-        product_id: values.product,
-        group_ids: [values.group, values.pharmacy].filter(Boolean),
-        status: "active",
-        updated_at: new Date().toISOString(),
-      };
-
-      console.log("Saving group pricing data:", groupPricingData);
-
-      if (!initialData) {
-        groupPricingData.created_at = new Date().toISOString();
-        const { error } = await supabase
+  
+      for (const product of selectedProducts) {
+        if (values.discountType === "fixed" && values.discountValue > product.base_price) {
+          throw new Error(`Flat discount cannot exceed the price of ${product.name}.`);
+        }
+        if (values.discountType === "percentage" && values.discountValue > 100) {
+          throw new Error("Percentage discount cannot exceed 100%.");
+        }
+  
+        const discountValue =
+          values.discountType === "percentage"
+            ? values.discountValue
+            : (values.discountValue / product.base_price) * 100;
+  
+        const groupPricingData: GroupPricingData = {
+          name: values.name,
+          discount: discountValue,
+          discount_type: values.discountType,
+          min_quantity: values.minQuantity,
+          max_quantity: values.maxQuantity,
+          product_id: product.id,
+          group_ids: [values.group, values.pharmacy].filter(Boolean),
+          status: "active",
+          updated_at: new Date().toISOString(),
+        };
+  
+        console.log("Checking if product exists in group_pricing:", product.id);
+  
+        // ✅ Check if product_id already exists in the group_pricing table
+        const { data: existingEntry, error: fetchError } = await supabase
           .from("group_pricing")
-          .insert(groupPricingData);
-
-        console.log("Insert response error:", error);
-        if (error) throw new Error(`Failed to create group pricing: ${error.message}`);
-      } else {
-        const { error } = await supabase
-          .from("group_pricing")
-          .update(groupPricingData)
-          .eq("id", initialData.id);
-
-        console.log("Update response error:", error);
-        if (error) throw new Error(`Failed to update group pricing: ${error.message}`);
+          .select("id")
+          .eq("product_id", product.id)
+          .single();
+  
+        if (fetchError && fetchError.code !== "PGRST116") {
+          console.error("Error checking existing entry:", fetchError);
+          throw new Error("Error checking existing entry.");
+        }
+  
+        if (existingEntry) {
+          console.log(`Updating existing entry for product ${product.id}`);
+  
+          // ✅ If product_id exists, update it
+          const { error: updateError } = await supabase
+            .from("group_pricing")
+            .update(groupPricingData)
+            .eq("product_id", product.id);
+  
+          if (updateError) {
+            console.error("Error updating:", updateError);
+            throw new Error(`Failed to update group pricing for ${product.name}: ${updateError.message}`);
+          }
+        } else {
+          console.log(`Inserting new entry for product ${product.id}`);
+          
+          // ✅ If product_id does not exist, insert a new row
+          groupPricingData.created_at = new Date().toISOString();
+          const { error: insertError } = await supabase
+            .from("group_pricing")
+            .insert(groupPricingData);
+  
+          if (insertError) {
+            console.error("Error inserting:", insertError);
+            throw new Error(`Failed to create group pricing for ${product.name}: ${insertError.message}`);
+          }
+        }
+  
+        // ✅ Call onSubmit for each product
+        onSubmit(groupPricingData);
       }
-
+  
       toast({
         title: "Success",
-        description: initialData 
-          ? "Group pricing updated successfully" 
-          : "Group pricing created successfully",
+        description: "Group pricing updated or created successfully for selected products.",
       });
-      
-      onSubmit(groupPricingData);
+  
       form.reset();
       setIsOpen(false);
     } catch (error: any) {
@@ -247,6 +279,10 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
       setLoading(false);
     }
   };
+  
+  
+  
+  
 
   useEffect(() => {
     if (isOpen) {

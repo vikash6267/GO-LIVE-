@@ -32,6 +32,9 @@ export const useOrderManagement = () => {
   
       if (ordersError) throw ordersError;
   
+
+    console.log(ordersData)
+
       const formattedOrders: OrderFormValues[] = (ordersData as any[]).map((order) => {
         const profileData = order.profiles || {};
   
@@ -41,6 +44,7 @@ export const useOrderManagement = () => {
           date: order.created_at || new Date().toISOString(),
           total: (order.total_amount || 0).toString(),
           status: order.status || 'pending', // Make sure to use the status from the database
+          payment_status: order.payment_status || 'unpaid', // Make sure to use the status from the database
           customerInfo: {
             name: profileData.first_name && profileData.last_name 
               ? `${profileData.first_name} ${profileData.last_name}` 
@@ -55,7 +59,7 @@ export const useOrderManagement = () => {
               zipCode: '',
             },
           },
-          items: [],
+          items: order.items,
           shipping: {
             method: order.shipping_method || "custom",
             cost: order.shipping_cost || 0,

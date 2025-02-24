@@ -6,6 +6,7 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
+  sizes:any[];
   customizations: Record<string, string>;
   notes: string;
 }
@@ -20,5 +21,7 @@ export const removeFromCart = createAction<string>('cart/removeFromCart');
 export const updateQuantity = createAction<{
   productId: string;
   quantity: number;
+  sizeId: string
+
 }>('cart/updateQuantity');
 export const clearCart = createAction('cart/clearCart');

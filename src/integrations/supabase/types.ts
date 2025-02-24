@@ -260,6 +260,8 @@ export type Database = {
           customer_info: Json | null
           due_date: string
           id: string
+        payment_status:string | null
+
           invoice_number: string
           items: Json | null
           order_id: string | null
@@ -279,6 +281,9 @@ export type Database = {
           created_at?: string | null
           customer_info?: Json | null
           due_date: string
+          payment_status:string | null
+
+
           id?: string
           invoice_number: string
           items?: Json | null
@@ -301,6 +306,7 @@ export type Database = {
           due_date?: string
           id?: string
           invoice_number?: string
+    payment_status:string | null
           items?: Json | null
           order_id?: string | null
           paid_at?: string | null
@@ -531,10 +537,10 @@ export type Database = {
           price: number
           price_per_case: number
           product_id: string | null
-          quantity_per_case: number | null
           rolls_per_case: number | null
           shipping_cost: number | null
           size_unit: string
+      
           size_value: string
           stock: number
           updated_at: string | null
@@ -549,6 +555,8 @@ export type Database = {
           rolls_per_case?: number | null
           shipping_cost?: number | null
           size_unit: string
+          
+         
           size_value: string
           stock?: number
           updated_at?: string | null
@@ -564,6 +572,7 @@ export type Database = {
           shipping_cost?: number | null
           size_unit?: string
           size_value?: string
+          
           stock?: number
           updated_at?: string | null
         }

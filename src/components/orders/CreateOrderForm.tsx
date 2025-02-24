@@ -29,8 +29,8 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const userProfile = useSelector(selectUserProfile);
-  const { cartItems } = useCart();
-
+  const { cartItems,clearCart } = useCart();
+  
   // Initialize form with user profile data
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
@@ -52,7 +52,7 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
           zipCode: userProfile?.zip_code || "",
         },
       },
-      items: [{ productId: "", quantity: 1, price: 0, notes: "" }],
+      items:cartItems ,
       shipping: {
         method: "FedEx",
         cost: 12.00,
@@ -90,11 +90,15 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
     return () => subscription.unsubscribe();
   }, [form, validateForm]);
 
+
+
   const onSubmit = async (data: OrderFormValues) => {
     try {
       setIsSubmitting(true);
       console.log("Starting order submission:", data);
   
+
+      
       // Validate order items
       validateOrderItems(data.items);
   
@@ -149,6 +153,7 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
         total_amount: calculatedTotal,
         shipping_cost: data.shipping?.cost || 0,
         tax_amount: 0,
+        items:data.items,
         notes: data.specialInstructions,
         shipping_method: data.shipping?.method,
         tracking_number: data.shipping?.trackingNumber,
@@ -200,7 +205,7 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
       // console.log("Stock updated successfully");
   
       // Reset form and local state
-      localStorage.removeItem("cart");
+      // localStorage.removeItem("cart");
   
       toast({
         title: "Order Created Successfully",
@@ -208,8 +213,9 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
       });
   
       form.reset();
-      setOrderItems([{ id: 1 }]);
+      // setOrderItems([{ id: 1 }]);
       navigate("/pharmacy/orders");
+      await clearCart()
     } catch (error) {
       console.error("Order creation error:", error);
       toast({
@@ -227,6 +233,7 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
   
   
   const addCartItemsToOrder = () => {
+    console.log(cartItems)
     if (cartItems.length === 0) {
       toast({
         title: "Cart is empty",
@@ -237,8 +244,10 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
     }
   
     const validCartItems = cartItems.filter(
-      (item) => item.productId && item.quantity > 0
+      (item) => item.productId 
     );
+  console.log(validCartItems)
+
   
     if (validCartItems.length === 0) {
       toast({
@@ -248,15 +257,25 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
       });
       return;
     }
-  
     const newOrderItems = validCartItems.map((item) => ({
       productId: item.productId,
       quantity: item.quantity,
       price: item.price,
       notes: item.notes || "",
+      sizes: item.sizes
+        ? item.sizes.map((size) => ({
+            id: size.id,
+            price: size.price,
+            quantity: size.quantity,
+            size_unit: size.size_unit,
+            size_value: size.size_value,
+          }))
+        : [],
     }));
-    form.setValue("items", []);
-    setOrderItems([]);
+  
+    form.setValue("items", []); // Reset form items
+    setOrderItems([]); // Reset state order items
+  
     form.setValue("items", [...form.getValues("items"), ...newOrderItems]);
     setOrderItems((prevOrderItems) => [
       ...prevOrderItems,
@@ -264,15 +283,24 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
     ]);
   };
   
+  
 
   const addOrderItem = () => {
     setOrderItems([...orderItems, { id: orderItems.length + 1 }]);
+  
     const currentItems = form.getValues("items") || [];
     form.setValue("items", [
       ...currentItems,
-      { productId: "", quantity: 1, price: 0, notes: "" },
+      {
+        productId: "",
+        quantity: 1,
+        price: 0,
+        notes: "",
+        sizes: [{ id: "", price: 0, quantity: 1, size_unit: "", size_value: "" }], // Default size entry
+      },
     ]);
   };
+  
 
   const removeOrderItem = (index: number) => {
     if (orderItems.length > 1) {
@@ -299,11 +327,9 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
         <CustomerSelectionField form={form} />
         
         <OrderItemsSection 
-          onAddCartData={addCartItemsToOrder}
-          orderItems={orderItems}
+          orderItems={cartItems}
           form={form}
-          onAddItem={addOrderItem}
-          onRemoveItem={removeOrderItem}
+          
         />
 
         <ShippingSection form={form} />

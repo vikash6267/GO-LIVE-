@@ -19,6 +19,8 @@ export const createInvoiceFromOrder = (orderData: OrderFormValues): Invoice => {
     amount: total_amount,
     tax_amount,
     total_amount,
+    payment_status:orderData.payment_status,
+
     payment_method: null,
     payment_notes: null,
     due_date: new Date().toISOString().split('T')[0],

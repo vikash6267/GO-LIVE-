@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
@@ -10,6 +9,7 @@ interface Size {
   price: number;
   pricePerCase?: number;
   stock: number;
+  quantity_per_case: number;
   rolls_per_case?: number;
   shipping_cost?: number;
 }
@@ -21,9 +21,20 @@ interface SizeListProps {
   category: string;
 }
 
-export const SizeList = ({ sizes = [], onRemoveSize, onUpdateSize, category }: SizeListProps) => {
-  const categoryConfig = CATEGORY_CONFIGS[category as keyof typeof CATEGORY_CONFIGS] || CATEGORY_CONFIGS.OTHER;
+export const SizeList = ({
+  sizes = [],
+  onRemoveSize,
+  onUpdateSize,
+  category,
+}: SizeListProps) => {
+  const categoryConfig =
+    CATEGORY_CONFIGS[category as keyof typeof CATEGORY_CONFIGS] ||
+    CATEGORY_CONFIGS.OTHER;
 
+
+
+    console.log(categoryConfig)
+    console.log(sizes)
   return (
     <div className="space-y-2">
       {sizes.map((size, index) => (
@@ -38,7 +49,9 @@ export const SizeList = ({ sizes = [], onRemoveSize, onUpdateSize, category }: S
                 <Input
                   type="text"
                   value={size.size_value}
-                  onChange={(e) => onUpdateSize(index, 'size_value', e.target.value)}
+                  onChange={(e) =>
+                    onUpdateSize(index, "size_value", e.target.value)
+                  }
                   className="h-8"
                 />
                 <span className="text-sm">{size.size_unit}</span>
@@ -50,7 +63,9 @@ export const SizeList = ({ sizes = [], onRemoveSize, onUpdateSize, category }: S
                 <Input
                   type="number"
                   value={size.rolls_per_case || 0}
-                  onChange={(e) => onUpdateSize(index, 'rolls_per_case', e.target.value)}
+                  onChange={(e) =>
+                    onUpdateSize(index, "rolls_per_case", e.target.value)
+                  }
                   className="h-8"
                   min="0"
                 />
@@ -61,7 +76,9 @@ export const SizeList = ({ sizes = [], onRemoveSize, onUpdateSize, category }: S
               <Input
                 type="number"
                 value={size.pricePerCase || 0}
-                onChange={(e) => onUpdateSize(index, 'pricePerCase', e.target.value)}
+                onChange={(e) =>
+                  onUpdateSize(index, "pricePerCase", e.target.value)
+                }
                 className="h-8"
                 min="0"
                 step="0.01"
@@ -72,7 +89,7 @@ export const SizeList = ({ sizes = [], onRemoveSize, onUpdateSize, category }: S
               <Input
                 type="number"
                 value={size.price}
-                onChange={(e) => onUpdateSize(index, 'price', e.target.value)}
+                onChange={(e) => onUpdateSize(index, "price", e.target.value)}
                 className="h-8"
                 min="0"
                 step="0.01"
@@ -83,7 +100,22 @@ export const SizeList = ({ sizes = [], onRemoveSize, onUpdateSize, category }: S
               <Input
                 type="number"
                 value={size.shipping_cost || 15}
-                onChange={(e) => onUpdateSize(index, 'shipping_cost', e.target.value)}
+                onChange={(e) =>
+                  onUpdateSize(index, "shipping_cost", e.target.value)
+                }
+                className="h-8"
+                min="0"
+                step="0.01"
+              />
+            </div>
+            <div>
+              <span className="text-sm font-medium">Q.Per Case</span>
+              <Input
+                type="number"
+                value={size.quantity_per_case || 15}
+                onChange={(e) =>
+                  onUpdateSize(index, "quantity_per_case", e.target.value)
+                }
                 className="h-8"
                 min="0"
                 step="0.01"
@@ -94,7 +126,9 @@ export const SizeList = ({ sizes = [], onRemoveSize, onUpdateSize, category }: S
               <Input
                 type="number"
                 value={size.stock}
-                onChange={(e) => onUpdateSize(index, 'stock', e.target.value)}
+                onChange={(e) =>
+                  onUpdateSize(index, "stock", parseInt(e.target.value) || 0)
+                }
                 className="h-8"
                 min="0"
               />

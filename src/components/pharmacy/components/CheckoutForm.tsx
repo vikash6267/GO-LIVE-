@@ -41,7 +41,7 @@ interface CheckoutFormProps {
 
 export function CheckoutForm({ onClose, total }: CheckoutFormProps) {
   const { toast } = useToast();
-  const { cartItems, clearCart } = useCart();
+  const { cartItems } = useCart();
   const navigate = useNavigate();
   
   const form = useForm<CheckoutFormValues>({
@@ -137,8 +137,7 @@ export function CheckoutForm({ onClose, total }: CheckoutFormProps) {
       existingOrders.push(order);
       localStorage.setItem('orders', JSON.stringify(existingOrders));
       
-      // Clear cart
-      clearCart();
+    
       
       // Show success message
       toast({

@@ -197,6 +197,7 @@ export function OrdersList({
           <TableHead className="font-semibold">Order Date</TableHead>
           <TableHead className="font-semibold">Total</TableHead>
           <TableHead className="font-semibold">Status</TableHead>
+          <TableHead className="font-semibold">Payment Status</TableHead>
           <TableHead className="font-semibold">Tracking</TableHead>
           {userRole === "admin" && <TableHead className="font-semibold">Actions</TableHead>}
         </TableRow>
@@ -226,7 +227,15 @@ export function OrdersList({
                   variant="secondary" 
                   className={getStatusColor(order.status || '')}
                 >
-                  {order.status || 'pending'}
+                  {order.status.toUpperCase() || 'pending'}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <Badge 
+                  variant="secondary" 
+                  className={getStatusColor(order?.payment_status || '')}
+                >
+                  {order?.payment_status.toUpperCase() || 'unpaid'}
                 </Badge>
               </TableCell>
               <TableCell>

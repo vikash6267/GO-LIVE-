@@ -5,7 +5,7 @@ export interface GroupPricing {
   discount_type: "percentage" | "fixed";
   min_quantity: number;
   max_quantity: number;
-  product_id: string;
+  product_id: string[];
   group_ids: string[];
   status: string;
   created_at: string;

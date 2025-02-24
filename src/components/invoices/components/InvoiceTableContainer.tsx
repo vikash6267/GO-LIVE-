@@ -36,6 +36,7 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
         .from("invoices")
         .select(`
           *,
+          payment_status,
           orders (order_number),
           profiles (first_name, last_name, email)
         `);
@@ -60,6 +61,7 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
       }
 
       const { data, error } = await query;
+      console.log("Raw Data from Supabase:", data);
 
       if (error) {
         toast({
@@ -180,6 +182,9 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
         id: invoice.id,
         customerInfo,
         shippingInfo,
+
+        payment_status: invoice.payment_status, // ✅ Extracted correctly
+
         items,
         subtotal: invoice.subtotal,
         tax: invoice.tax_amount,

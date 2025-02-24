@@ -21,6 +21,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     price: "",
     pricePerCase: "",
     stock: "",
+    quantity_per_case: "",
     rolls_per_case: "",
     shipping_cost: "15"
   });
@@ -42,6 +43,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
       size_unit: newSize.size_unit || categoryConfig.defaultUnit,
       price: parseFloat(newSize.price) || 0,
       stock: parseInt(newSize.stock) || 0,
+      quantity_per_case: parseFloat(newSize.quantity_per_case) || 0,
       pricePerCase: parseFloat(newSize.pricePerCase) || 0,
       rolls_per_case: parseInt(newSize.rolls_per_case) || 0,
       shipping_cost: parseFloat(newSize.shipping_cost) || 15
@@ -67,6 +69,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
       price: "",
       pricePerCase: "",
       stock: "",
+      quantity_per_case: "",
       rolls_per_case: "",
       shipping_cost: "15"
     });
@@ -95,25 +98,26 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
   const handleUpdateSize = (index: number, field: string, value: string | number) => {
     const currentSizes = form.getValues("sizes") || [];
     const updatedSizes = [...currentSizes];
-    
-    const updatedSize = {
+  
+    // Ensure value is correctly converted
+    const parsedValue =
+      typeof value === "string" && field !== "size_value" && field !== "size_unit"
+        ? parseFloat(value) || 0
+        : value;
+  
+    updatedSizes[index] = {
       ...updatedSizes[index],
-      [field]: typeof value === 'string' && field !== 'size_value' && field !== 'size_unit' 
-        ? parseFloat(value) || 0 
-        : value || (field === 'size_unit' ? categoryConfig.defaultUnit : ''),
-      size_value: updatedSizes[index].size_value || '',
-      size_unit: updatedSizes[index].size_unit || categoryConfig.defaultUnit,
-      price: updatedSizes[index].price || 0,
-      stock: updatedSizes[index].stock || 0
+      [field]: parsedValue, // Ensure stock updates properly
     };
-
-    updatedSizes[index] = updatedSize;
-    
-    form.setValue("sizes", updatedSizes, { 
+  
+    form.setValue("sizes", updatedSizes, {
       shouldValidate: true,
-      shouldDirty: true 
+      shouldDirty: true,
     });
+  
+    form.trigger("sizes"); // Force validation and re-render
   };
+  
 
   return (
     <div className="space-y-6">
@@ -135,6 +139,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
                 size_value: size.size_value || '',
                 size_unit: size.size_unit || categoryConfig.defaultUnit,
                 price: size.price || 0,
+                quantity_per_case : size?.quantity_per_case || 0,
                 stock: size.stock || 0,
               }))}
               onRemoveSize={handleRemoveSize}

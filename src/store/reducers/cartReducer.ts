@@ -2,8 +2,9 @@ import { createReducer } from '@reduxjs/toolkit';
 import { CartState, addToCart, removeFromCart, updateQuantity, clearCart } from '../types/cartTypes';
 
 const initialState: CartState = {
-  items: [],
+  items: JSON.parse(localStorage.getItem("cartItems") || "[]"),
 };
+
 
 export const cartReducer = createReducer(initialState, (builder) => {
   builder
@@ -14,17 +15,25 @@ export const cartReducer = createReducer(initialState, (builder) => {
       } else {
         state.items.push(action.payload);
       }
+      localStorage.setItem("cartItems", JSON.stringify(state.items)); // ✅ Save to localStorage
     })
     .addCase(removeFromCart, (state, action) => {
       state.items = state.items.filter(item => item.productId !== action.payload);
+      localStorage.setItem("cartItems", JSON.stringify(state.items)); // ✅ Save to localStorage
     })
     .addCase(updateQuantity, (state, action) => {
-      const item = state.items.find(item => item.productId === action.payload.productId);
-      if (item) {
-        item.quantity = action.payload.quantity;
+      const { productId, sizeId, quantity } = action.payload;
+      const product = state.items.find((item) => item.productId === productId);
+      if (product) {
+        const size = product.sizes.find((size) => size.id === sizeId);
+        if (size) {
+          size.quantity = +quantity;
+        }
       }
+      localStorage.setItem("cartItems", JSON.stringify(state.items)); // ✅ Save to localStorage
     })
     .addCase(clearCart, (state) => {
       state.items = [];
+      localStorage.removeItem("cartItems"); // ✅ Remove from localStorage
     });
 });

@@ -20,16 +20,26 @@ export const CartDrawer = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+  const shipingCost = 15
+  const total = cartItems.reduce((sum, item) => {
+    // ✅ Har size ki price * quantity ka sum calculate karega
+    const itemTotal = item.sizes.reduce(
+      (sizeSum, size) => sizeSum + size.price * size.quantity,
+      0
+    );
+    return sum + itemTotal + shipingCost;
+  }, 0);
+
+  useEffect(() => {
+    console.log(cartItems);
+  }, []);
 
   const handleQuantityChange = async (
     productId: string,
-    newQuantity: number
+    newQuantity: number,
+    sizeId: string
   ) => {
-    const success = await updateQuantity(productId, newQuantity);
+    const success = await updateQuantity(productId, newQuantity, sizeId);
     if (!success) {
       toast({
         title: "Error",
@@ -68,8 +78,6 @@ export const CartDrawer = () => {
       // Store order items in localStorage for the order page
       localStorage.setItem("pendingOrderItems", JSON.stringify(orderItems));
 
-      // Clear the cart
-      await clearCart();
 
       // Close the drawer
       setIsOpen(false);
@@ -130,44 +138,82 @@ export const CartDrawer = () => {
                     className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
                   >
                     <img
-                      src={item.image}
-                      alt={item.name}
+                      src={`https://cfyqeilfmodrbiamqgme.supabase.co/storage/v1/object/public/product-images/${item.image}`}
+                      alt={`${item.name}`}
                       className="w-16 h-16 object-cover rounded-md"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder.svg";
+                      }}
                     />
                     <div className="flex-1">
                       <h3 className="font-medium">{item.name}</h3>
                       <p className="text-sm text-gray-500">
-                        ${item.price.toFixed(2)}
+                       
                       </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() =>
-                            handleQuantityChange(
-                              item.productId,
-                              item.quantity - 1
-                            )
-                          }
-                          disabled={item.quantity <= 1}
-                        >
-                          <Minus className="h-4 w-4" />
-                        </Button>
-                        <span className="w-8 text-center">{item.quantity}</span>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-8 w-8"
-                          onClick={() =>
-                            handleQuantityChange(
-                              item.productId,
-                              item.quantity + 1
-                            )
-                          }
-                        >
-                          <Plus className="h-4 w-4" />
-                        </Button>
+                      <div>
+                        {item.sizes
+                          .filter((size) => size.quantity > 0) // ✅ Sirf non-zero quantity wale sizes dikhaye
+                          .map((size) => (
+                            <div
+                              key={size.id}
+                              className="border p-2 mb-2 rounded"
+                            >
+                              <p>
+                                <strong>Size:</strong> {size.size_value}{" "}
+                                {size.size_unit}
+                              </p>
+                              <p>
+                                <strong>Price per Case:</strong> 
+                                ${size.price.toFixed(2)}
+                              </p>
+                              <p>
+                                <strong>Total Price:</strong> 
+                                ${(size.quantity * size.price).toFixed(2)}
+                              </p>
+
+                              <div className="flex items-center gap-2 mt-2">
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() =>
+                                    handleQuantityChange(
+                                      item.productId,
+                                      (item.sizes.find((s) => s.id === size.id)
+                                        ?.quantity || 0) - 1, // Default 0 if size not found
+
+                                      size.id
+                                    )
+                                  }
+                                  disabled={(item.sizes.find((s) => s.id === size.id)?.quantity || 0) <= 1}
+
+                                >
+                                  <Minus className="h-4 w-4" />
+                                </Button>
+                                <span className="w-8 text-center">
+                                  {item.sizes.find((s) => s.id === size.id)
+                                    ?.quantity || "N/A"}
+                                </span>
+
+                                <Button
+                                  variant="outline"
+                                  size="icon"
+                                  className="h-8 w-8"
+                                  onClick={() =>
+                                    handleQuantityChange(
+                                      item.productId,
+                                      (item.sizes.find((s) => s.id === size.id)
+                                        ?.quantity || 0) + 1, // Default 0 if size not found
+                                      size.id
+                                    )
+                                  }
+                                >
+                                  <Plus className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
                       </div>
                     </div>
                     <Button
@@ -186,6 +232,10 @@ export const CartDrawer = () => {
 
           {cartItems.length > 0 && (
             <div className="border-t mt-6 pt-6 space-y-4">
+              <div className="flex justify-between text-lg font-medium">
+                <span>Shipping Cost</span>
+                <span>${shipingCost}</span>
+              </div>
               <div className="flex justify-between text-lg font-medium">
                 <span>Total</span>
                 <span>${total.toFixed(2)}</span>

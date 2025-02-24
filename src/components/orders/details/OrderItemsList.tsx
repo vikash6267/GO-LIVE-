@@ -1,20 +1,45 @@
 import { OrderFormValues } from "../schemas/orderSchema";
 
 interface OrderItemsListProps {
-  items: OrderFormValues['items'];
+  items: OrderFormValues["items"];
 }
 
 export function OrderItemsList({ items }: OrderItemsListProps) {
+ 
+
   return (
-    <div className="space-y-2">
-      <h3 className="font-semibold">Order Items</h3>
-      <div className="space-y-2">
+    <div className="space-y-4">
+      <h3 className="font-semibold text-lg">Order Items</h3>
+      <div className="space-y-4">
         {items.map((item, index) => (
-          <div key={index} className="border p-2 rounded">
-            <p>Product: {item.productId}</p>
-            <p>Quantity: {item.quantity}</p>
-            <p>Price: ${item.price.toFixed(2)}</p>
-            {item.notes && <p>Notes: {item.notes}</p>}
+          <div key={index} className="border p-4 rounded shadow">
+            <p className="font-medium">🛒 Product: {item.name}</p>
+            
+            {/* Agar item ke andar sizes available hai toh */}
+            {item.sizes && item.sizes.length > 0 ? (
+              <div className="mt-2 space-y-2">
+                {item.sizes.map((size, sizeIndex) => (
+                  <div key={sizeIndex} className="border p-2 rounded bg-gray-100">
+                    <p>
+                      <strong>Size:</strong> {size.size_value} {size.size_unit}
+                    </p>
+                    <p>
+                      <strong>Quantity:</strong> {size.quantity}
+                    </p>
+                    <p>
+                      <strong>Price per Unit:</strong> ${size.price.toFixed(2)}
+                    </p>
+                    <p>
+                      <strong>Total:</strong> ${(size.quantity * size.price).toFixed(2)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">No sizes available</p>
+            )}
+
+            {item.notes && <p className="text-gray-600 italic">📝 Notes: {item.notes}</p>}
           </div>
         ))}
       </div>

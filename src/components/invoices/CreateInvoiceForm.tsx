@@ -35,6 +35,7 @@ const formSchema = z.object({
   }),
   paymentMethod: z.string().optional(),
   paymentNotes: z.string().optional(),
+  payment_status: z.string().optional(),
 });
 
 export function CreateInvoiceForm() {
@@ -51,6 +52,7 @@ export function CreateInvoiceForm() {
       dueDate: "",
       paymentMethod: "",
       paymentNotes: "",
+      payment_status:""
     },
   });
 
@@ -125,6 +127,9 @@ export function CreateInvoiceForm() {
 
       const { data: invoiceNumber } = await supabase.rpc('generate_invoice_number');
 
+
+      console.log(values?.payment_status)
+
       const invoiceData = {
         invoice_number: invoiceNumber,
         order_id: orderData.id,
@@ -134,6 +139,7 @@ export function CreateInvoiceForm() {
         tax_amount: orderData.tax_amount || 0,
         total_amount: parseFloat(values.amount),
         due_date: values.dueDate,
+        payment_status: orderData.payment_status,
         payment_method: values.paymentMethod as PaymentMethod,
         payment_notes: values.paymentNotes || null,
         items: orderData.items || [],
@@ -148,6 +154,8 @@ export function CreateInvoiceForm() {
 
       console.log('Creating invoice with data:', invoiceData);
 
+
+      
       const { data, error } = await supabase
         .from("invoices")
         .insert(invoiceData)

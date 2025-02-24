@@ -23,10 +23,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const [customizations, setCustomizations] = useState<Record<string, string>>(
     {}
   );
+<<<<<<< HEAD
+  const [quantity, setQuantity] = useState(1);
+=======
 
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
 
   const [quantity, setQuantity] = useState<{ [key: string]: number }>({});
+>>>>>>> 771bd903dfd4bddd1e710890ac1e7052c8db5bb5
   const navigate = useNavigate();
 
 

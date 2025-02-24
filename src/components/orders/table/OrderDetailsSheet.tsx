@@ -1,4 +1,3 @@
-
 import {
   Sheet,
   SheetContent,
@@ -43,41 +42,38 @@ export const OrderDetailsSheet = ({
   onShipOrder,
   onConfirmOrder,
   onDeleteOrder,
-  userRole = "pharmacy"
+  userRole = "pharmacy",
 }: OrderDetailsSheetProps) => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [razorpayLoaded, setRazorpayLoaded] = useState(false);
-
   const { toast } = useToast();
   const [currentOrder, setCurrentOrder] = useState<OrderFormValues>(order);
 
   // Update currentOrder when order prop changes
   useEffect(() => {
-    console.log(order)
     setCurrentOrder(order);
   }, [order]);
 
-  const handleStatusUpdate = async (action: 'process' | 'ship' | 'confirm') => {
+  const handleStatusUpdate = async (action: "process" | "ship" | "confirm") => {
     if (!currentOrder.id) return;
 
     try {
       switch (action) {
-        case 'process':
+        case "process":
           if (onProcessOrder) {
             await onProcessOrder(currentOrder.id);
-            setCurrentOrder(prev => ({ ...prev, status: 'processing' }));
+            setCurrentOrder((prev) => ({ ...prev, status: "processing" }));
           }
           break;
-        case 'ship':
+        case "ship":
           if (onShipOrder) {
             await onShipOrder(currentOrder.id);
-            setCurrentOrder(prev => ({ ...prev, status: 'shipped' }));
+            setCurrentOrder((prev) => ({ ...prev, status: "shipped" }));
           }
           break;
-        case 'confirm':
+        case "confirm":
           if (onConfirmOrder) {
             await onConfirmOrder(currentOrder.id);
-            setCurrentOrder(prev => ({ ...prev, status: 'pending' }));
+            setCurrentOrder((prev) => ({ ...prev, status: "pending" }));
           }
           break;
       }
@@ -348,8 +344,8 @@ export const OrderDetailsSheet = ({
             </div>
 
             <OrderWorkflowStatus status={currentOrder.status} />
-            
-            {currentOrder.payment_status !== 'paid' && (
+
+            {currentOrder.status !== "paid" && (
               <div className="flex justify-end">
                 <Button
                   onClick={handlePayNow}
@@ -366,9 +362,9 @@ export const OrderDetailsSheet = ({
               <div className="flex justify-end">
                 <OrderActions
                   order={currentOrder}
-                  onProcessOrder={() => handleStatusUpdate('process')}
-                  onShipOrder={() => handleStatusUpdate('ship')}
-                  onConfirmOrder={() => handleStatusUpdate('confirm')}
+                  onProcessOrder={() => handleStatusUpdate("process")}
+                  onShipOrder={() => handleStatusUpdate("ship")}
+                  onConfirmOrder={() => handleStatusUpdate("confirm")}
                   onDeleteOrder={onDeleteOrder}
                 />
               </div>
@@ -376,7 +372,7 @@ export const OrderDetailsSheet = ({
 
             <OrderCustomerInfo customerInfo={currentOrder.customerInfo} />
             <OrderItemsList items={currentOrder.items} />
-            <OrderPaymentInfo 
+            <OrderPaymentInfo
               payment={currentOrder.payment}
               specialInstructions={currentOrder.specialInstructions}
             />

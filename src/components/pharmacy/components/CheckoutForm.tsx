@@ -65,7 +65,7 @@ export function CheckoutForm({ onClose, total }: CheckoutFormProps) {
   const onSubmit = async (data: CheckoutFormValues) => {
     try {
       // Prevent default form submission behavior
-      event?.preventDefault();
+      // event?.preventDefault();
 
       // Show processing toast
       toast({

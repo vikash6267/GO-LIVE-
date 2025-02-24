@@ -6,17 +6,17 @@ interface OrderItemsListProps {
 
 export function OrderItemsList({ items }: OrderItemsListProps) {
  
-
+console.log(items)
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-lg">Order Items</h3>
       <div className="space-y-4">
-        {items.map((item, index) => (
+        {items?.map((item, index) => (
           <div key={index} className="border p-4 rounded shadow">
             <p className="font-medium">🛒 Product: {item.name}</p>
             
             {/* Agar item ke andar sizes available hai toh */}
-            {item.sizes && item.sizes.length > 0 ? (
+            {item?.sizes && item?.sizes.length > 0 ? (
               <div className="mt-2 space-y-2">
                 {item.sizes.map((size, sizeIndex) => (
                   <div key={sizeIndex} className="border p-2 rounded bg-gray-100">

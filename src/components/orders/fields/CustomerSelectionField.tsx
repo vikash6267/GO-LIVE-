@@ -114,7 +114,7 @@ export function CustomerSelectionField({ form }: CustomerSelectionFieldProps) {
         {isValidating ? (
           <div className="text-sm text-muted-foreground">Validating customer information...</div>
         ) : (
-          <CustomerInfoFields form={form} readOnly={true} />
+          <CustomerInfoFields form={form}  />
         )}
       </div>
     </div>

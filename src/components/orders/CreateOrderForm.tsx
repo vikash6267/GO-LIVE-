@@ -31,6 +31,7 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
   const userProfile = useSelector(selectUserProfile);
   const { cartItems,clearCart } = useCart();
   
+  console.log(cartItems)
   // Initialize form with user profile data
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
@@ -40,6 +41,7 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
       date: new Date().toISOString(),
       total: "0",
       status: "new",
+      payment_status:"unpaid",
       customerInfo: {
         name: userProfile?.display_name || `${userProfile?.first_name || ''} ${userProfile?.last_name || ''}`,
         email: userProfile?.email || "",
@@ -93,6 +95,7 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
 
 
   const onSubmit = async (data: OrderFormValues) => {
+    console.log("first")
     try {
       setIsSubmitting(true);
       console.log("Starting order submission:", data);
@@ -202,7 +205,7 @@ export function CreateOrderForm({ initialData, onFormChange }: CreateOrderFormPr
         }
       }
   
-      // console.log("Stock updated successfully");
+      console.log("Stock updated successfully");
   
       // Reset form and local state
       // localStorage.removeItem("cart");

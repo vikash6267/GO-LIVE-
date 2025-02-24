@@ -5,8 +5,7 @@ interface OrderItemsListProps {
 }
 
 export function OrderItemsList({ items }: OrderItemsListProps) {
- 
-console.log(items)
+  console.log(items);
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-lg">Order Items</h3>
@@ -14,12 +13,15 @@ console.log(items)
         {items?.map((item, index) => (
           <div key={index} className="border p-4 rounded shadow">
             <p className="font-medium">🛒 Product: {item.name}</p>
-            
+
             {/* Agar item ke andar sizes available hai toh */}
             {item?.sizes && item?.sizes.length > 0 ? (
               <div className="mt-2 space-y-2">
                 {item.sizes.map((size, sizeIndex) => (
-                  <div key={sizeIndex} className="border p-2 rounded bg-gray-100">
+                  <div
+                    key={sizeIndex}
+                    className="border p-2 rounded bg-gray-100"
+                  >
                     <p>
                       <strong>Size:</strong> {size.size_value} {size.size_unit}
                     </p>
@@ -30,7 +32,8 @@ console.log(items)
                       <strong>Price per Unit:</strong> ${size.price.toFixed(2)}
                     </p>
                     <p>
-                      <strong>Total:</strong> ${(size.quantity * size.price).toFixed(2)}
+                      <strong>Total:</strong> $
+                      {(size.quantity * size.price).toFixed(2)}
                     </p>
                   </div>
                 ))}
@@ -39,7 +42,9 @@ console.log(items)
               <p className="text-gray-500">No sizes available</p>
             )}
 
-            {item.notes && <p className="text-gray-600 italic">📝 Notes: {item.notes}</p>}
+            {item.notes && (
+              <p className="text-gray-600 italic">📝 Notes: {item.notes}</p>
+            )}
           </div>
         ))}
       </div>

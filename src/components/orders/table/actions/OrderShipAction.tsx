@@ -5,19 +5,31 @@ import { ConfirmationDialog } from "./ConfirmationDialog";
 import { TrackingDialog } from "../../components/TrackingDialog";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/hooks/use-cart";
 
 interface OrderShipActionProps {
   order: OrderFormValues;
   onShipOrder?: (orderId: string) => void;
 }
 
-export const OrderShipAction = ({ order, onShipOrder }: OrderShipActionProps) => {
+export const OrderShipAction = ({
+  order,
+  onShipOrder,
+}: OrderShipActionProps) => {
   const { toast } = useToast();
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showTrackingDialog, setShowTrackingDialog] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState("");
-  const [shippingMethod, setShippingMethod] = useState<"FedEx" | "custom">("FedEx");
+  const [shippingMethod, setShippingMethod] = useState<"FedEx" | "custom">(
+    "FedEx"
+  );
+  const { cartItems, clearCart } = useCart();
 
+  console.log(JSON.stringify(cartItems), "cart he ye");
+  const totalShippingCost = cartItems.reduce(
+    (total, item) => total + (item.shipping_cost || 0),
+    0
+  );
   const handleShipConfirm = () => {
     setShowConfirmDialog(false);
     setShowTrackingDialog(true);
@@ -37,11 +49,11 @@ export const OrderShipAction = ({ order, onShipOrder }: OrderShipActionProps) =>
       console.log("Submitting tracking information:", {
         orderId: order.id,
         trackingNumber,
-        shippingMethod
+        shippingMethod,
       });
 
       // Get fresh orders from localStorage
-      const savedOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+      const savedOrders = JSON.parse(localStorage.getItem("orders") || "[]");
       const updatedOrders = savedOrders.map((o: OrderFormValues) => {
         if (o.id === order.id) {
           return {
@@ -50,16 +62,16 @@ export const OrderShipAction = ({ order, onShipOrder }: OrderShipActionProps) =>
               ...(o.shipping || {}),
               method: shippingMethod,
               trackingNumber,
-              cost: shippingMethod === "FedEx" ? 12.00 : 0,
+              cost: shippingMethod === "FedEx" ? totalShippingCost : 0,
             },
-            status: "shipped"
+            status: "shipped",
           };
         }
         return o;
       });
-      
+
       console.log("Saving updated orders:", updatedOrders);
-      localStorage.setItem('orders', JSON.stringify(updatedOrders));
+      localStorage.setItem("orders", JSON.stringify(updatedOrders));
 
       // Then call the onShipOrder callback
       if (onShipOrder && order.id) {
@@ -68,13 +80,13 @@ export const OrderShipAction = ({ order, onShipOrder }: OrderShipActionProps) =>
       }
 
       setShowTrackingDialog(false);
-      
+
       toast({
         title: "Success",
         description: `Order shipped with tracking number: ${trackingNumber}`,
       });
     } catch (error) {
-      console.error('Error updating order:', error);
+      console.error("Error updating order:", error);
       toast({
         title: "Error",
         description: "Failed to update order shipping information",

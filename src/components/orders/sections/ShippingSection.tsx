@@ -17,6 +17,7 @@ import { UseFormReturn } from "react-hook-form";
 import { OrderFormValues } from "../schemas/orderSchema";
 import { calculateShippingCost, ShippingCarrier } from "../utils/shippingUtils";
 import { useEffect, useState } from "react";
+import { useCart } from "@/hooks/use-cart";
 
 interface ShippingSectionProps {
   form: UseFormReturn<OrderFormValues>;
@@ -24,17 +25,23 @@ interface ShippingSectionProps {
 
 export function ShippingSection({ form }: ShippingSectionProps) {
   const [isCustomCost, setIsCustomCost] = useState(false);
+  const { cartItems, clearCart } = useCart();
 
+  const totalShippingCost = cartItems.reduce(
+    (total, item) => total + (item.shipping_cost || 0),
+    0
+  );
   useEffect(() => {
     const method = form.watch("shipping.method");
     if (method && !isCustomCost) {
-      const cost = calculateShippingCost(method as ShippingCarrier);
+      const cost = totalShippingCost;
       form.setValue("shipping.cost", cost);
     }
   }, [form.watch("shipping.method"), isCustomCost, form]);
 
   return (
-    <div className="space-y-4">
+    <div>
+      {/* <div className="space-y-4">
       <h2 className="text-xl font-semibold">Shipping Information</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FormField
@@ -88,6 +95,7 @@ export function ShippingSection({ form }: ShippingSectionProps) {
           )}
         />
       </div>
+    </div> */}
     </div>
   );
 }

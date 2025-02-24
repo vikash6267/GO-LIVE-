@@ -74,6 +74,7 @@ export const CartDrawer = () => {
         quantity: item.quantity,
         price: item.price,
         notes: item.notes || "",
+        shipping_cost: item.shipping_cost,
       }));
       // Store order items in localStorage for the order page
       localStorage.setItem("pendingOrderItems", JSON.stringify(orderItems));

@@ -1,4 +1,4 @@
-import { createAction } from '@reduxjs/toolkit';
+import { createAction } from "@reduxjs/toolkit";
 
 export interface CartItem {
   productId: string;
@@ -6,9 +6,10 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
-  sizes:any[];
+  sizes: any[];
   customizations: Record<string, string>;
   notes: string;
+  shipping_cost: number;
 }
 
 export interface CartState {
@@ -16,12 +17,11 @@ export interface CartState {
 }
 
 // Create typed action creators
-export const addToCart = createAction<CartItem>('cart/addToCart');
-export const removeFromCart = createAction<string>('cart/removeFromCart');
+export const addToCart = createAction<CartItem>("cart/addToCart");
+export const removeFromCart = createAction<string>("cart/removeFromCart");
 export const updateQuantity = createAction<{
   productId: string;
   quantity: number;
-  sizeId: string
-
-}>('cart/updateQuantity');
-export const clearCart = createAction('cart/clearCart');
+  sizeId: string;
+}>("cart/updateQuantity");
+export const clearCart = createAction("cart/clearCart");

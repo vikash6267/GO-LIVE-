@@ -14,6 +14,7 @@ import { OrderItemsList } from "./details/OrderItemsList";
 import { OrderPaymentInfo } from "./details/OrderPaymentInfo";
 import { OrderTotals } from "./details/OrderTotals";
 import { getTrackingUrl } from "./utils/shippingUtils";
+import { useCart } from "@/hooks/use-cart";
 
 interface OrderPreviewProps {
   orderData: Partial<OrderFormValues>;
@@ -21,26 +22,33 @@ interface OrderPreviewProps {
 
 export function OrderPreview({ orderData }: OrderPreviewProps) {
   // Ensure we have default values for all potentially undefined properties
+  const { cartItems, clearCart } = useCart();
+
+  console.log(JSON.stringify(cartItems), "cart he ye");
+  const totalShippingCost = cartItems.reduce(
+    (total, item) => total + (item.shipping_cost || 0),
+    0
+  );
   const safeOrderData = {
     customerInfo: orderData.customerInfo || {
       name: "",
       email: "",
       phone: "",
       type: "Pharmacy",
-      address: { street: "", city: "", state: "", zipCode: "" }
+      address: { street: "", city: "", state: "", zipCode: "" },
     },
     items: orderData.items || [],
     shipping: orderData.shipping || {
       method: "FedEx",
-      cost: 12.00,
+      cost: totalShippingCost,
       trackingNumber: "",
-      estimatedDelivery: ""
+      estimatedDelivery: "",
     },
     payment: orderData.payment || {
       method: "card",
-      notes: ""
+      notes: "",
     },
-    specialInstructions: orderData.specialInstructions || ""
+    specialInstructions: orderData.specialInstructions || "",
   };
 
   return (
@@ -54,13 +62,15 @@ export function OrderPreview({ orderData }: OrderPreviewProps) {
       <SheetContent className="w-full md:max-w-3xl overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Order Preview</SheetTitle>
-          <SheetDescription>Review your order details before submission</SheetDescription>
+          <SheetDescription>
+            Review your order details before submission
+          </SheetDescription>
         </SheetHeader>
 
         <div className="mt-6 space-y-6">
           <OrderCustomerInfo customerInfo={safeOrderData.customerInfo} />
           <OrderItemsList items={safeOrderData.items} />
-          
+
           <div className="space-y-2">
             <h3 className="font-semibold flex items-center gap-2">
               <Truck className="h-4 w-4" />
@@ -69,9 +79,12 @@ export function OrderPreview({ orderData }: OrderPreviewProps) {
             <p>Method: {safeOrderData.shipping?.method}</p>
             {safeOrderData.shipping?.trackingNumber && (
               <p>
-                Tracking: 
-                <a 
-                  href={getTrackingUrl(safeOrderData.shipping.method, safeOrderData.shipping.trackingNumber)}
+                Tracking:
+                <a
+                  href={getTrackingUrl(
+                    safeOrderData.shipping.method,
+                    safeOrderData.shipping.trackingNumber
+                  )}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ml-2 text-blue-600 hover:underline"
@@ -81,15 +94,15 @@ export function OrderPreview({ orderData }: OrderPreviewProps) {
               </p>
             )}
           </div>
-          
-          <OrderPaymentInfo 
+
+          <OrderPaymentInfo
             payment={safeOrderData.payment}
             specialInstructions={safeOrderData.specialInstructions}
           />
-          <OrderTotals 
+          <OrderTotals
             items={safeOrderData.items}
             paymentMethod={safeOrderData.payment.method}
-            shipping={safeOrderData.shipping}
+            // shipping={totalShippingCost}
           />
         </div>
       </SheetContent>

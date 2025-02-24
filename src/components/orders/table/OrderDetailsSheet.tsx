@@ -218,17 +218,7 @@ export const OrderDetailsSheet = ({
     }
   };
 
-  useEffect(() => {
-    const loadRazorpayScript = () => {
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.async = true;
-      script.onload = () => setRazorpayLoaded(true);
-      document.body.appendChild(script);
-    };
 
-    loadRazorpayScript();
-  }, []);
 
 
   // const handlePayNow = async () => {
@@ -345,7 +335,7 @@ export const OrderDetailsSheet = ({
 
             <OrderWorkflowStatus status={currentOrder.status} />
 
-            {currentOrder.status !== "paid" && (
+            {currentOrder.payment_status !== "paid" && (
               <div className="flex justify-end">
                 <Button
                   onClick={handlePayNow}

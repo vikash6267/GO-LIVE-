@@ -108,27 +108,21 @@ const HeroSection = () => {
                 description="One of the Fastest growing Rx Supply Company"
                 bgColor="bg-emerald-700/40"
               />
-              {/* <FeatureCard
-                icon={<Box className="w-6 h-6 text-white" />}
-                title="Quality Assured"
-                description="Quality & Affordability Assured"
-                bgColor="bg-emerald-700/40"
-              /> */}
               <FeatureCard
-                icon={<Truck className="w-6 h-6 text-white" />}
+                icon={<Box className="w-6 h-6 text-white" />}
                 title="Quality & Affordability Assured"
                 description="Best Quality Supply at Affordable Pricing"
                 bgColor="bg-emerald-700/40"
               />
               <FeatureCard
-                icon={<Settings className="w-6 h-6 text-white" />}
-                title="Same Day Shipping"
+                icon={<Truck className="w-6 h-6 text-white" />}
+                title="Fast Delivery"
                 description="Same Day Dispatch if the order is placed before 3.00pm EST"
                 bgColor="bg-emerald-700/40"
               />
               <FeatureCard
                 icon={<Settings className="w-6 h-6 text-white" />}
-                title="Personalized Solutions"
+                title="Customization"
                 description="Personalized Solutions for your Rx Paper Bags, Rx Labels and many more Products"
                 bgColor="bg-emerald-700/40"
               />

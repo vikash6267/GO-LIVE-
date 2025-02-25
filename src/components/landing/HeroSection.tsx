@@ -78,7 +78,7 @@ const HeroSection = () => {
                   key={i}
                   src={logo}
                   alt={`Trusted Pharmacy ${i + 1}`}
-                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white object-cover"
+                  className="w-10 h-10 0 rounded-full border-2 border-white object-cover"
                 />
               ))}
             </div>

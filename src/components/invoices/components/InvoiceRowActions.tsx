@@ -76,10 +76,10 @@ export function InvoiceRowActions({ invoice, onPreview, onActionComplete }: Invo
           <DropdownMenuItem onClick={() => onPreview(invoice)}>
             Preview Invoice
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => exportToPDF(invoice)}>
+          {/* <DropdownMenuItem onClick={() => exportToPDF(invoice)}>
             <Download className="mr-2 h-4 w-4" />
             Download PDF
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
 
           {invoice.status === "needs_payment_link" && (
             <DropdownMenuItem onClick={generatePaymentLink} disabled={isGeneratingLink}>

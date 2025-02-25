@@ -4,6 +4,7 @@ import "jspdf-autotable";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import React from "react";
+import InvoiceExport from "./InvoiceExport"
 
 // Extend the jsPDF type to include autoTable
 interface jsPDFWithAutoTable extends jsPDF {
@@ -70,9 +71,9 @@ export const exportToPDF = (invoice?: Invoice) => {
 
 export const ExportOptions: React.FC<ExportOptionsProps> = ({ invoices }) => {
   return (
-    <Button onClick={() => exportToPDF()} className="flex items-center gap-2">
-      <Download className="h-4 w-4" />
-      Export All
-    </Button>
+    <div className="flex items-center gap-2">
+    
+      <InvoiceExport invoices={invoices} companyName="9RX" logoUrl="/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png" />
+    </div>
   );
 };

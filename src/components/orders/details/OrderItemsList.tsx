@@ -13,6 +13,7 @@ export function OrderItemsList({ items }: OrderItemsListProps) {
         {items?.map((item, index) => (
           <div key={index} className="border p-4 rounded shadow">
             <p className="font-medium">🛒 Product: {item.name}</p>
+            {/* <p className="font-medium"> Order ID: {item.id}</p> */}
 
             {/* Agar item ke andar sizes available hai toh */}
             {item?.sizes && item?.sizes.length > 0 ? (

@@ -194,6 +194,7 @@ export function OrdersList({
             </TableHead>
           )}
           <TableHead className="font-semibold">Customer Name</TableHead>
+          <TableHead className="font-semibold">Order Id</TableHead>
           <TableHead className="font-semibold">Order Date</TableHead>
           <TableHead className="font-semibold">Total</TableHead>
           <TableHead className="font-semibold">Status</TableHead>
@@ -205,6 +206,7 @@ export function OrdersList({
       <TableBody>
         {orders.map((order) => {
           const orderId = order.id || '';
+          // console.log(orderId)
           return (
             <TableRow 
               key={orderId}
@@ -220,6 +222,7 @@ export function OrdersList({
                 </TableCell>
               )}
               <TableCell className="font-medium">{order.customerInfo?.name || 'N/A'}</TableCell>
+              <TableCell className="font-medium">{orderId}</TableCell>
               <TableCell>{getOrderDate(order)}</TableCell>
               <TableCell>{formatTotal(order.total)}</TableCell>
               <TableCell>

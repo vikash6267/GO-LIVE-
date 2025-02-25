@@ -66,12 +66,12 @@ const TestimonialsSection = () => {
             },
             // when window width is >= 768px (md)
             768: {
-              slidesPerView: 2,
+              slidesPerView: 1,
               spaceBetween: 24,
             },
             // when window width is >= 1024px (lg)
             1024: {
-              slidesPerView: 3,
+              slidesPerView: 1,
               spaceBetween: 24,
             },
           }}
@@ -116,7 +116,7 @@ const TestimonialCard = ({
   image: string;
   quote: string;
 }) => (
-  <div className="h-full p-6 cursor-pointer rounded-2xl backdrop-blur-sm shadow-lg shadow-gray-300 bg-white/50 transform transition-transform duration-300 hover:scale-105">
+  <div className="min-h-[250px] p-6 cursor-pointer rounded-2xl backdrop-blur-sm shadow-lg shadow-gray-300 bg-white/50 transform transition-transform duration-300 hover:scale-105">
     <div className="flex items-center gap-4 mb-4">
       <img
         src={image || "/placeholder.svg"}
@@ -133,7 +133,7 @@ const TestimonialCard = ({
         </p>
       </div>
     </div>
-    <p className="text-emerald-800 text-sm mb-4 line-clamp-4">{quote}</p>
+    <p className="text-emerald-800 text-xl mb-4 line-cla">{quote}</p>
     {/* <div className="flex items-center gap-2">
       <div className="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 transition-colors cursor-pointer">
         <PlayCircle className="w-4 h-4 text-emerald-600" />

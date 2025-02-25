@@ -25,7 +25,6 @@ export const OrderShipAction = ({
   );
   const { cartItems, clearCart } = useCart();
 
-  console.log(JSON.stringify(cartItems), "cart he ye");
   const totalShippingCost = cartItems.reduce(
     (total, item) => total + (item.shipping_cost || 0),
     0

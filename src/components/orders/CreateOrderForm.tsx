@@ -37,11 +37,11 @@ export function CreateOrderForm({
   const userProfile = useSelector(selectUserProfile);
   const { cartItems, clearCart } = useCart();
 
-  console.log(JSON.stringify(cartItems), "cart he ye");
-  const totalShippingCost = cartItems.reduce(
-    (total, item) => total + (item.shipping_cost || 0),
-    0
+
+  const totalShippingCost = Math.max(
+    ...cartItems.map(item => item.shipping_cost || 0)
   );
+  
 
   // Initialize form with user profile data
   const form = useForm<OrderFormValues>({
@@ -111,13 +111,14 @@ export function CreateOrderForm({
       setIsSubmitting(true);
       console.log("Starting order submission:", data);
 
+      
       // Validate order items
       validateOrderItems(data.items);
 
       // Calculate order total
       const calculatedTotal = calculateOrderTotal(
         data.items,
-        data.shipping?.cost || 0
+        totalShippingCost || 0
       );
 
       if (userProfile?.id == null) {

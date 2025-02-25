@@ -9,7 +9,7 @@ interface OrderTotalsProps {
 export function OrderTotals({ items, paymentMethod }: OrderTotalsProps) {
   const { cartItems, clearCart } = useCart();
 
-  console.log(JSON.stringify(cartItems), "cart he ye");
+
   const shipping = cartItems.reduce(
     (total, item) => total + (item.shipping_cost || 0),
     0

@@ -13,7 +13,14 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { AddressFields } from "../users/forms/AddressFields";
 import { useForm } from "react-hook-form";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -30,7 +37,7 @@ const pharmacySchema = z.object({
     street2: z.string().optional(),
     city: z.string().min(2, "City is required"),
     state: z.string().min(2, "State is required"),
-    zipCode: z.string().min(5, "ZIP code is required"),
+    zip_code: z.string().min(5, "ZIP code is required"),
     phone: z.string().optional(),
     faxNumber: z.string().optional(),
   }),
@@ -64,7 +71,7 @@ export function AddPharmacyModal({
         street2: "",
         city: "",
         state: "",
-        zipCode: "",
+        zip_code: "",
         phone: "",
         faxNumber: "",
       },
@@ -88,10 +95,11 @@ export function AddPharmacyModal({
         <DialogHeader>
           <DialogTitle>Add New Pharmacy</DialogTitle>
           <DialogDescription>
-            Add a new pharmacy to your group. Fill in the pharmacy details below.
+            Add a new pharmacy to your group. Fill in the pharmacy details
+            below.
           </DialogDescription>
         </DialogHeader>
-        
+
         <ScrollArea className="max-h-[calc(90vh-8rem)] px-6">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -131,7 +139,11 @@ export function AddPharmacyModal({
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input {...field} type="email" placeholder="Enter email" />
+                        <Input
+                          {...field}
+                          type="email"
+                          placeholder="Enter email"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -145,7 +157,11 @@ export function AddPharmacyModal({
                     <FormItem>
                       <FormLabel>Phone</FormLabel>
                       <FormControl>
-                        <Input {...field} type="tel" placeholder="Enter phone number" />
+                        <Input
+                          {...field}
+                          type="tel"
+                          placeholder="Enter phone number"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -159,7 +175,9 @@ export function AddPharmacyModal({
         </ScrollArea>
 
         <DialogFooter className="p-6 pt-4">
-          <Button type="submit" onClick={form.handleSubmit(onSubmit)}>Add Pharmacy</Button>
+          <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+            Add Pharmacy
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

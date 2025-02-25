@@ -5,13 +5,11 @@ import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserProfile } from "../../../store/selectors/userSelectors";
-import {supabase}  from "@/supabaseClient";
+import { supabase } from "@/supabaseClient";
 
 interface CustomerSelectionFieldProps {
   form: UseFormReturn<any>;
 }
-
-
 
 // Improved customer validation schema
 const customerValidationSchema = z.object({
@@ -23,7 +21,7 @@ const customerValidationSchema = z.object({
     street: z.string().min(5, "Street address must be at least 5 characters"),
     city: z.string().min(2, "City must be at least 2 characters"),
     state: z.string().min(2, "State must be at least 2 characters"),
-    zipCode: z.string().regex(/^\d{5}(-\d{4})?$/, "Invalid ZIP code format"),
+    zip_code: z.string().regex(/^\d{5}(-\d{4})?$/, "Invalid ZIP code format"),
   }),
 });
 
@@ -34,12 +32,20 @@ export function CustomerSelectionField({ form }: CustomerSelectionFieldProps) {
 
   const fetchCustomerInfo = async (userId) => {
     try {
-      const { data, error } = await supabase.from("profiles").select("first_name, last_name, email, mobile_phone, type, company_name, display_name")
-        .eq("status", "active").eq("id",userId).single(); // Fetch only one record for simplicity
+      const { data, error } = await supabase
+        .from("profiles")
+        .select(
+          "first_name, last_name, email, mobile_phone, type, company_name, display_name"
+        )
+        .eq("status", "active")
+        .eq("id", userId)
+        .single(); // Fetch only one record for simplicity
 
       if (error) {
         console.error("Failed to fetch customer information:", error);
-        throw new Error("Failed to fetch customer information: " + error.message);
+        throw new Error(
+          "Failed to fetch customer information: " + error.message
+        );
       }
 
       if (!data || data.length === 0) {
@@ -58,7 +64,7 @@ export function CustomerSelectionField({ form }: CustomerSelectionFieldProps) {
           street: data.company_name || "N/A",
           city: "N/A", // Populate with relevant field if available
           state: "N/A", // Populate with relevant field if available
-          zipCode: "00000", // Replace with actual data if available
+          zip_code: "00000", // Replace with actual data if available
         },
       };
 
@@ -72,31 +78,33 @@ export function CustomerSelectionField({ form }: CustomerSelectionFieldProps) {
       console.error("Error fetching customer info:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to load customer information.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to load customer information.",
         variant: "destructive",
       });
       return null;
     }
   };
 
-  
-
   // Set form values when component mounts with validation
   useEffect(() => {
-    if (!userProfile?.id) return
-    
+    if (!userProfile?.id) return;
+
     const setCustomerInfo = async () => {
       setIsValidating(true);
       try {
         const customerInfo = await fetchCustomerInfo(userProfile?.id);
         if (customerInfo) {
-          form.setValue('customerInfo', customerInfo);
+          form.setValue("customerInfo", customerInfo);
         }
       } catch (error) {
         console.error("Error setting customer info:", error);
         toast({
           title: "Validation Error",
-          description: "Please ensure all customer information is complete and valid.",
+          description:
+            "Please ensure all customer information is complete and valid.",
           variant: "destructive",
         });
       } finally {
@@ -112,9 +120,11 @@ export function CustomerSelectionField({ form }: CustomerSelectionFieldProps) {
       <div className="flex flex-col gap-4">
         <h2 className="text-xl font-semibold">Customer Information</h2>
         {isValidating ? (
-          <div className="text-sm text-muted-foreground">Validating customer information...</div>
+          <div className="text-sm text-muted-foreground">
+            Validating customer information...
+          </div>
         ) : (
-          <CustomerInfoFields form={form}  />
+          <CustomerInfoFields form={form} />
         )}
       </div>
     </div>

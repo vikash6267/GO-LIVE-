@@ -1,13 +1,14 @@
-
 import { BaseUserFormData } from "../../schemas/sharedFormSchema";
 
-export const mapProfileDataToFormState = (data: any): Partial<BaseUserFormData> => {
+export const mapProfileDataToFormState = (
+  data: any
+): Partial<BaseUserFormData> => {
   if (!data) {
-    console.warn('No data provided to mapProfileDataToFormState');
+    console.warn("No data provided to mapProfileDataToFormState");
     return {};
   }
 
-  console.log('Mapping profile data to form state:', data);
+  console.log("Mapping profile data to form state:", data);
 
   const formState: Partial<BaseUserFormData> = {
     firstName: data.first_name || "",
@@ -24,13 +25,13 @@ export const mapProfileDataToFormState = (data: any): Partial<BaseUserFormData> 
       street1: "",
       city: "",
       state: "",
-      zipCode: "",
+      zip_code: "",
     },
     shippingAddress: data.shipping_address || {
       street1: "",
       city: "",
       state: "",
-      zipCode: "",
+      zip_code: "",
     },
     sameAsShipping: Boolean(data.same_as_shipping),
     taxPreference: data.tax_preference || "Taxable",
@@ -54,7 +55,7 @@ export const mapProfileDataToFormState = (data: any): Partial<BaseUserFormData> 
     paymentMethod: data.payment_method || "",
   };
 
-  console.log('Mapped form state:', formState);
+  console.log("Mapped form state:", formState);
   return formState;
 };
 
@@ -78,12 +79,13 @@ export const validateRequiredFields = (
   if (!values.firstName?.trim()) errors.push("First name is required");
   if (!values.lastName?.trim()) errors.push("Last name is required");
   if (!values.email?.trim()) errors.push("Email is required");
-  if (values.email && !isValidEmail(values.email)) errors.push("Invalid email format");
-  
+  if (values.email && !isValidEmail(values.email))
+    errors.push("Invalid email format");
+
   if (values.workPhone && !isValidPhone(values.workPhone)) {
     errors.push("Invalid work phone format");
   }
-  
+
   if (values.mobilePhone && !isValidPhone(values.mobilePhone)) {
     errors.push("Invalid mobile phone format");
   }

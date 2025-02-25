@@ -24,7 +24,6 @@ export function OrderPreview({ orderData }: OrderPreviewProps) {
   // Ensure we have default values for all potentially undefined properties
   const { cartItems, clearCart } = useCart();
 
-
   const totalShippingCost = cartItems.reduce(
     (total, item) => total + (item.shipping_cost || 0),
     0
@@ -35,7 +34,7 @@ export function OrderPreview({ orderData }: OrderPreviewProps) {
       email: "",
       phone: "",
       type: "Pharmacy",
-      address: { street: "", city: "", state: "", zipCode: "" },
+      address: { street: "", city: "", state: "", zip_code: "" },
     },
     items: orderData.items || [],
     shipping: orderData.shipping || {

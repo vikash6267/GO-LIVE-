@@ -10,17 +10,17 @@ export default function PharmacyOrder() {
 
   useEffect(() => {
     // Verify user is logged in and is a pharmacy
-    const userType = sessionStorage.getItem('userType');
-    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    const userType = sessionStorage.getItem("userType");
+    const isLoggedIn = sessionStorage.getItem("isLoggedIn");
 
-    if (!isLoggedIn || userType !== 'pharmacy') {
+    if (!isLoggedIn || userType !== "pharmacy") {
       // console.log('Unauthorized access attempt:', { isLoggedIn, userType });
       toast({
         title: "Unauthorized Access",
         description: "Please log in as a pharmacy to access this page.",
         variant: "destructive",
       });
-      navigate('/login');
+      navigate("/login");
       return;
     }
   }, [navigate, toast]);
@@ -28,15 +28,15 @@ export default function PharmacyOrder() {
   // Get customer info from login session with proper type annotation
   const customerInfo = {
     type: "Pharmacy" as const,
-    name: sessionStorage.getItem('userName') || '',
-    email: sessionStorage.getItem('userEmail') || '',
-    phone: sessionStorage.getItem('userPhone') || '',
+    name: sessionStorage.getItem("userName") || "",
+    email: sessionStorage.getItem("userEmail") || "",
+    phone: sessionStorage.getItem("userPhone") || "",
     address: {
-      street: sessionStorage.getItem('userStreet') || '',
-      city: sessionStorage.getItem('userCity') || '',
-      state: sessionStorage.getItem('userState') || '',
-      zipCode: sessionStorage.getItem('userZipCode') || '',
-    }
+      street: sessionStorage.getItem("userStreet") || "",
+      city: sessionStorage.getItem("userCity") || "",
+      state: sessionStorage.getItem("userState") || "",
+      zip_code: sessionStorage.getItem("userzip_code") || "",
+    },
   };
 
   return (
@@ -44,7 +44,9 @@ export default function PharmacyOrder() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Place New Order</h1>
-          <p className="text-muted-foreground">Order supplies for your pharmacy</p>
+          <p className="text-muted-foreground">
+            Order supplies for your pharmacy
+          </p>
         </div>
 
         <div className="rounded-lg border bg-card p-6">

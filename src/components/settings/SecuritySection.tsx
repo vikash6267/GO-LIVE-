@@ -1,5 +1,16 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Shield, Key } from "lucide-react";
@@ -25,7 +36,7 @@ export function SecuritySection({ form }: SecuritySectionProps) {
       <CardContent className="space-y-6">
         <FormField
           control={form.control}
-          name="currentPassword"
+          name="current_password"
           render={({ field }) => (
             <FormItem>
               <FormLabel className="flex items-center gap-2">
@@ -41,7 +52,7 @@ export function SecuritySection({ form }: SecuritySectionProps) {
 
         <FormField
           control={form.control}
-          name="newPassword"
+          name="new_password"
           render={({ field }) => (
             <FormItem>
               <FormLabel>New Password</FormLabel>
@@ -54,11 +65,13 @@ export function SecuritySection({ form }: SecuritySectionProps) {
 
         <FormField
           control={form.control}
-          name="twoFactorEnabled"
+          name="two_factor_enabled"
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <FormLabel className="text-base">Two-factor Authentication</FormLabel>
+                <FormLabel className="text-base">
+                  Two-factor Authentication
+                </FormLabel>
                 <CardDescription>
                   Add an extra layer of security to your account
                 </CardDescription>

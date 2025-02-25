@@ -4,7 +4,10 @@ const addressSchema = z.object({
   street: z.string().min(1, "Street is required"),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
-  zipCode: z.string().min(5, "Zip code is required").max(10, "Zip code must be at most 10 characters"),
+  zip_code: z
+    .string()
+    .min(5, "Zip code is required")
+    .max(10, "Zip code must be at most 10 characters"),
 });
 
 const customerInfoSchema = z.object({
@@ -42,7 +45,8 @@ const shippingSchema = z.object({
 const paymentSchema = z.object({
   method: z.enum(["card", "bank_transfer", "manual", "ach"]),
   notes: z.string().optional(),
-  achAccountType: z.enum(["checking", "savings", "businessChecking"])
+  achAccountType: z
+    .enum(["checking", "savings", "businessChecking"])
     .optional(),
   achAccountName: z.string().optional(),
   achRoutingNumber: z.string().optional(),
@@ -55,7 +59,7 @@ const shippingAddressSchema = z.object({
   street: z.string().min(1, "Street is required"),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
-  zipCode: z.string().min(5, "Zip code is required"),
+  zip_code: z.string().min(5, "Zip code is required"),
 });
 
 export const orderFormSchema = z.object({

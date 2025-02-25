@@ -1,4 +1,10 @@
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UseFormReturn } from "react-hook-form";
 
@@ -98,7 +104,7 @@ export function ShippingFields({ form }: ShippingFieldsProps) {
 
       <FormField
         control={form.control}
-        name="shippingAddress.zipCode"
+        name="shippingAddress.zip_code"
         render={({ field }) => (
           <FormItem>
             <FormLabel>ZIP Code</FormLabel>

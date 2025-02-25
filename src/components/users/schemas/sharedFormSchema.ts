@@ -1,4 +1,3 @@
-
 import * as z from "zod";
 
 export const addressSchema = z.object({
@@ -8,7 +7,7 @@ export const addressSchema = z.object({
   street2: z.string().optional(),
   city: z.string().min(2, "City is required"),
   state: z.string().min(2, "State is required"),
-  zipCode: z.string().min(5, "ZIP code is required"),
+  zip_code: z.string().min(5, "ZIP code is required"),
   phone: z.string().optional(),
   faxNumber: z.string().optional(),
 });

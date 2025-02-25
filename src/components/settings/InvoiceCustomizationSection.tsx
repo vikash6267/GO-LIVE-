@@ -1,5 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormField, FormItem, FormLabel, FormControl, FormDescription } from "@/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormDescription,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
@@ -11,7 +17,9 @@ interface InvoiceCustomizationSectionProps {
   form: UseFormReturn<SettingsFormValues>;
 }
 
-export function InvoiceCustomizationSection({ form }: InvoiceCustomizationSectionProps) {
+export function InvoiceCustomizationSection({
+  form,
+}: InvoiceCustomizationSectionProps) {
   const validateImage = (file: File) => {
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
@@ -29,7 +37,7 @@ export function InvoiceCustomizationSection({ form }: InvoiceCustomizationSectio
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
-            name="invoiceLogo"
+            name="invoice_logo"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Invoice Logo</FormLabel>
@@ -45,7 +53,7 @@ export function InvoiceCustomizationSection({ form }: InvoiceCustomizationSectio
 
           <FormField
             control={form.control}
-            name="invoiceAccentColor"
+            name="invoice_accent_color"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Accent Color</FormLabel>
@@ -62,12 +70,12 @@ export function InvoiceCustomizationSection({ form }: InvoiceCustomizationSectio
 
         <FormField
           control={form.control}
-          name="invoiceHeaderText"
+          name="invoice_header_text"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Header Text</FormLabel>
               <FormControl>
-                <Textarea 
+                <Textarea
                   placeholder="Enter custom header text..."
                   className="h-20"
                   {...field}
@@ -79,12 +87,12 @@ export function InvoiceCustomizationSection({ form }: InvoiceCustomizationSectio
 
         <FormField
           control={form.control}
-          name="invoiceFooterText"
+          name="invoice_footer_text"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Footer Text</FormLabel>
               <FormControl>
-                <Textarea 
+                <Textarea
                   placeholder="Enter custom footer text..."
                   className="h-20"
                   {...field}
@@ -96,12 +104,12 @@ export function InvoiceCustomizationSection({ form }: InvoiceCustomizationSectio
 
         <FormField
           control={form.control}
-          name="invoiceTermsAndConditions"
+          name="invoice_terms_and_conditions"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Terms and Conditions</FormLabel>
               <FormControl>
-                <Textarea 
+                <Textarea
                   placeholder="Enter terms and conditions..."
                   className="h-32"
                   {...field}
@@ -114,11 +122,13 @@ export function InvoiceCustomizationSection({ form }: InvoiceCustomizationSectio
         <div className="space-y-4">
           <FormField
             control={form.control}
-            name="showBusinessAddress"
+            name="show_business_address"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
-                  <FormLabel className="text-base">Show Business Address</FormLabel>
+                  <FormLabel className="text-base">
+                    Show Business Address
+                  </FormLabel>
                   <FormDescription>
                     Display your business address on invoices
                   </FormDescription>
@@ -135,11 +145,13 @@ export function InvoiceCustomizationSection({ form }: InvoiceCustomizationSectio
 
           <FormField
             control={form.control}
-            name="showPaymentInstructions"
+            name="show_payment_instructions"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                 <div className="space-y-0.5">
-                  <FormLabel className="text-base">Show Payment Instructions</FormLabel>
+                  <FormLabel className="text-base">
+                    Show Payment Instructions
+                  </FormLabel>
                   <FormDescription>
                     Display payment instructions on invoices
                   </FormDescription>
@@ -157,12 +169,12 @@ export function InvoiceCustomizationSection({ form }: InvoiceCustomizationSectio
 
         <FormField
           control={form.control}
-          name="customPaymentInstructions"
+          name="custom_payment_instructions"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Custom Payment Instructions</FormLabel>
               <FormControl>
-                <Textarea 
+                <Textarea
                   placeholder="Enter custom payment instructions..."
                   className="h-20"
                   {...field}

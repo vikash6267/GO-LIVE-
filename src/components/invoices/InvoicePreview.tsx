@@ -74,11 +74,19 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
       <div ref={invoiceRef} className="border p-6 space-y-8 bg-white">
         {/* Company Name & Logo */}
         <div className="flex justify-between items-center border-b pb-4">
-          <div className=" flex gap-3"> 
-           
-              <img src={settings.logo || '/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png'} alt="Company Logo" className=" h-12 sm:h-16 relative z-10 contrast-200" />
-            
-            <h2 className="text-xl font-bold mt-2">{settings.businessName || "9RX"}</h2>
+          <div className=" flex gap-3">
+            <img
+              src={
+                settings.logo ||
+                "/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png"
+              }
+              alt="Company Logo"
+              className=" h-12 sm:h-16 relative z-10 contrast-200"
+            />
+
+            <h2 className="text-xl font-bold mt-2">
+              {settings.business_name || "9RX"}
+            </h2>
           </div>
           <SheetTitle className="text-3xl">Invoice</SheetTitle>
         </div>
@@ -115,7 +123,9 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
               <tr key={index} className="border-b text-sm">
                 <td className="border p-2">{item.name}</td>
                 <td className="border p-2">
-                  {item.sizes?.map((size) => `${size.size_value} ${size.size_unit}`).join(", ")}
+                  {item.sizes
+                    ?.map((size) => `${size.size_value} ${size.size_unit}`)
+                    .join(", ")}
                 </td>
                 <td className="border p-2 text-right">{item.quantity}</td>
                 <td className="border p-2 text-right">${item.price}</td>
@@ -147,7 +157,10 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
 
       {/* Download Button */}
       <div className="text-center pt-4">
-        <button onClick={handleDownloadPDF} className="bg-blue-600 text-white px-4 py-2 rounded">
+        <button
+          onClick={handleDownloadPDF}
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
           Download Invoice
         </button>
       </div>

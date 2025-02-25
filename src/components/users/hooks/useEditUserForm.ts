@@ -1,10 +1,15 @@
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/hooks/use-toast";
 import { BaseUserFormData, baseUserSchema } from "../schemas/sharedFormSchema";
-import { UseEditUserFormProps, EditUserFormState } from "./types/editUserForm.types";
-import { fetchUserProfile, updateUserProfile } from "./services/userProfileService";
+import {
+  UseEditUserFormProps,
+  EditUserFormState,
+} from "./types/editUserForm.types";
+import {
+  fetchUserProfile,
+  updateUserProfile,
+} from "./services/userProfileService";
 import { useState, useCallback } from "react";
 
 export const useEditUserForm = ({
@@ -41,13 +46,13 @@ export const useEditUserForm = ({
         street1: "",
         city: "",
         state: "",
-        zipCode: "",
+        zip_code: "",
       },
       shippingAddress: {
         street1: "",
         city: "",
         state: "",
-        zipCode: "",
+        zip_code: "",
       },
       sameAsShipping: false,
       taxPreference: "Taxable",
@@ -60,16 +65,16 @@ export const useEditUserForm = ({
 
   const fetchUserData = useCallback(async () => {
     try {
-      console.log('Fetching user data for ID:', userId);
-      setFormState(prev => ({ ...prev, isLoading: true, error: null }));
-      
+      console.log("Fetching user data for ID:", userId);
+      setFormState((prev) => ({ ...prev, isLoading: true, error: null }));
+
       const data = await fetchUserProfile(userId);
-      
+
       if (data) {
-        console.log('Successfully fetched user data:', data);
+        console.log("Successfully fetched user data:", data);
         // Split the name into first and last name if it exists
         const [firstName = "", lastName = ""] = (initialName || "").split(" ");
-        
+
         form.reset({
           firstName: data.first_name || firstName,
           lastName: data.last_name || lastName,
@@ -85,13 +90,13 @@ export const useEditUserForm = ({
             street1: "",
             city: "",
             state: "",
-            zipCode: "",
+            zip_code: "",
           },
           shippingAddress: data.shipping_address || {
             street1: "",
             city: "",
             state: "",
-            zipCode: "",
+            zip_code: "",
           },
           sameAsShipping: data.same_as_shipping || false,
           taxPreference: data.tax_preference || "Taxable",
@@ -102,10 +107,10 @@ export const useEditUserForm = ({
         });
       }
     } catch (error: any) {
-      console.error('Error fetching user data:', error);
-      setFormState(prev => ({
+      console.error("Error fetching user data:", error);
+      setFormState((prev) => ({
         ...prev,
-        error: error.message || 'Failed to load user data'
+        error: error.message || "Failed to load user data",
       }));
       toast({
         title: "Error Loading Data",
@@ -113,21 +118,29 @@ export const useEditUserForm = ({
         variant: "destructive",
       });
     } finally {
-      setFormState(prev => ({ ...prev, isLoading: false }));
+      setFormState((prev) => ({ ...prev, isLoading: false }));
     }
-  }, [userId, initialName, initialEmail, initialType, initialStatus, form, toast]);
+  }, [
+    userId,
+    initialName,
+    initialEmail,
+    initialType,
+    initialStatus,
+    form,
+    toast,
+  ]);
 
   const onSubmit = async (values: BaseUserFormData) => {
     try {
-      console.log('Starting form submission with values:', values);
-      
+      console.log("Starting form submission with values:", values);
+
       // Validate required fields
       if (!values.firstName?.trim() || !values.lastName?.trim()) {
-        throw new Error('First name and last name are required');
+        throw new Error("First name and last name are required");
       }
-      
-      setFormState(prev => ({ ...prev, isSaving: true, error: null }));
-      
+
+      setFormState((prev) => ({ ...prev, isSaving: true, error: null }));
+
       // Ensure all required fields are properly formatted
       const formattedValues = {
         ...values,
@@ -137,24 +150,24 @@ export const useEditUserForm = ({
         billingAddress: values.billingAddress || {},
         shippingAddress: values.shippingAddress || {},
       };
-      
-      console.log('Submitting formatted values:', formattedValues);
-      
+
+      console.log("Submitting formatted values:", formattedValues);
+
       await updateUserProfile(userId, formattedValues);
-      
+
       toast({
         title: "Success",
         description: "User profile has been updated successfully.",
       });
-      
+
       if (onSuccess) {
         onSuccess();
       }
     } catch (error: any) {
-      console.error('Error updating profile:', error);
-      setFormState(prev => ({
+      console.error("Error updating profile:", error);
+      setFormState((prev) => ({
         ...prev,
-        error: error.message || 'Failed to update profile'
+        error: error.message || "Failed to update profile",
       }));
       toast({
         title: "Update Failed",
@@ -163,7 +176,7 @@ export const useEditUserForm = ({
       });
       throw error;
     } finally {
-      setFormState(prev => ({ ...prev, isSaving: false }));
+      setFormState((prev) => ({ ...prev, isSaving: false }));
     }
   };
 

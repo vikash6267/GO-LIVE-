@@ -1,11 +1,21 @@
-
 import { UseFormReturn } from "react-hook-form";
 import { BaseUserFormData, LocationData } from "../../schemas/sharedFormSchema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { AddressFields } from "../AddressFields";
 import { Minus, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -18,16 +28,25 @@ interface LocationCardProps {
   onRemove: () => void;
 }
 
-export function LocationCard({ location, index, form, onRemove }: LocationCardProps) {
+export function LocationCard({
+  location,
+  index,
+  form,
+  onRemove,
+}: LocationCardProps) {
   const { toast } = useToast();
   const [showDetails, setShowDetails] = useState(false);
 
   const handleSave = () => {
     const currentLocation = form.getValues(`locations.${index}`);
-    
-    if (!currentLocation.name || !currentLocation.address.street1 || 
-        !currentLocation.address.city || !currentLocation.address.state || 
-        !currentLocation.address.zipCode) {
+
+    if (
+      !currentLocation.name ||
+      !currentLocation.address.street1 ||
+      !currentLocation.address.city ||
+      !currentLocation.address.state ||
+      !currentLocation.address.zip_code
+    ) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields for this location.",
@@ -64,7 +83,7 @@ export function LocationCard({ location, index, form, onRemove }: LocationCardPr
               variant="ghost"
               onClick={() => setShowDetails(!showDetails)}
             >
-              {showDetails ? 'Hide Details' : 'Show Details'}
+              {showDetails ? "Hide Details" : "Show Details"}
             </Button>
             <Button
               type="button"
@@ -86,7 +105,10 @@ export function LocationCard({ location, index, form, onRemove }: LocationCardPr
               name={`locations.${index}.type`}
               render={({ field }) => (
                 <FormItem>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select type" />
@@ -109,7 +131,10 @@ export function LocationCard({ location, index, form, onRemove }: LocationCardPr
               name={`locations.${index}.status`}
               render={({ field }) => (
                 <FormItem>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />

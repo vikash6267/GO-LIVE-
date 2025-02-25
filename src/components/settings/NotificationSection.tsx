@@ -1,5 +1,16 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+} from "@/components/ui/form";
 import { Switch } from "@/components/ui/switch";
 import { Bell, MessageSquare } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
@@ -24,7 +35,7 @@ export function NotificationSection({ form }: NotificationSectionProps) {
       <CardContent className="space-y-6">
         <FormField
           control={form.control}
-          name="emailNotifications"
+          name="email_notifications"
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
@@ -45,7 +56,7 @@ export function NotificationSection({ form }: NotificationSectionProps) {
 
         <FormField
           control={form.control}
-          name="orderUpdates"
+          name="order_updates"
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">

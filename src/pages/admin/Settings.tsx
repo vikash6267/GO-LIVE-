@@ -1,4 +1,3 @@
-
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -9,7 +8,10 @@ import { NotificationSection } from "@/components/settings/NotificationSection";
 import { InvoiceSection } from "@/components/settings/InvoiceSection";
 import { InvoiceTemplateSection } from "@/components/settings/InvoiceTemplateSection";
 import { PaymentSection } from "@/components/settings/PaymentSection";
-import { defaultValues, SettingsFormValues } from "@/components/settings/settingsTypes";
+import {
+  defaultValues,
+  SettingsFormValues,
+} from "@/components/settings/settingsTypes";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,7 +31,7 @@ export default function Settings() {
   const [saving, setSaving] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const userProfile = useSelector(selectUserProfile);
-  
+
   const form = useForm<SettingsFormValues>({
     defaultValues,
   });
@@ -44,9 +46,9 @@ export default function Settings() {
 
       // First, try to get existing settings
       const { data: settingsData, error: fetchError } = await supabase
-        .from('settings')
-        .select('*')
-        .eq('profile_id', userProfile.id)
+        .from("settings")
+        .select("*")
+        .eq("profile_id", userProfile.id)
         .maybeSingle();
 
       if (fetchError) {
@@ -57,12 +59,10 @@ export default function Settings() {
 
       // Create default settings if none exist
       if (!settingsData) {
-        const { error: insertError } = await supabase
-          .from('settings')
-          .insert({
-            profile_id: userProfile.id,
-            ...defaultValues
-          });
+        const { error: insertError } = await supabase.from("settings").insert({
+          profile_id: userProfile.id,
+          ...defaultValues,
+        });
 
         if (insertError) {
           console.error("Error creating settings:", insertError);
@@ -73,10 +73,10 @@ export default function Settings() {
 
       // Fetch payment settings
       const { data: paymentData, error: paymentError } = await supabase
-        .from('payment_settings')
-        .select('settings')
-        .eq('provider', 'authorize_net')
-        .eq('profile_id', userProfile.id)
+        .from("payment_settings")
+        .select("settings")
+        .eq("provider", "authorize_net")
+        .eq("profile_id", userProfile.id)
         .maybeSingle();
 
       if (paymentError) {
@@ -84,22 +84,22 @@ export default function Settings() {
       }
 
       // Safely convert the payment settings
-      const paymentSettings = paymentData?.settings 
+      const paymentSettings = paymentData?.settings
         ? (paymentData.settings as unknown as PaymentSettings)
         : {
             enabled: false,
-            apiLoginId: '',
-            transactionKey: '',
-            testMode: false
+            apiLoginId: "",
+            transactionKey: "",
+            testMode: false,
           };
 
       // Combine settings and payment settings
       const combinedSettings = {
         ...(settingsData || defaultValues),
-        authorizeNetEnabled: paymentSettings.enabled,
-        authorizeNetApiLoginId: paymentSettings.apiLoginId,
-        authorizeNetTransactionKey: paymentSettings.transactionKey,
-        authorizeNetTestMode: paymentSettings.testMode,
+        authorize_net_enabled: paymentSettings.enabled,
+        authorize_net_api_login_id: paymentSettings.apiLoginId,
+        authorize_net_transaction_key: paymentSettings.transactionKey,
+        authorize_net_test_mode: paymentSettings.testMode,
       };
 
       return combinedSettings;
@@ -122,45 +122,46 @@ export default function Settings() {
     try {
       // Separate payment settings from general settings
       const paymentSettings = {
-        enabled: data.authorizeNetEnabled,
-        apiLoginId: data.authorizeNetApiLoginId,
-        transactionKey: data.authorizeNetTransactionKey,
-        testMode: data.authorizeNetTestMode
+        enabled: data.authorize_net_enabled,
+        apiLoginId: data.authorize_net_api_login_id,
+        transactionKey: data.authorize_net_transaction_key,
+        testMode: data.authorize_net_test_mode,
       };
 
       // Remove payment settings from general settings object
-      const { 
-        authorizeNetEnabled,
-        authorizeNetApiLoginId,
-        authorizeNetTransactionKey,
-        authorizeNetTestMode,
-        ...generalSettings 
+      const {
+        authorize_net_enabled,
+        authorize_net_api_login_id,
+        authorize_net_transaction_key,
+        authorize_net_test_mode,
+        ...generalSettings
       } = data;
 
       // Save general settings
-      const { error: settingsError } = await supabase
-        .from('settings')
-        .upsert({
-          profile_id: userProfile.id,
-          ...generalSettings,
-          updated_at: new Date().toISOString()
-        });
+      const { error: settingsError } = await supabase.from("settings").upsert({
+        profile_id: userProfile.id,
+        ...generalSettings,
+        updated_at: new Date().toISOString(),
+      });
 
       if (settingsError) {
         throw settingsError;
       }
 
       // Save payment settings
-      if (data.authorizeNetEnabled) {
+      if (data.authorize_net_enabled) {
         const { error: paymentError } = await supabase
-          .from('payment_settings')
-          .upsert({
-            profile_id: userProfile.id,
-            provider: 'authorize_net',
-            settings: paymentSettings
-          }, {
-            onConflict: 'profile_id,provider'
-          });
+          .from("payment_settings")
+          .upsert(
+            {
+              profile_id: userProfile.id,
+              provider: "authorize_net",
+              settings: paymentSettings,
+            },
+            {
+              onConflict: "profile_id,provider",
+            }
+          );
 
         if (paymentError) {
           throw paymentError;
@@ -211,7 +212,10 @@ export default function Settings() {
         )}
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6"
+          >
             <BusinessProfileSection form={form} />
             <LocationContactSection form={form} />
             <InvoiceSection form={form} />

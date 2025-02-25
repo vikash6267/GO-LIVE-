@@ -1,4 +1,3 @@
-
 import * as z from "zod";
 
 const addressSchema = z.object({
@@ -8,7 +7,7 @@ const addressSchema = z.object({
   street2: z.string().optional(),
   city: z.string().min(2, "City is required"),
   state: z.string().min(2, "State is required"),
-  zipCode: z.string().min(5, "ZIP code is required"),
+  zip_code: z.string().min(5, "ZIP code is required"),
   phone: z.string().optional(),
   faxNumber: z.string().optional(),
 });
@@ -31,23 +30,13 @@ const rolePermissions = {
     "manage_settings",
     "manage_billing",
   ],
-  manager: [
-    "view_users",
-    "edit_users",
-    "view_reports",
-    "manage_billing",
-  ],
-  staff: [
-    "view_users",
-    "view_reports",
-  ],
-  user: [
-    "view_reports",
-  ],
+  manager: ["view_users", "edit_users", "view_reports", "manage_billing"],
+  staff: ["view_users", "view_reports"],
+  user: ["view_reports"],
 } as const;
 
 export type UserRole = keyof typeof rolePermissions;
-export type Permission = typeof rolePermissions[UserRole][number];
+export type Permission = (typeof rolePermissions)[UserRole][number];
 
 const baseSchema = z.object({
   firstName: z.string().min(2, "First name is required"),
@@ -84,22 +73,27 @@ export const hospitalSchema = baseSchema.extend({
 export const groupSchema = baseSchema.extend({
   type: z.literal("group"),
   parentGroup: z.string().optional(),
-  groupType: z.enum(["corporate", "regional", "franchise"]).default("corporate"),
-  locations: z.array(locationSchema).min(1, "At least one location is required"),
+  groupType: z
+    .enum(["corporate", "regional", "franchise"])
+    .default("corporate"),
+  locations: z
+    .array(locationSchema)
+    .min(1, "At least one location is required"),
   license: z.string().min(5, "License number is required"),
 });
 
-export type UserFormData = z.infer<typeof pharmacySchema> | 
-                         z.infer<typeof hospitalSchema> | 
-                         z.infer<typeof groupSchema>;
+export type UserFormData =
+  | z.infer<typeof pharmacySchema>
+  | z.infer<typeof hospitalSchema>
+  | z.infer<typeof groupSchema>;
 
 export type AddressData = z.infer<typeof addressSchema>;
 export type LocationData = z.infer<typeof locationSchema>;
 
 export type AddressFieldPath = keyof AddressData;
-export type UserFormPath = 
-  | keyof UserFormData 
-  | `billingAddress.${AddressFieldPath}` 
+export type UserFormPath =
+  | keyof UserFormData
+  | `billingAddress.${AddressFieldPath}`
   | `shippingAddress.${AddressFieldPath}`;
 
 export { rolePermissions };

@@ -1,5 +1,16 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Mail, Plus } from "lucide-react";
@@ -17,7 +28,8 @@ export function LocationContactSection({ form }: LocationContactSectionProps) {
         <div>
           <CardTitle>Location and Contact Info</CardTitle>
           <CardDescription>
-            Let customers know where your business is based and how they can reach you
+            Let customers know where your business is based and how they can
+            reach you
           </CardDescription>
         </div>
         <Button variant="outline" size="sm">
@@ -85,7 +97,7 @@ export function LocationContactSection({ form }: LocationContactSectionProps) {
 
           <FormField
             control={form.control}
-            name="zipCode"
+            name="zip_code"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>ZIP Code</FormLabel>

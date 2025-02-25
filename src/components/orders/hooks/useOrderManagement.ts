@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { OrderFormValues } from "../schemas/orderSchema";
 import { useToast } from "@/hooks/use-toast";
@@ -7,7 +6,9 @@ import { supabase } from "@/supabaseClient";
 export const useOrderManagement = () => {
   const { toast } = useToast();
   const [orders, setOrders] = useState<OrderFormValues[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState<OrderFormValues | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<OrderFormValues | null>(
+    null
+  );
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -16,7 +17,8 @@ export const useOrderManagement = () => {
     try {
       const { data: ordersData, error: ordersError } = await supabase
         .from("orders")
-        .select(`
+        .select(
+          `
           *,
           profiles (
             first_name, 
@@ -26,63 +28,67 @@ export const useOrderManagement = () => {
             type, 
             company_name
           )
-        `)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false }); // Order by most recent first
-  
+        `
+        )
+        .is("deleted_at", null)
+        .order("created_at", { ascending: false }); // Order by most recent first
+
       if (ordersError) throw ordersError;
-  
 
-    console.log(ordersData)
+      console.log(ordersData);
 
-      const formattedOrders: OrderFormValues[] = (ordersData as any[]).map((order) => {
-        const profileData = order.profiles || {};
-  
-        return {
-          id: order.id || '',
-          customer: order.profile_id || '',
-          date: order.created_at || new Date().toISOString(),
-          total: (order.total_amount || 0).toString(),
-          status: order.status || 'pending', // Make sure to use the status from the database
-          payment_status: order.payment_status || 'unpaid', // Make sure to use the status from the database
-          customerInfo: {
-            name: profileData.first_name && profileData.last_name 
-              ? `${profileData.first_name} ${profileData.last_name}` 
-              : 'Unknown',
-            email: profileData.email || '',
-            phone: profileData.mobile_phone || '',
-            type: "Pharmacy",
-            address: {
-              street: profileData.company_name || '',
-              city: '',
-              state: '',
-              zipCode: '',
+      const formattedOrders: OrderFormValues[] = (ordersData as any[]).map(
+        (order) => {
+          const profileData = order.profiles || {};
+
+          return {
+            id: order.id || "",
+            customer: order.profile_id || "",
+            date: order.created_at || new Date().toISOString(),
+            total: (order.total_amount || 0).toString(),
+            status: order.status || "pending", // Make sure to use the status from the database
+            payment_status: order.payment_status || "unpaid", // Make sure to use the status from the database
+            customerInfo: {
+              name:
+                profileData.first_name && profileData.last_name
+                  ? `${profileData.first_name} ${profileData.last_name}`
+                  : "Unknown",
+              email: profileData.email || "",
+              phone: profileData.mobile_phone || "",
+              type: "Pharmacy",
+              address: {
+                street: profileData.company_name || "",
+                city: "",
+                state: "",
+                zip_code: "",
+              },
             },
-          },
-          items: order.items,
-          shipping: {
-            method: order.shipping_method || "custom",
-            cost: order.shipping_cost || 0,
-            trackingNumber: order.tracking_number || '',
-            estimatedDelivery: order.estimated_delivery || '',
-          },
-          payment: {
-            method: "manual",
-            notes: '',
-          },
-          specialInstructions: order.notes || '',
-          shippingAddress: {
-            fullName: profileData.first_name && profileData.last_name 
-              ? `${profileData.first_name} ${profileData.last_name}` 
-              : '',
-            street: '',
-            city: '',
-            state: '',
-            zipCode: '',
-          },
-        };
-      });
-  
+            items: order.items,
+            shipping: {
+              method: order.shipping_method || "custom",
+              cost: order.shipping_cost || 0,
+              trackingNumber: order.tracking_number || "",
+              estimatedDelivery: order.estimated_delivery || "",
+            },
+            payment: {
+              method: "manual",
+              notes: "",
+            },
+            specialInstructions: order.notes || "",
+            shippingAddress: {
+              fullName:
+                profileData.first_name && profileData.last_name
+                  ? `${profileData.first_name} ${profileData.last_name}`
+                  : "",
+              street: "",
+              city: "",
+              state: "",
+              zip_code: "",
+            },
+          };
+        }
+      );
+
       setOrders(formattedOrders);
     } catch (error) {
       console.error("Error loading orders:", error);
@@ -115,8 +121,10 @@ export const useOrderManagement = () => {
       if (error) throw error;
 
       // Update the local state by removing the deleted order
-      setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
-      
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) => order.id !== orderId)
+      );
+
       toast({
         title: "Success",
         description: "Order deleted successfully",
@@ -141,9 +149,9 @@ export const useOrderManagement = () => {
     try {
       const { error } = await supabase
         .from("orders")
-        .update({ 
+        .update({
           status: newStatus,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
         .eq("id", orderId);
 

@@ -21,25 +21,24 @@ export function PaymentSection({ form }: PaymentSectionProps) {
       <div className="space-y-4">
         <FormField
           control={form.control}
-          name="authorizeNetEnabled"
+          name="authorize_net_enabled"
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <FormLabel className="text-base">Enable Authorize.Net</FormLabel>
+                <FormLabel className="text-base">
+                  Enable Authorize.Net
+                </FormLabel>
               </div>
-              <Switch
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
+              <Switch checked={field.value} onCheckedChange={field.onChange} />
             </FormItem>
           )}
         />
 
-        {form.watch("authorizeNetEnabled") && (
+        {form.watch("authorize_net_enabled") && (
           <>
             <FormField
               control={form.control}
-              name="authorizeNetApiLoginId"
+              name="authorize_net_api_login_id"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>API Login ID</FormLabel>
@@ -55,7 +54,7 @@ export function PaymentSection({ form }: PaymentSectionProps) {
 
             <FormField
               control={form.control}
-              name="authorizeNetTransactionKey"
+              name="authorize_net_transaction_key"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Transaction Key</FormLabel>
@@ -71,7 +70,7 @@ export function PaymentSection({ form }: PaymentSectionProps) {
 
             <FormField
               control={form.control}
-              name="authorizeNetTestMode"
+              name="authorize_net_test_mode"
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">

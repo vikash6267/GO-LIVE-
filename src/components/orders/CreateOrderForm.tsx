@@ -37,11 +37,9 @@ export function CreateOrderForm({
   const userProfile = useSelector(selectUserProfile);
   const { cartItems, clearCart } = useCart();
 
-
   const totalShippingCost = Math.max(
-    ...cartItems.map(item => item.shipping_cost || 0)
+    ...cartItems.map((item) => item.shipping_cost || 0)
   );
-  
 
   // Initialize form with user profile data
   const form = useForm<OrderFormValues>({
@@ -64,7 +62,7 @@ export function CreateOrderForm({
           street: userProfile?.company_name || "",
           city: userProfile?.city || "",
           state: userProfile?.state || "",
-          zipCode: userProfile?.zip_code || "",
+          zip_code: userProfile?.zip_code || "",
         },
       },
       items: cartItems,
@@ -111,7 +109,6 @@ export function CreateOrderForm({
       setIsSubmitting(true);
       console.log("Starting order submission:", data);
 
-      
       // Validate order items
       validateOrderItems(data.items);
 

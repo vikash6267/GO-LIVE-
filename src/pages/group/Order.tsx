@@ -19,11 +19,11 @@ export default function GroupOrder() {
   const [selectedPharmacy, setSelectedPharmacy] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  
+
   // Get group info from session storage
   const groupInfo = {
-    name: sessionStorage.getItem('groupName') || '',
-    id: sessionStorage.getItem('groupId') || '',
+    name: sessionStorage.getItem("groupName") || "",
+    id: sessionStorage.getItem("groupId") || "",
     pharmacies: [
       { id: "1", name: "Pharmacy A", location: "New York" },
       { id: "2", name: "Pharmacy B", location: "Los Angeles" },
@@ -37,7 +37,8 @@ export default function GroupOrder() {
       if (!groupInfo.name) {
         toast({
           title: "Missing Group Information",
-          description: "Please ensure you're logged in with a valid group account.",
+          description:
+            "Please ensure you're logged in with a valid group account.",
           variant: "destructive",
         });
       }
@@ -49,22 +50,24 @@ export default function GroupOrder() {
 
   const handlePharmacyChange = (pharmacyId: string) => {
     setSelectedPharmacy(pharmacyId);
-    const selectedPharmacyData = groupInfo.pharmacies.find(p => p.id === pharmacyId);
-    
+    const selectedPharmacyData = groupInfo.pharmacies.find(
+      (p) => p.id === pharmacyId
+    );
+
     if (selectedPharmacyData) {
       setOrderData({
         customerInfo: {
           type: "Pharmacy",
           name: selectedPharmacyData.name,
-          email: sessionStorage.getItem('userEmail') || '',
-          phone: sessionStorage.getItem('userPhone') || '',
+          email: sessionStorage.getItem("userEmail") || "",
+          phone: sessionStorage.getItem("userPhone") || "",
           address: {
-            street: sessionStorage.getItem('pharmacyStreet') || '',
+            street: sessionStorage.getItem("pharmacyStreet") || "",
             city: selectedPharmacyData.location,
-            state: sessionStorage.getItem('pharmacyState') || '',
-            zipCode: sessionStorage.getItem('pharmacyZipCode') || '',
-          }
-        }
+            state: sessionStorage.getItem("pharmacyState") || "",
+            zip_code: sessionStorage.getItem("pharmacyzip_code") || "",
+          },
+        },
       });
     }
   };
@@ -88,9 +91,13 @@ export default function GroupOrder() {
       <div className="space-y-6 p-6 bg-white rounded-lg">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Create Group Order</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Create Group Order
+            </h1>
             <p className="text-muted-foreground">
-              {groupInfo.name ? `Place a new order for ${groupInfo.name}` : 'Place a new order'}
+              {groupInfo.name
+                ? `Place a new order for ${groupInfo.name}`
+                : "Place a new order"}
             </p>
           </div>
         </div>
@@ -116,7 +123,7 @@ export default function GroupOrder() {
           </div>
 
           {selectedPharmacy && (
-            <CreateOrderForm 
+            <CreateOrderForm
               initialData={orderData}
               onFormChange={handleFormChange}
             />

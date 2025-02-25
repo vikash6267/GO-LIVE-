@@ -26,7 +26,7 @@ export function InvoiceSection({ form }: InvoiceSectionProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="invoicePrefix"
+            name="invoice_prefix"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Invoice Prefix</FormLabel>
@@ -42,13 +42,13 @@ export function InvoiceSection({ form }: InvoiceSectionProps) {
 
           <FormField
             control={form.control}
-            name="nextInvoiceNumber"
+            name="next_invoice_number"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Next Invoice Number</FormLabel>
                 <FormControl>
-                  <Input 
-                    type="number" 
+                  <Input
+                    type="number"
                     {...field}
                     onChange={(e) => field.onChange(parseInt(e.target.value))}
                   />
@@ -63,13 +63,13 @@ export function InvoiceSection({ form }: InvoiceSectionProps) {
 
         <FormField
           control={form.control}
-          name="invoiceDueDays"
+          name="invoice_due_days"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Payment Due Days</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
+                <Input
+                  type="number"
                   {...field}
                   onChange={(e) => field.onChange(parseInt(e.target.value))}
                 />
@@ -83,12 +83,12 @@ export function InvoiceSection({ form }: InvoiceSectionProps) {
 
         <FormField
           control={form.control}
-          name="invoiceNotes"
+          name="invoice_notes"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Default Invoice Notes</FormLabel>
               <FormControl>
-                <Textarea 
+                <Textarea
                   placeholder="Enter default notes to appear on invoices..."
                   className="h-20"
                   {...field}
@@ -103,11 +103,13 @@ export function InvoiceSection({ form }: InvoiceSectionProps) {
 
         <FormField
           control={form.control}
-          name="showLogo"
+          name="show_logo"
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <FormLabel className="text-base">Show Logo on Invoices</FormLabel>
+                <FormLabel className="text-base">
+                  Show Logo on Invoices
+                </FormLabel>
                 <FormDescription>
                   Display your business logo on invoice documents
                 </FormDescription>

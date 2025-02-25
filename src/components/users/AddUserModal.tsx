@@ -1,4 +1,3 @@
-
 import {
   Dialog,
   DialogContent,
@@ -13,7 +12,7 @@ import { baseUserSchema, BaseUserFormData } from "./schemas/sharedFormSchema";
 import { SharedUserForm } from "./forms/SharedUserForm";
 import { supabase } from "@/supabaseClient";
 import { useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface AddUserModalProps {
@@ -31,7 +30,7 @@ export function AddUserModal({
 
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const form = useForm<BaseUserFormData>({
     resolver: zodResolver(baseUserSchema),
     defaultValues: {
@@ -56,7 +55,7 @@ export function AddUserModal({
         street2: "",
         city: "",
         state: "",
-        zipCode: "",
+        zip_code: "",
         phone: "",
         faxNumber: "",
       },
@@ -67,7 +66,7 @@ export function AddUserModal({
         street2: "",
         city: "",
         state: "",
-        zipCode: "",
+        zip_code: "",
         phone: "",
         faxNumber: "",
       },
@@ -87,7 +86,7 @@ export function AddUserModal({
 
       // First check if we have an authenticated session
       // const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
+
       // if (sessionError || !session) {
       //   throw new Error('You must be logged in to create a customer');
       // }
@@ -109,29 +108,33 @@ export function AddUserModal({
       //   throw new Error('A user with this email already exists');
       // }
       // console.log('Attempting to create user with data:', values.email);
-      const response = await fetch('https://cfyqeilfmodrbiamqgme.supabase.co/auth/v1/admin/users', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmeXFlaWxmbW9kcmJpYW1xZ21lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNjMzNTUzNSwiZXhwIjoyMDUxOTExNTM1fQ.nOqhABs1EMQHOrNtiGdt6uAxWxGnnGRcWr5dkn_BLr0`, // Use the service role key here
-          'Content-Type': 'application/json',
-          'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmeXFlaWxmbW9kcmJpYW1xZ21lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNjMzNTUzNSwiZXhwIjoyMDUxOTExNTM1fQ.nOqhABs1EMQHOrNtiGdt6uAxWxGnnGRcWr5dkn_BLr0'
-        },
-        body: JSON.stringify({
-          email: values.email,
-          password:'12345678',
-          type:"pharmacy",
-          user_metadata:{
-            first_name: values.firstName,
-            last_name: values.lastName
-          }
-        })
-      });
-  
-  const tempUserData = await response.json();
-  console.log(tempUserData);
-  if(!tempUserData?.id){
-    throw new Error(tempUserData.msg || "Failed To Create Custmore");
-  }
+      const response = await fetch(
+        "https://cfyqeilfmodrbiamqgme.supabase.co/auth/v1/admin/users",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmeXFlaWxmbW9kcmJpYW1xZ21lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNjMzNTUzNSwiZXhwIjoyMDUxOTExNTM1fQ.nOqhABs1EMQHOrNtiGdt6uAxWxGnnGRcWr5dkn_BLr0`, // Use the service role key here
+            "Content-Type": "application/json",
+            apikey:
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmeXFlaWxmbW9kcmJpYW1xZ21lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNjMzNTUzNSwiZXhwIjoyMDUxOTExNTM1fQ.nOqhABs1EMQHOrNtiGdt6uAxWxGnnGRcWr5dkn_BLr0",
+          },
+          body: JSON.stringify({
+            email: values.email,
+            password: "12345678",
+            type: "pharmacy",
+            user_metadata: {
+              first_name: values.firstName,
+              last_name: values.lastName,
+            },
+          }),
+        }
+      );
+
+      const tempUserData = await response.json();
+      console.log(tempUserData);
+      if (!tempUserData?.id) {
+        throw new Error(tempUserData.msg || "Failed To Create Custmore");
+      }
 
       // Generate a new UUID for the user
       // const userId = uuidv4();
@@ -147,7 +150,8 @@ export function AddUserModal({
         status: values.status.toLowerCase(),
         role: values.role.toLowerCase(),
         company_name: values.companyName,
-        display_name: values.displayName || `${values.firstName} ${values.lastName}`,
+        display_name:
+          values.displayName || `${values.firstName} ${values.lastName}`,
         work_phone: values.workPhone,
         mobile_phone: values.mobilePhone,
         pharmacy_license: values.pharmacyLicense,
@@ -155,7 +159,9 @@ export function AddUserModal({
         tax_id: values.taxId,
         documents: Array.isArray(values.documents) ? values.documents : [],
         billing_address: values.billingAddress || {},
-        shipping_address: values.sameAsShipping ? values.billingAddress : values.shippingAddress,
+        shipping_address: values.sameAsShipping
+          ? values.billingAddress
+          : values.shippingAddress,
         same_as_shipping: values.sameAsShipping,
         tax_preference: values.taxPreference,
         currency: values.currency,
@@ -170,19 +176,16 @@ export function AddUserModal({
         contact_person: values.contactPerson || null,
         department: values.department || null,
         notes: values.notes || null,
-        preferred_contact_method: values.preferredContactMethod || 'email',
-        language_preference: values.languagePreference || 'English',
+        preferred_contact_method: values.preferredContactMethod || "email",
+        language_preference: values.languagePreference || "English",
         credit_limit: values.creditLimit || null,
         payment_method: values.paymentMethod || null,
-        account_status: 'active'
+        account_status: "active",
       };
 
       // console.log('Attempting to insert user with data:', userData);
 
-
-      
-      const { error } = await supabase.from('profiles').upsert(userData)
-
+      const { error } = await supabase.from("profiles").upsert(userData);
 
       // const { data, error } = await supabase
       //   .from('profiles')
@@ -201,7 +204,7 @@ export function AddUserModal({
         description: `${values.firstName} ${values.lastName} has been created successfully`,
       });
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      
+
       form.reset();
       onUserAdded();
       onOpenChange(false);
@@ -209,7 +212,8 @@ export function AddUserModal({
       // console.error('Detailed error creating customer:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to create customer. Please try again.",
+        description:
+          error.message || "Failed to create customer. Please try again.",
         variant: "destructive",
       });
     } finally {

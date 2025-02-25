@@ -1,4 +1,3 @@
-
 import { UseFormReturn } from "react-hook-form";
 import { BaseUserFormData } from "../schemas/sharedFormSchema";
 import { LocationsList } from "./locations/LocationsList";
@@ -29,7 +28,7 @@ export function LocationsInput({ form }: LocationsInputProps) {
         street2: "",
         city: "",
         state: "",
-        zipCode: "",
+        zip_code: "",
         phone: "",
         faxNumber: "",
       },
@@ -66,10 +65,7 @@ export function LocationsInput({ form }: LocationsInputProps) {
         onImport={handleImportLocations}
       />
 
-      <LocationsList
-        locations={locations}
-        form={form}
-      />
+      <LocationsList locations={locations} form={form} />
     </div>
   );
 }

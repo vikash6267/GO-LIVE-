@@ -22,7 +22,7 @@ export function InvoiceTemplateSection({ form }: InvoiceTemplateSectionProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           control={form.control}
-          name="invoiceHeaderText"
+          name="invoice_header_text"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Header Text</FormLabel>
@@ -33,7 +33,7 @@ export function InvoiceTemplateSection({ form }: InvoiceTemplateSectionProps) {
 
         <FormField
           control={form.control}
-          name="invoiceFooterText"
+          name="invoice_footer_text"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Footer Text</FormLabel>
@@ -44,32 +44,28 @@ export function InvoiceTemplateSection({ form }: InvoiceTemplateSectionProps) {
 
         <FormField
           control={form.control}
-          name="showBusinessAddress"
+          name="show_business_address"
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
-                <FormLabel className="text-base">Show Business Address</FormLabel>
+                <FormLabel className="text-base">
+                  Show Business Address
+                </FormLabel>
               </div>
-              <Switch
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
+              <Switch checked={field.value} onCheckedChange={field.onChange} />
             </FormItem>
           )}
         />
 
         <FormField
           control={form.control}
-          name="showInvoiceDueDate"
+          name="show_invoice_due_date"
           render={({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel className="text-base">Show Due Date</FormLabel>
               </div>
-              <Switch
-                checked={field.value}
-                onCheckedChange={field.onChange}
-              />
+              <Switch checked={field.value} onCheckedChange={field.onChange} />
             </FormItem>
           )}
         />

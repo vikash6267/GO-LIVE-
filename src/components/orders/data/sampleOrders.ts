@@ -13,8 +13,8 @@ export const sampleGroups = [
           street: "123 Main St",
           city: "Los Angeles",
           state: "CA",
-          zipCode: "90001"
-        }
+          zip_code: "90001",
+        },
       },
       {
         id: "PHARM-002",
@@ -26,10 +26,10 @@ export const sampleGroups = [
           street: "456 Oak St",
           city: "Los Angeles",
           state: "CA",
-          zipCode: "90002"
-        }
-      }
-    ]
+          zip_code: "90002",
+        },
+      },
+    ],
   },
   {
     id: "GRP-002",
@@ -45,11 +45,11 @@ export const sampleGroups = [
           street: "789 Pine St",
           city: "San Francisco",
           state: "CA",
-          zipCode: "94105"
-        }
-      }
-    ]
-  }
+          zip_code: "94105",
+        },
+      },
+    ],
+  },
 ];
 
 export const sampleOrders = [
@@ -68,28 +68,28 @@ export const sampleOrders = [
         street: "123 Main St",
         city: "Los Angeles",
         state: "CA",
-        zipCode: "90001"
-      }
+        zip_code: "90001",
+      },
     },
     items: [
       {
         productId: "PROD-001",
         quantity: 5,
         price: 100,
-        notes: "Urgent delivery"
-      }
+        notes: "Urgent delivery",
+      },
     ],
     payment: {
       method: "card" as const,
-      notes: "Processed via Stripe"
+      notes: "Processed via Stripe",
     },
     shipping: {
       method: "FedEx" as const,
       cost: 15.99,
       trackingNumber: "FDX123456789",
-      estimatedDelivery: "2024-01-07"
+      estimatedDelivery: "2024-01-07",
     },
-    specialInstructions: "Please deliver during business hours"
+    specialInstructions: "Please deliver during business hours",
   },
   {
     id: "ORD-002",
@@ -106,34 +106,34 @@ export const sampleOrders = [
         street: "123 Main St",
         city: "Los Angeles",
         state: "CA",
-        zipCode: "90001"
-      }
+        zip_code: "90001",
+      },
     },
     items: [
       {
         productId: "PROD-002",
         quantity: 8,
         price: 150,
-        notes: ""
+        notes: "",
       },
       {
         productId: "PROD-003",
         quantity: 3,
         price: 289,
-        notes: "Handle with care"
-      }
+        notes: "Handle with care",
+      },
     ],
     payment: {
       method: "bank_transfer" as const,
-      notes: "Payment completed"
+      notes: "Payment completed",
     },
     shipping: {
       method: "FedEx" as const,
       cost: 25.99,
       trackingNumber: "FDX987654321",
-      estimatedDelivery: "2024-01-12"
+      estimatedDelivery: "2024-01-12",
     },
-    specialInstructions: "Call before delivery"
+    specialInstructions: "Call before delivery",
   },
   {
     id: "ORD-003",
@@ -150,27 +150,27 @@ export const sampleOrders = [
         street: "123 Main St",
         city: "Los Angeles",
         state: "CA",
-        zipCode: "90001"
-      }
+        zip_code: "90001",
+      },
     },
     items: [
       {
         productId: "PROD-004",
         quantity: 2,
         price: 493.82,
-        notes: "Temperature sensitive"
-      }
+        notes: "Temperature sensitive",
+      },
     ],
     payment: {
       method: "card" as const,
-      notes: "Awaiting authorization"
+      notes: "Awaiting authorization",
     },
     shipping: {
       method: "FedEx" as const,
       cost: 19.99,
       trackingNumber: "FDX456789123",
-      estimatedDelivery: "2024-01-17"
+      estimatedDelivery: "2024-01-17",
     },
-    specialInstructions: "Maintain cold chain during delivery"
-  }
+    specialInstructions: "Maintain cold chain during delivery",
+  },
 ];

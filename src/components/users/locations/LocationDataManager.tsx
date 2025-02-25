@@ -9,27 +9,34 @@ interface LocationDataManagerProps {
   onImport: (locations: LocationData[]) => void;
 }
 
-export function LocationDataManager({ locations, onImport }: LocationDataManagerProps) {
+export function LocationDataManager({
+  locations,
+  onImport,
+}: LocationDataManagerProps) {
   const { toast } = useToast();
 
   const handleExport = () => {
     const csvContent = [
-      ["Name", "Type", "Status", "Address", "Manager", "Contact Email"].join(","),
-      ...locations.map(location => [
-        location.name,
-        location.type,
-        location.status,
-        `${location.address.street1}, ${location.address.city}, ${location.address.state}`,
-        location.manager || "",
-        location.contactEmail || ""
-      ].join(","))
+      ["Name", "Type", "Status", "Address", "Manager", "Contact Email"].join(
+        ","
+      ),
+      ...locations.map((location) =>
+        [
+          location.name,
+          location.type,
+          location.status,
+          `${location.address.street1}, ${location.address.city}, ${location.address.state}`,
+          location.manager || "",
+          location.contactEmail || "",
+        ].join(",")
+      ),
     ].join("\n");
 
-    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const blob = new Blob([csvContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = 'locations.csv';
+    a.download = "locations.csv";
     a.click();
     window.URL.revokeObjectURL(url);
 
@@ -46,15 +53,16 @@ export function LocationDataManager({ locations, onImport }: LocationDataManager
       reader.onload = (e) => {
         try {
           const text = e.target?.result as string;
-          const rows = text.split('\n').slice(1); // Skip header
-          const importedLocations: LocationData[] = rows.map(row => {
-            const [name, type, status, address, manager, contactEmail] = row.split(',');
-            const [street1, city, state] = address.split(', ');
-            
+          const rows = text.split("\n").slice(1); // Skip header
+          const importedLocations: LocationData[] = rows.map((row) => {
+            const [name, type, status, address, manager, contactEmail] =
+              row.split(",");
+            const [street1, city, state] = address.split(", ");
+
             return {
               name,
-              type: type as LocationData['type'],
-              status: status as LocationData['status'],
+              type: type as LocationData["type"],
+              status: status as LocationData["status"],
               address: {
                 street1,
                 city,
@@ -62,7 +70,7 @@ export function LocationDataManager({ locations, onImport }: LocationDataManager
                 attention: "",
                 countryRegion: "",
                 street2: "",
-                zipCode: "",
+                zip_code: "",
                 phone: "",
                 faxNumber: "",
               },
@@ -70,7 +78,7 @@ export function LocationDataManager({ locations, onImport }: LocationDataManager
               contactEmail,
             };
           });
-          
+
           onImport(importedLocations);
           toast({
             title: "Import Successful",
@@ -95,10 +103,7 @@ export function LocationDataManager({ locations, onImport }: LocationDataManager
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-4">
-          <Button
-            onClick={handleExport}
-            className="flex items-center gap-2"
-          >
+          <Button onClick={handleExport} className="flex items-center gap-2">
             <Download className="h-4 w-4" />
             Export to CSV
           </Button>
@@ -109,10 +114,7 @@ export function LocationDataManager({ locations, onImport }: LocationDataManager
               onChange={handleImport}
               className="absolute inset-0 opacity-0 cursor-pointer"
             />
-            <Button
-              variant="outline"
-              className="flex items-center gap-2"
-            >
+            <Button variant="outline" className="flex items-center gap-2">
               <Upload className="h-4 w-4" />
               Import from CSV
             </Button>
@@ -120,7 +122,8 @@ export function LocationDataManager({ locations, onImport }: LocationDataManager
         </div>
         <div className="text-sm text-muted-foreground">
           <FileSpreadsheet className="h-4 w-4 inline-block mr-2" />
-          Supported format: CSV with headers (Name, Type, Status, Address, Manager, Contact Email)
+          Supported format: CSV with headers (Name, Type, Status, Address,
+          Manager, Contact Email)
         </div>
       </CardContent>
     </Card>

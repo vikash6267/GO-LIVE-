@@ -34,6 +34,7 @@ export const mapProfileDataToFormState = (
       zip_code: "",
     },
     sameAsShipping: Boolean(data.same_as_shipping),
+    freeShipping: Boolean(data.freeShipping),
     taxPreference: data.tax_preference || "Taxable",
     currency: data.currency || "USD",
     paymentTerms: data.payment_terms || "DueOnReceipt",

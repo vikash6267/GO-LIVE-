@@ -71,6 +71,7 @@ export function AddUserModal({
         faxNumber: "",
       },
       sameAsShipping: false,
+      freeShipping: false,
       taxPreference: "Taxable",
       currency: "USD",
       paymentTerms: "DueOnReceipt",
@@ -163,6 +164,7 @@ export function AddUserModal({
           ? values.billingAddress
           : values.shippingAddress,
         same_as_shipping: values.sameAsShipping,
+        freeShipping: values.freeShipping,
         tax_preference: values.taxPreference,
         currency: values.currency,
         payment_terms: values.paymentTerms,

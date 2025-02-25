@@ -1,4 +1,3 @@
-
 import { Json } from "@/integrations/supabase/types";
 import { z } from "zod";
 
@@ -26,7 +25,8 @@ export const InvoiceStatusEnum = {
   CANCELLED: "cancelled",
 } as const;
 
-export type InvoiceStatus = typeof InvoiceStatusEnum[keyof typeof InvoiceStatusEnum];
+export type InvoiceStatus =
+  (typeof InvoiceStatusEnum)[keyof typeof InvoiceStatusEnum];
 
 export const PaymentMethodEnum = {
   CARD: "card",
@@ -35,7 +35,9 @@ export const PaymentMethodEnum = {
   MANUAL: "manual",
 } as const;
 
-export type PaymentMethod = typeof PaymentMethodEnum[keyof typeof PaymentMethodEnum] | null;
+export type PaymentMethod =
+  | (typeof PaymentMethodEnum)[keyof typeof PaymentMethodEnum]
+  | null;
 
 // Zod schema for runtime validation
 export const invoiceItemSchema = z.object({
@@ -43,13 +45,13 @@ export const invoiceItemSchema = z.object({
   description: z.string(),
   quantity: z.number().positive(),
   rate: z.number().nonnegative(),
-  amount: z.number().nonnegative()
+  amount: z.number().nonnegative(),
 });
 
 export const customerInfoSchema = z.object({
   name: z.string(),
   phone: z.string(),
-  email: z.string().email()
+  email: z.string().email(),
 });
 
 export const invoiceSchema = z.object({
@@ -64,7 +66,7 @@ export const invoiceSchema = z.object({
     "payment_link_sent",
     "paid",
     "overdue",
-    "cancelled"
+    "cancelled",
   ]),
   amount: z.number().nonnegative(),
   tax_amount: z.number().nullable(),
@@ -80,14 +82,18 @@ export const invoiceSchema = z.object({
   customer_info: z.union([customerInfoSchema, z.any()]), // Handle Json type
   shipping_info: z.union([customerInfoSchema, z.any()]), // Handle Json type
   subtotal: z.number().nonnegative(),
-  orders: z.object({
-    order_number: z.string()
-  }).optional(),
-  profiles: z.object({
-    first_name: z.string(),
-    last_name: z.string(),
-    email: z.string().email()
-  }).optional()
+  orders: z
+    .object({
+      order_number: z.string(),
+    })
+    .optional(),
+  profiles: z
+    .object({
+      first_name: z.string(),
+      last_name: z.string(),
+      email: z.string().email(),
+    })
+    .optional(),
 });
 
 // Type guards
@@ -151,11 +157,12 @@ export interface Invoice {
   subtotal: number;
   orders?: RelatedOrder;
   profiles?: RelatedProfile;
+  freeShipping?: boolean;
 }
 
 // Type for Supabase real-time payload
 export type InvoiceRealtimePayload = {
   new: Invoice | null;
   old: Invoice | null;
-  eventType: 'INSERT' | 'UPDATE' | 'DELETE';
+  eventType: "INSERT" | "UPDATE" | "DELETE";
 };

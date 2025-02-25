@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { DialogFooter } from "@/components/ui/dialog";
@@ -15,41 +14,51 @@ interface SharedUserFormProps {
   isSubmitting?: boolean;
 }
 
-export function SharedUserForm({ 
-  form, 
-  onSubmit, 
+export function SharedUserForm({
+  form,
+  onSubmit,
   submitLabel,
-  isSubmitting = false 
+  isSubmitting = false,
 }: SharedUserFormProps) {
   const handleSubmit = async (values: BaseUserFormData) => {
-    console.log('SharedUserForm: Starting form submission with values:', values);
+    console.log(
+      "SharedUserForm: Starting form submission with values:",
+      values
+    );
     try {
-      console.log('SharedUserForm: Starting form submission with values:', values);
+      console.log(
+        "SharedUserForm: Starting form submission with values:",
+        values
+      );
 
       // Ensure type is one of the allowed values
       const validType = (type: string): "pharmacy" | "hospital" | "group" => {
         const validTypes = ["pharmacy", "hospital", "group"] as const;
         const normalizedType = type.toLowerCase();
-        return validTypes.includes(normalizedType as any) 
-          ? normalizedType as "pharmacy" | "hospital" | "group"
+        return validTypes.includes(normalizedType as any)
+          ? (normalizedType as "pharmacy" | "hospital" | "group")
           : "pharmacy";
       };
 
       // Ensure status is one of the allowed values
-      const validStatus = (status: string): "active" | "inactive" | "pending" => {
+      const validStatus = (
+        status: string
+      ): "active" | "inactive" | "pending" => {
         const validStatuses = ["active", "inactive", "pending"] as const;
         const normalizedStatus = status.toLowerCase();
         return validStatuses.includes(normalizedStatus as any)
-          ? normalizedStatus as "active" | "inactive" | "pending"
+          ? (normalizedStatus as "active" | "inactive" | "pending")
           : "active";
       };
 
       // Ensure role is one of the allowed values
-      const validRole = (role: string): "admin" | "manager" | "staff" | "user" => {
+      const validRole = (
+        role: string
+      ): "admin" | "manager" | "staff" | "user" => {
         const validRoles = ["admin", "manager", "staff", "user"] as const;
         const normalizedRole = role.toLowerCase();
         return validRoles.includes(normalizedRole as any)
-          ? normalizedRole as "admin" | "manager" | "staff" | "user"
+          ? (normalizedRole as "admin" | "manager" | "staff" | "user")
           : "user";
       };
 
@@ -63,7 +72,8 @@ export function SharedUserForm({
         status: validStatus(values.status),
         role: validRole(values.role),
         companyName: values.companyName,
-        displayName: values.displayName || `${values.firstName} ${values.lastName}`,
+        displayName:
+          values.displayName || `${values.firstName} ${values.lastName}`,
         workPhone: values.workPhone,
         mobilePhone: values.mobilePhone,
         pharmacyLicense: values.pharmacyLicense,
@@ -73,28 +83,29 @@ export function SharedUserForm({
         billingAddress: values.billingAddress || {},
         shippingAddress: values.shippingAddress || {},
         sameAsShipping: values.sameAsShipping || false,
-        taxPreference: values.taxPreference || 'Taxable',
-        currency: values.currency || 'USD',
-        paymentTerms: values.paymentTerms || 'DueOnReceipt',
+        freeShipping: values.freeShipping || false,
+        taxPreference: values.taxPreference || "Taxable",
+        currency: values.currency || "USD",
+        paymentTerms: values.paymentTerms || "DueOnReceipt",
         enablePortal: values.enablePortal || false,
-        portalLanguage: values.portalLanguage || 'English',
+        portalLanguage: values.portalLanguage || "English",
         alternativeEmail: values.alternativeEmail,
         website: values.website,
         faxNumber: values.faxNumber,
         contactPerson: values.contactPerson,
         department: values.department,
         notes: values.notes,
-        preferredContactMethod: values.preferredContactMethod || 'email',
-        languagePreference: values.languagePreference || 'English',
+        preferredContactMethod: values.preferredContactMethod || "email",
+        languagePreference: values.languagePreference || "English",
         creditLimit: values.creditLimit,
-        paymentMethod: values.paymentMethod
+        paymentMethod: values.paymentMethod,
       };
 
-      console.log('SharedUserForm: Formatted values:', formattedValues);
+      console.log("SharedUserForm: Formatted values:", formattedValues);
       await onSubmit(formattedValues);
-      console.log('SharedUserForm: Form submission passed to parent');
+      console.log("SharedUserForm: Form submission passed to parent");
     } catch (error) {
-      console.error('SharedUserForm: Error in form submission:', error);
+      console.error("SharedUserForm: Error in form submission:", error);
       throw error;
     }
   };
@@ -102,25 +113,28 @@ export function SharedUserForm({
   const userType = form.watch("type");
 
   return (
-    <Form {...form} >
-      <form onSubmit={form.handleSubmit(
-    (values) => {
-      // console.log("✅ Valid form submission:", values);
-      handleSubmit(values);
-    },
-    (errors) => {
-      console.error("❌ Form validation errors:", errors);
-    }
-  )} className="space-y-6">
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(
+          (values) => {
+            // console.log("✅ Valid form submission:", values);
+            handleSubmit(values);
+          },
+          (errors) => {
+            console.error("❌ Form validation errors:", errors);
+          }
+        )}
+        className="space-y-6"
+      >
         <BaseUserFields form={form} />
-        
+
         {userType === "group" && (
           <GroupUserFields form={form as UseFormReturn<any>} />
         )}
 
         <DialogFooter>
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             // disabled={isSubmitting}
             className="w-full md:w-auto"
           >

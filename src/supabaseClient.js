@@ -25,7 +25,7 @@ const expectedFields = [
   'type',
   'status',
   'role',
-  
+
   // Contact Information
   'alternative_email',
   'website',
@@ -34,38 +34,39 @@ const expectedFields = [
   'fax_number',
   'contact_person',
   'department',
-  
+
   // Business Information
   'company_name',
   'display_name',
   'pharmacy_license',
   'group_station',
   'tax_id',
-  
+
   // Additional Fields
   'notes',
   'preferred_contact_method',
   'language_preference',
-  
+
   // Documents and References
   'documents',
-  
+
   // Address Information
   'billing_address',
   'shipping_address',
   'same_as_shipping',
-  
+  'freeShipping',
+
   // Financial Information
   'tax_preference',
   'currency',
   'payment_terms',
   'credit_limit',
   'payment_method',
-  
+
   // Portal Settings
   'enable_portal',
   'portal_language',
-  
+
   // System Fields
   'created_at',
   'updated_at',
@@ -77,26 +78,26 @@ const expectedFields = [
 const testConnection = async () => {
   try {
     console.log('Starting Supabase connection test...');
-    
+
     // Test basic connection
     const { data: profileCount, error: countError } = await supabase
       .from('profiles')
       .select('count', { count: 'exact' });
-    
+
     if (countError) {
       console.error('❌ Supabase connection error:', countError.message);
       return false;
     }
-    
+
     console.log('✅ Connected to Supabase successfully');
     console.log(`📊 Total profiles in database: ${profileCount?.count || 0}`);
-    
+
     // Check table structure
     const { data: tableInfo, error: tableError } = await supabase
       .from('profiles')
       .select('*')
       .limit(1);
-    
+
     if (tableError) {
       console.error('❌ Error fetching table structure:', tableError.message);
       return false;
@@ -107,21 +108,21 @@ const testConnection = async () => {
       const existingFields = Object.keys(tableInfo[0]);
       console.log('\n📋 Table Structure Analysis:');
       console.log('Available fields:', existingFields);
-      
+
       // Check for missing fields
       const missingFields = expectedFields.filter(field => !existingFields.includes(field));
-      
+
       if (missingFields.length > 0) {
         console.error('\n❌ Missing fields in profiles table:');
         missingFields.forEach(field => {
           console.error(`  - ${field}`);
         });
-        
+
         // Generate SQL commands for missing fields
         console.log('\n💡 SQL commands to add missing fields:');
         missingFields.forEach(field => {
           let sqlType = 'text';
-          
+
           // Determine appropriate SQL type based on field name
           if (field.includes('_at')) {
             sqlType = 'timestamp with time zone';
@@ -129,12 +130,14 @@ const testConnection = async () => {
             sqlType = 'numeric(10,2)';
           } else if (field === 'same_as_shipping' || field === 'enable_portal') {
             sqlType = 'boolean DEFAULT false';
+          } else if (field === 'freeShipping' || field === 'enable_portal') {
+            sqlType = 'boolean DEFAULT false';
           } else if (field === 'documents') {
             sqlType = 'jsonb[]';
           } else if (field.includes('address')) {
             sqlType = 'jsonb';
           }
-          
+
           console.log(`ALTER TABLE profiles ADD COLUMN IF NOT EXISTS ${field} ${sqlType};`);
         });
 
@@ -148,7 +151,7 @@ const testConnection = async () => {
         console.log('\n✅ All expected fields are present in the profiles table');
       }
     }
-    
+
     return true;
   } catch (err) {
     console.error('❌ Failed to connect to Supabase:', err);

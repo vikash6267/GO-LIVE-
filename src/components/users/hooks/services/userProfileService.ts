@@ -1,51 +1,55 @@
-
 import { supabase } from "@/supabaseClient";
 import { BaseUserFormData } from "../../schemas/sharedFormSchema";
 import { toast } from "@/hooks/use-toast";
 
 export const fetchUserProfile = async (userId: string) => {
-  console.log('Fetching user data for ID:', userId);
-  
+  console.log("Fetching user data for ID:", userId);
+
   try {
     const { data: session } = await supabase.auth.getSession();
     if (!session?.session) {
-      console.error('Authentication Error: No active session found');
-      throw new Error('No active session found');
+      console.error("Authentication Error: No active session found");
+      throw new Error("No active session found");
     }
 
     const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
       .maybeSingle();
 
     if (error) {
-      console.error('Database Error - Failed to fetch profile:', error);
+      console.error("Database Error - Failed to fetch profile:", error);
       throw new Error(`Database error: ${error.message}`);
     }
 
     if (!data) {
-      console.error('Data Error: User profile not found for ID:', userId);
-      throw new Error('User profile not found');
+      console.error("Data Error: User profile not found for ID:", userId);
+      throw new Error("User profile not found");
     }
 
-    console.log('Successfully fetched profile:', data);
+    console.log("Successfully fetched profile:", data);
     return data;
   } catch (error: any) {
-    console.error('Error in fetchUserProfile:', error);
-    throw new Error(error.message || 'Failed to fetch user profile');
+    console.error("Error in fetchUserProfile:", error);
+    throw new Error(error.message || "Failed to fetch user profile");
   }
 };
 
-export const updateUserProfile = async (userId: string, values: BaseUserFormData) => {
-  console.log('Starting profile update with values:', values);
-  console.log('Updating user ID:', userId);
-  
+export const updateUserProfile = async (
+  userId: string,
+  values: BaseUserFormData
+) => {
+  console.log("Starting profile update with values:", values);
+  console.log("Updating user ID:", userId);
+
   try {
     const { data: session } = await supabase.auth.getSession();
     if (!session?.session) {
-      console.error('Authentication Error: No active session found during update');
-      throw new Error('No active session found');
+      console.error(
+        "Authentication Error: No active session found during update"
+      );
+      throw new Error("No active session found");
     }
 
     // Map form values to profile data structure
@@ -64,30 +68,31 @@ export const updateUserProfile = async (userId: string, values: BaseUserFormData
       billing_address: values.billingAddress || {},
       shipping_address: values.shippingAddress || {},
       same_as_shipping: values.sameAsShipping || false,
-      tax_preference: values.taxPreference || 'Taxable',
-      currency: values.currency || 'USD',
-      payment_terms: values.paymentTerms || 'DueOnReceipt',
+      freeShipping: values.freeShipping || false,
+      tax_preference: values.taxPreference || "Taxable",
+      currency: values.currency || "USD",
+      payment_terms: values.paymentTerms || "DueOnReceipt",
       enable_portal: values.enablePortal || false,
-      portal_language: values.portalLanguage || 'English',
-      updated_at: new Date().toISOString()
+      portal_language: values.portalLanguage || "English",
+      updated_at: new Date().toISOString(),
     };
 
-    console.log('Prepared profile data for update:', profileData);
+    console.log("Prepared profile data for update:", profileData);
 
     const { data, error } = await supabase
-      .from('profiles')
+      .from("profiles")
       .update(profileData)
-      .eq('id', userId)
+      .eq("id", userId)
       .select()
       .maybeSingle();
 
     if (error) {
-      console.error('Supabase update error:', error);
-      console.error('Error details:', {
+      console.error("Supabase update error:", error);
+      console.error("Error details:", {
         code: error.code,
         message: error.message,
         details: error.details,
-        hint: error.hint
+        hint: error.hint,
       });
       toast({
         title: "Error",
@@ -98,18 +103,18 @@ export const updateUserProfile = async (userId: string, values: BaseUserFormData
     }
 
     if (!data) {
-      console.error('Update Error: No data returned after update');
-      throw new Error('Profile update failed - no data returned');
+      console.error("Update Error: No data returned after update");
+      throw new Error("Profile update failed - no data returned");
     }
 
-    console.log('Profile updated successfully:', data);
+    console.log("Profile updated successfully:", data);
     toast({
       title: "Success",
       description: "Profile updated successfully",
     });
     return data;
   } catch (error: any) {
-    console.error('Error in updateUserProfile:', error);
-    throw new Error(error.message || 'Failed to update profile');
+    console.error("Error in updateUserProfile:", error);
+    throw new Error(error.message || "Failed to update profile");
   }
 };

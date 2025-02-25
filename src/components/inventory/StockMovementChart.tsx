@@ -1,7 +1,14 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import { Line, LineChart, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import {
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
 
 const data = [
   { date: "Jan", inbound: 40, outbound: 24 },
@@ -17,14 +24,14 @@ const chartConfig = {
   inbound: {
     label: "Inbound",
     theme: {
-      light: "hsl(142.1 76.2% 36.3%)",  // Emerald-600
+      light: "hsl(142.1 76.2% 36.3%)", // Emerald-600
       dark: "hsl(142.1 76.2% 36.3%)",
     },
   },
   outbound: {
     label: "Outbound",
     theme: {
-      light: "hsl(346.8 77.2% 49.8%)",  // Rose-500
+      light: "hsl(346.8 77.2% 49.8%)", // Rose-500
       dark: "hsl(346.8 77.2% 49.8%)",
     },
   },
@@ -47,15 +54,15 @@ export const StockMovementChart = () => {
         </div>
       </CardHeader>
       <CardContent className="px-1">
-        <div className="h-[300px] w-full rounded-lg bg-gradient-to-b from-emerald-50/50 to-transparent">
+        <div className="h-[520px] w-full rounded-lg bg-gradient-to-b from-emerald-50/50 to-transparent">
           <ChartContainer config={chartConfig}>
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart 
-                data={data} 
+              <LineChart
+                data={data}
                 margin={{ top: 20, right: 30, left: 10, bottom: 5 }}
               >
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   stroke="#888888"
                   fontSize={12}
                   tickLine={false}

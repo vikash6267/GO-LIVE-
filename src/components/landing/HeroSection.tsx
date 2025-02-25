@@ -29,7 +29,7 @@ const HeroSection = () => {
                 <img
                   src="/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png"
                   alt="9rx Logo"
-                  className="h-12 sm:h-16 relative z-10 contrast-200 "
+                  className=" h-16 relative z-10 con "
                 />
               </div>
             </div>
@@ -87,7 +87,7 @@ const HeroSection = () => {
             </span>
           </div>
 
-          <div className="max-w-4xl space-y-8 mb-16">
+          <div className="max-w-5xl space-y-8 mb-16">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight drop-shadow-lg">
               Elevate Your Pharmacy <br />
               <span className="text-teal-300 drop-shadow-lg">
@@ -109,7 +109,7 @@ const HeroSection = () => {
                 bgColor="bg-emerald-700/40"
               />
               <FeatureCard
-                icon={<Box className="w-6 h-6 text-white" />}
+                icon={<Box className="w- h-6 text-white" />}
                 title="Quality & Affordability Assured"
                 description="Best Quality Supply at Affordable Pricing"
                 bgColor="bg-emerald-700/40"
@@ -146,7 +146,7 @@ const FeatureCard = ({
   bgColor?: string;
 }) => (
   <div
-    className={`${bgColor} backdrop-blur-sm rounded-xl p-6 hover:bg-opacity-40 transition-all duration-300 group`}
+    className={`${bgColor} backdrop-blur-sm rounded-xl p-3 hover:bg-opacity-40 transition-all duration-300 group`}
   >
     <div className="p-3 rounded-lg bg-teal-600/30 inline-block mb-4">
       {icon}

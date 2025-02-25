@@ -9,8 +9,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import image1 from "../../assests/home/1.jpg";
-import image2 from "../../assests/home/2.jpg";
+import image1 from "../../assests/home/1.png";
+import image2 from "../../assests/home/2.png";
 import image3 from "../../assests/home/3.png";
 
 const HeroSection = () => {
@@ -78,7 +78,7 @@ const HeroSection = () => {
                   key={i}
                   src={logo}
                   alt={`Trusted Pharmacy ${i + 1}`}
-                  className="w-10 h-10 0 rounded-full border-2 border-white object-cover"
+                  className="w-14 h-14 0 rounded-full border-2 border-white object-cover"
                 />
               ))}
             </div>

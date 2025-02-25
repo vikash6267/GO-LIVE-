@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from "react";
 import { HeroSection } from "./components/HeroSection";
 import { CartDrawer } from "./components/CartDrawer";
@@ -28,7 +27,7 @@ const ProductShowcase = () => {
           throw error;
         }
 
-        console.log(productsData)
+        console.log(productsData);
         // Map Supabase data to match ProductDetails
         const mappedProducts: ProductDetails[] = productsData.map((item) => ({
           id: item.id,
@@ -40,9 +39,9 @@ const ProductShowcase = () => {
           shipping_cost: item.shipping_cost || "",
           stock: item.current_stock || 0,
           minOrder: item.min_stock || 0,
-          images: item.images ,
-          image: item.image_url || item.image || '/placeholder.svg',
-          image_url: item.image_url || item.image || '/placeholder.svg',
+          images: item.images,
+          image: item.image_url || item.image || "/placeholder.svg",
+          image_url: item.image_url || item.image || "/placeholder.svg",
           offer: "",
           endsIn: "",
           productId: item.id.toString(),
@@ -50,19 +49,31 @@ const ProductShowcase = () => {
             safetyInfo: item.description || "",
           },
           quantityPerCase: item.quantity_per_case || 0,
-          sizes: item.product_sizes?.map((size: any) => ({
-            id:size.id,
-            size_value: size.size_value,
-            size_unit: size.size_unit,
-            price: size.price,
-            pricePerCase: size.price_per_case,
-            stock: size.stock
-          })) || [],
-          tierPricing: item.enable_tier_pricing ? {
-            tier1: { quantity: item.tier1_name || "", price: item.tier1_price || 0 },
-            tier2: { quantity: item.tier2_name || "", price: item.tier2_price || 0 },
-            tier3: { quantity: item.tier3_name || "", price: item.tier3_price || 0 },
-          } : undefined
+          sizes:
+            item.product_sizes?.map((size: any) => ({
+              id: size.id,
+              size_value: size.size_value,
+              size_unit: size.size_unit,
+              price: size.price,
+              pricePerCase: size.price_per_case,
+              stock: size.stock,
+            })) || [],
+          tierPricing: item.enable_tier_pricing
+            ? {
+                tier1: {
+                  quantity: item.tier1_name || "",
+                  price: item.tier1_price || 0,
+                },
+                tier2: {
+                  quantity: item.tier2_name || "",
+                  price: item.tier2_price || 0,
+                },
+                tier3: {
+                  quantity: item.tier3_name || "",
+                  price: item.tier3_price || 0,
+                },
+              }
+            : undefined,
         }));
 
         console.log("Mapped Products:", mappedProducts);

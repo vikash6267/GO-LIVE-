@@ -1,6 +1,18 @@
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import { ACHPaymentFields } from "@/components/orders/sections/payment/ACHPaymentFields";
 
@@ -28,7 +40,7 @@ export function PaymentFields({ form }: PaymentFieldsProps) {
               </FormControl>
               <SelectContent>
                 <SelectItem value="card">Credit Card</SelectItem>
-                <SelectItem value="ach">ACH/eCheck (1% fee)</SelectItem>
+                <SelectItem value="ach">ACH/eCheck </SelectItem>
                 <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
               </SelectContent>
             </Select>
@@ -85,9 +97,7 @@ export function PaymentFields({ form }: PaymentFieldsProps) {
         </>
       )}
 
-      {paymentMethod === "ach" && (
-        <ACHPaymentFields form={form} />
-      )}
+      {paymentMethod === "ach" && <ACHPaymentFields form={form} />}
     </div>
   );
 }

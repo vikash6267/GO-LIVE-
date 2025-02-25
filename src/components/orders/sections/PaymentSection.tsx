@@ -1,12 +1,23 @@
-
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { AuthorizeNetCredentials } from "./payment/AuthorizeNetCredentials";
 import { ACHPaymentFields } from "./payment/ACHPaymentFields";
-import { processACHPayment } from '../utils/authorizeNetUtils';
+import { processACHPayment } from "../utils/authorizeNetUtils";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -23,26 +34,28 @@ export function PaymentSection({ form }: { form: any }) {
   const paymentMethod = form.watch("payment.method");
   const [isProcessing, setIsProcessing] = useState(false);
   const [apiCredentials, setApiCredentials] = useState<PaymentSettings>({
-    apiLoginId: '',
-    transactionKey: '',
+    apiLoginId: "",
+    transactionKey: "",
     testMode: false,
-    enabled: false
+    enabled: false,
   });
 
   useEffect(() => {
     const fetchCredentials = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session?.user) return;
 
       const { data: paymentData, error } = await supabase
-        .from('payment_settings')
-        .select('settings')
-        .eq('provider', 'authorize_net')
-        .eq('profile_id', session.user.id)
+        .from("payment_settings")
+        .select("settings")
+        .eq("provider", "authorize_net")
+        .eq("profile_id", session.user.id)
         .maybeSingle();
 
       if (error) {
-        console.error('Error fetching credentials:', error);
+        console.error("Error fetching credentials:", error);
         return;
       }
 
@@ -55,12 +68,17 @@ export function PaymentSection({ form }: { form: any }) {
     fetchCredentials();
   }, []);
 
-  const handleCredentialsChange = async (field: 'apiLoginId' | 'transactionKey' | 'testMode', value: string | boolean) => {
+  const handleCredentialsChange = async (
+    field: "apiLoginId" | "transactionKey" | "testMode",
+    value: string | boolean
+  ) => {
     const newCredentials = { ...apiCredentials, [field]: value };
     setApiCredentials(newCredentials);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session?.user) {
         toast({
           title: "Authentication Required",
@@ -70,18 +88,19 @@ export function PaymentSection({ form }: { form: any }) {
         return;
       }
 
-      const { error } = await supabase
-        .from('payment_settings')
-        .upsert({
+      const { error } = await supabase.from("payment_settings").upsert(
+        {
           profile_id: session.user.id,
-          provider: 'authorize_net',
-          settings: newCredentials
-        }, {
-          onConflict: 'profile_id,provider'
-        });
+          provider: "authorize_net",
+          settings: newCredentials,
+        },
+        {
+          onConflict: "profile_id,provider",
+        }
+      );
 
       if (error) {
-        console.error('Error saving credentials:', error);
+        console.error("Error saving credentials:", error);
         toast({
           title: "Error",
           description: "Failed to save payment settings",
@@ -89,7 +108,7 @@ export function PaymentSection({ form }: { form: any }) {
         });
       }
     } catch (error) {
-      console.error('Error saving credentials:', error);
+      console.error("Error saving credentials:", error);
       toast({
         title: "Error",
         description: "Failed to save payment settings",
@@ -113,8 +132,8 @@ export function PaymentSection({ form }: { form: any }) {
       ...data,
       apiCredentials: {
         ...apiCredentials,
-        transactionKey: "[REDACTED]"
-      }
+        transactionKey: "[REDACTED]",
+      },
     });
 
     try {
@@ -128,7 +147,7 @@ export function PaymentSection({ form }: { form: any }) {
         customerName: data.customerInfo.name,
         apiLoginId: apiCredentials.apiLoginId,
         transactionKey: apiCredentials.transactionKey,
-        testMode: apiCredentials.testMode
+        testMode: apiCredentials.testMode,
       });
 
       if (response.success) {
@@ -137,13 +156,18 @@ export function PaymentSection({ form }: { form: any }) {
           description: `ACH payment processed successfully. Transaction ID: ${response.transactionId}`,
         });
       } else {
-        throw new Error(response.error?.text || "Failed to process ACH payment");
+        throw new Error(
+          response.error?.text || "Failed to process ACH payment"
+        );
       }
     } catch (error) {
       console.error("Payment processing error:", error);
       toast({
         title: "Payment Failed",
-        description: error instanceof Error ? error.message : "Failed to process ACH payment",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to process ACH payment",
         variant: "destructive",
       });
     } finally {
@@ -154,7 +178,7 @@ export function PaymentSection({ form }: { form: any }) {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold">Payment Information</h2>
-      
+
       {apiCredentials.testMode && (
         <Alert>
           <AlertDescription>
@@ -183,9 +207,9 @@ export function PaymentSection({ form }: { form: any }) {
               </FormControl>
               <SelectContent>
                 <SelectItem value="card">Credit Card (2% fee)</SelectItem>
-                <SelectItem value="ach">ACH/eCheck (1% fee)</SelectItem>
-                <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                <SelectItem value="manual">Manual Payment</SelectItem>
+                <SelectItem value="ach">ACH/eCheck </SelectItem>
+                {/* <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                <SelectItem value="manual">Manual Payment</SelectItem> */}
               </SelectContent>
             </Select>
             <FormMessage />
@@ -195,7 +219,7 @@ export function PaymentSection({ form }: { form: any }) {
 
       {paymentMethod === "ach" && (
         <>
-          <AuthorizeNetCredentials 
+          <AuthorizeNetCredentials
             apiCredentials={apiCredentials}
             onCredentialsChange={handleCredentialsChange}
           />

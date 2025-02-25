@@ -1,6 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import { Line, LineChart, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from "recharts";
+import {
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
 const data = [
   { month: "Jan", revenue: 4000 },
@@ -23,13 +30,16 @@ const chartConfig = {
 
 export const RevenueChart = () => {
   return (
-    <div className="h-[300px] w-full mt-4">
+    <div className="h-[350px] w-full mt-4">
       <ChartContainer config={chartConfig}>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+          <LineChart
+            data={data}
+            margin={{ top: 5, right: 30, left: 20, bottom: 55 }}
+          >
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted/20" />
-            <XAxis 
-              dataKey="month" 
+            <XAxis
+              dataKey="month"
               stroke="#888888"
               fontSize={12}
               tickLine={false}

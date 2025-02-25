@@ -172,13 +172,13 @@ export const OrderDetailsSheet = ({
         accountType: "checking",
         accountName: currentOrder.customerInfo.name,
         routingNumber: "122000661", // Test routing number
-        accountNumber: "1234567890", // Test account number
+        accountNumber: "1234567890",
         amount: parseFloat(currentOrder.total),
         customerEmail: currentOrder.customerInfo.email,
         customerName: currentOrder.customerInfo.name,
         apiLoginId,
         transactionKey,
-        testMode: true, // Set to false in production
+        testMode: true,
       });
 
       if (response.success) {

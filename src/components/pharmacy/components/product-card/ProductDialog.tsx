@@ -22,14 +22,14 @@ interface ProductDialogProps {
   product: ProductDetails;
   isInCart: boolean;
   quantity: { [key: string]: number };
-  onIncreaseQuantity: (id:string) => void; // Add this
-  onDecreaseQuantity: (id:string) => void; // Add this
+  onIncreaseQuantity: (id: string) => void; // Add this
+  onDecreaseQuantity: (id: string) => void; // Add this
   isAddingToCart: boolean;
   customizations: Record<string, string>;
   onCustomizationChange: (customizations: Record<string, string>) => void;
   onAddToCart: () => void;
   setSelectedSizes: (sizeIds: string[]) => void;
-  selectedSizes:string[]
+  selectedSizes: string[];
 }
 
 export const ProductDialog = ({
@@ -42,41 +42,38 @@ export const ProductDialog = ({
   onCustomizationChange,
   onAddToCart,
   setSelectedSizes,
-  selectedSizes
+  selectedSizes,
 }: ProductDialogProps) => {
+  const [imageUrl, setImageUrl] = useState<string>("/placeholder.svg");
 
-
-  const [imageUrl, setImageUrl] = useState<string>('/placeholder.svg');
-
-    useEffect(() => {
-      const loadImage = async () => {
-        if (product.images[0] && product.images[0] !== '/placeholder.svg') {
-          try {
-            // If the image is already a full URL, use it directly
-            if (product.images[0].startsWith('http')) {
-              setImageUrl(product.images[0]);
-              return;
-            }
-  
-            // Get the public URL from Supabase storage
-            const { data } = supabase.storage
-              .from('product-images')
-              .getPublicUrl(product.images[0]);
-            
-            if (data?.publicUrl) {
-              console.log('Loading image from:', data.publicUrl); // Debug log
-              setImageUrl(data.publicUrl);
-            }
-          } catch (error) {
-            console.error('Error loading image:', error);
-            setImageUrl('/placeholder.svg');
+  useEffect(() => {
+    const loadImage = async () => {
+      if (product.images[0] && product.images[0] !== "/placeholder.svg") {
+        try {
+          // If the image is already a full URL, use it directly
+          if (product.images[0].startsWith("http")) {
+            setImageUrl(product.images[0]);
+            return;
           }
-        }
-      };
-  
-      loadImage();
-    }, [product.images[0]]);
 
+          // Get the public URL from Supabase storage
+          const { data } = supabase.storage
+            .from("product-images")
+            .getPublicUrl(product.images[0]);
+
+          if (data?.publicUrl) {
+            console.log("Loading image from:", data.publicUrl); // Debug log
+            setImageUrl(data.publicUrl);
+          }
+        } catch (error) {
+          console.error("Error loading image:", error);
+          setImageUrl("/placeholder.svg");
+        }
+      }
+    };
+
+    loadImage();
+  }, [product.images[0]]);
 
   return (
     <DialogContent className="max-w-4xl max-h-[90vh]">
@@ -102,17 +99,15 @@ export const ProductDialog = ({
 
             {/* Compliance Badges */}
             <div className="flex flex-wrap gap-2 mt-4">
-              {["FDA-Approved", "USP 671 Tested", "Child-Resistant"].map(
-                (badge) => (
-                  <Badge
-                    key={badge}
-                    variant="secondary"
-                    className="bg-emerald-50 text-emerald-700 border border-emerald-200"
-                  >
-                    {badge}
-                  </Badge>
-                )
-              )}
+              {["USP 671 Tested", "Child-Resistant"].map((badge) => (
+                <Badge
+                  key={badge}
+                  variant="secondary"
+                  className="bg-emerald-50 text-emerald-700 border border-emerald-200"
+                >
+                  {badge}
+                </Badge>
+              ))}
             </div>
           </div>
 

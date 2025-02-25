@@ -74,7 +74,8 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
       <div ref={invoiceRef} className="border p-6 space-y-8 bg-white">
         {/* Company Name & Logo */}
         <div className="flex justify-between items-center border-b pb-4">
-          <div className=" flex gap-3">
+        <div>
+        <div className=" flex gap-3">
             <img
               src={
                 settings.logo ||
@@ -87,7 +88,10 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
             <h2 className="text-xl font-bold mt-2">
               {settings.business_name || "9RX"}
             </h2>
+            
           </div>
+          <div className="mt-3 ml-5">936 Broad River Ln,<br /> Charlotte, <br /> NC 28211</div>
+        </div>
           <SheetTitle className="text-3xl">Invoice</SheetTitle>
         </div>
 
@@ -129,7 +133,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
                 </td>
                 <td className="border p-2 text-right">{item.quantity}</td>
                 <td className="border p-2 text-right">${item.price}</td>
-                <td className="border p-2 text-right">${item.amount}</td>
+                <td className="border p-2 text-right">${item.price * item.quantity}</td>
               </tr>
             ))}
           </tbody>
@@ -140,7 +144,8 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
           <div className="w-64 space-y-2">
             <div className="flex justify-between">
               <span>Sub Total</span>
-              <span>${invoice?.subtotal?.toFixed(2) || "0.00"}</span>
+
+              <span>${invoice?.subtotal || "0.00"}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span>Tax (6%)</span>

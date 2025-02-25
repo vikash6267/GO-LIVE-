@@ -116,7 +116,7 @@ const TestimonialCard = ({
   image: string;
   quote: string;
 }) => (
-  <div className="h-full p-6 cursor-pointer rounded-2xl backdrop-blur-sm shadow-lg shadow-gray-300 bg-white/50 transform transition-transform duration-300 hover:scale-105">
+  <div className="min-h-[264px] p-6 cursor-pointer rounded-2xl backdrop-blur-sm shadow-lg shadow-gray-300 bg-white/50 transform transition-transform duration-300 hover:scale-105">
     <div className="flex items-center gap-4 mb-4">
       <img
         src={image || "/placeholder.svg"}
@@ -125,15 +125,15 @@ const TestimonialCard = ({
         loading="lazy"
       />
       <div>
-        <h4 className="text-emerald-900 font-semibold text-lg">
+        <h4 className="text-emerald-900 font-semibold text-xl">
           {name || "Anonymous"}
         </h4>
-        <p className="text-emerald-600 text-sm">
+        <p className="text-emerald-600 text-lg">
           {title || "Pharmacy Professional"}
         </p>
       </div>
     </div>
-    <p className="text-emerald-800 text-sm mb-4 line-clamp-4">{quote}</p>
+    <p className="text-emerald-800 text-xl mb-4 line-clamp-4">{quote}</p>
     {/* <div className="flex items-center gap-2">
       <div className="p-2 rounded-full bg-emerald-100 hover:bg-emerald-200 transition-colors cursor-pointer">
         <PlayCircle className="w-4 h-4 text-emerald-600" />

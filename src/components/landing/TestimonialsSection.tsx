@@ -5,6 +5,9 @@ import type React from "react";
 import { Users, HeartHandshake, PlayCircle } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import valley from "../../assests/home/1.png"
+import vistara from "../../assests/home/2.png"
+import cannon from "../../assests/home/2.png"
 
 // Import Swiper styles
 import "swiper/css";
@@ -77,7 +80,7 @@ const TestimonialsSection = () => {
           }}
         >
           {testimonials.map((testimonial, index) => (
-            <SwiperSlide key={index}>
+            <SwiperSlide key={index} className="p-5">
               <TestimonialCard {...testimonial} />
             </SwiperSlide>
           ))}
@@ -116,7 +119,7 @@ const TestimonialCard = ({
   image: string;
   quote: string;
 }) => (
-  <div className="min-h-[250px] p-6 cursor-pointer rounded-2xl backdrop-blur-sm shadow-lg shadow-gray-300 bg-white/50 transform transition-transform duration-300 hover:scale-105">
+  <div className="min-h-[250px] p-6 cursor-pointer rounded-2xl backdrop-blur-sm shadow-lg shadow-gray-300 bg-white/50 transform transition-transform duration-300 ">
     <div className="flex items-center gap-4 mb-4">
       <img
         src={image || "/placeholder.svg"}
@@ -148,7 +151,7 @@ const testimonials = [
     name: "Ryan Yanicko",
     title: "Cannon Pharmacy Mooresville",
     image:
-      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=300&h=300",
+     cannon,
     quote:
       "Snehal and 9Rx have been excellent to work with getting our pharmacy bags and labels designed and delivered. They took the time to address our concerns and make sure the product was exactly to our specifications. The product quality is excellent and they are very reliable with ordering and delivery of the products.",
   },
@@ -156,7 +159,7 @@ const testimonials = [
     name: "Mark Cantrell",
     title: "Operations Manager, Cannon Pharmacy Main",
     image:
-      "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=300&h=300",
+    cannon,
     quote:
       "It has been a pleasure and wonderful experience working with 9rx. The products are wonderful and are customized to our exact specifications perfectly. The service and customer service are unparalleled and unmatched by any vendor that I have or currently work with. We are extremely pleased and lucky to have the amazing opportunity to do business with 9rx. We HIGHLY recommend this company and its services. Extremely Impressed and Pleased.",
   },
@@ -164,7 +167,7 @@ const testimonials = [
     name: "Khristina, PharmD",
     title: "Valley Health Pharmacy, Director of Pharmacy Operations",
     image:
-      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=300&h=300",
+      valley,
     quote:
       "I am incredibly impressed with the service I have received from 9RX when purchasing our pharmacy supplies (prescription labels, custom bags and medication droppers/adaptors). 9RX is truly reliable, offering high-quality items that meet all of our needs. The ordering process was straightforward, and the products arrived on time and in excellent condition. What stood out the most, however, was the excellent customer service. Snehal and the team have been responsive, knowledgeable, and always available to assist with any questions or concerns. I can confidently recommend 9RX to anyone looking for top-notch pharmacy supplies and reliable service.",
   },
@@ -172,7 +175,7 @@ const testimonials = [
     name: "John Smith",
     title: "Independent Pharmacy Owner",
     image:
-      "https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&w=300&h=300",
+     vistara,
     quote:
       "I'm extremely satisfied with my purchases of pharmacy vials and other supplies from 9-Rx.com past 8 months and more. The quality of the products is very good and the service was fast and reliable. What helped my all businesses the most was the affordability of the pharmacy supplies when reimbursement rate is very challenging now a days. But what truly sets then apart is the trustworthiness of the team. They're knowledgeable, responsive, and genuinely care about their customers. Overall, I highly recommend for all your pharmacy needs. Thanks Much Snehal and Rajesh.",
   },

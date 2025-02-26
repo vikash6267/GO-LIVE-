@@ -22,7 +22,8 @@ export interface ProductSize {
   price: number;
   quantity_per_case: number;
 
-  pricePerCase: number;
+  price_per_case: number;
+  pricePerCase: any;
   stock: number;
 }
 

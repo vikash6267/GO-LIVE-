@@ -21,6 +21,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     price: "",
     pricePerCase: "",
     stock: "",
+    price_per_case:'',
     quantity_per_case: "",
     rolls_per_case: "",
     shipping_cost: "15"
@@ -44,7 +45,8 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
       price: parseFloat(newSize.price) || 0,
       stock: parseInt(newSize.stock) || 0,
       quantity_per_case: parseFloat(newSize.quantity_per_case) || 0,
-      pricePerCase: parseFloat(newSize.pricePerCase) || 0,
+      pricePerCase: parseFloat(newSize.price_per_case) || 0,
+      price_per_case: parseFloat(newSize.price_per_case) || 0,
       rolls_per_case: parseInt(newSize.rolls_per_case) || 0,
       shipping_cost: parseFloat(newSize.shipping_cost) || 15
     } as const;
@@ -68,6 +70,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
       size_unit: categoryConfig.defaultUnit,
       price: "",
       pricePerCase: "",
+      price_per_case:"",
       stock: "",
       quantity_per_case: "",
       rolls_per_case: "",
@@ -99,6 +102,19 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     const currentSizes = form.getValues("sizes") || [];
     const updatedSizes = [...currentSizes];
   
+if(field === "price" || field === "quantity_per_case" ){
+  console.log(updatedSizes?.[index])
+let PPC = Number(updatedSizes?.[index].price  / updatedSizes?.[index].quantity_per_case).toFixed(2)
+
+
+
+updatedSizes[index] = {
+  ...updatedSizes[index],
+  ["price_per_case"]: Number(PPC), // Ensure stock updates properly
+};
+
+
+}
     // Ensure value is correctly converted
     const parsedValue =
       typeof value === "string" && field !== "size_value" && field !== "size_unit"

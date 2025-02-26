@@ -4,6 +4,7 @@ export interface SizeVariation {
   size_unit: string;
   price: number;
   pricePerCase: number;
+  price_per_case: number;
   stock: number;
   quantityPerCase: number;
 }

@@ -51,6 +51,7 @@ export const ProductsTable = ({
       : product.base_price;
   };
 
+
   return (
     <div className="rounded-md border">
       <ScrollArea className="h-[600px]">

@@ -1,5 +1,11 @@
-
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { OrderFormValues } from "../schemas/orderSchema";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
@@ -14,6 +20,8 @@ import { getCustomerName, formatTotal } from "../utils/customerUtils";
 import { getStatusColor } from "../utils/statusUtils";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/supabaseClient";
+import { Clipboard, ClipboardCheck } from "lucide-react";
+import { useState } from "react";
 
 interface OrdersListProps {
   orders: OrderFormValues[];
@@ -31,7 +39,7 @@ interface OrdersListProps {
   onOrderSelect?: (orderId: string) => void;
 }
 
-export function OrdersList({ 
+export function OrdersList({
   orders,
   onOrderClick,
   selectedOrder,
@@ -44,35 +52,36 @@ export function OrdersList({
   isLoading = false,
   userRole = "pharmacy",
   selectedOrders = [],
-  onOrderSelect
+  onOrderSelect,
 }: OrdersListProps) {
   const { toast } = useToast();
 
-  const createInvoiceForOrder = async (orderId: string, orderData: OrderFormValues) => {
+  const createInvoiceForOrder = async (
+    orderId: string,
+    orderData: OrderFormValues
+  ) => {
     try {
       // Generate invoice number using the database function
-      const { data: invoiceNumberData, error: invoiceNumberError } = await supabase
-        .rpc('generate_invoice_number');
+      const { data: invoiceNumberData, error: invoiceNumberError } =
+        await supabase.rpc("generate_invoice_number");
 
       if (invoiceNumberError) throw invoiceNumberError;
 
       const invoiceNumber = invoiceNumberData;
 
       // Create the invoice
-      const { error: createError } = await supabase
-        .from('invoices')
-        .insert({
-          invoice_number: invoiceNumber,
-          order_id: orderId,
-          profile_id: orderData.customer,
-          status: 'needs_payment_link',
-          amount: parseFloat(orderData.total),
-          total_amount: parseFloat(orderData.total),
-          due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
-          items: orderData.items,
-          customer_info: orderData.customerInfo,
-          shipping_info: orderData.shipping
-        });
+      const { error: createError } = await supabase.from("invoices").insert({
+        invoice_number: invoiceNumber,
+        order_id: orderId,
+        profile_id: orderData.customer,
+        status: "needs_payment_link",
+        amount: parseFloat(orderData.total),
+        total_amount: parseFloat(orderData.total),
+        due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+        items: orderData.items,
+        customer_info: orderData.customerInfo,
+        shipping_info: orderData.shipping,
+      });
 
       if (createError) throw createError;
 
@@ -90,12 +99,17 @@ export function OrdersList({
     }
   };
 
-  const handleStatusChange = async (orderId: string, newStatus: string, trackingNumber?: string, shippingMethod?: string) => {
+  const handleStatusChange = async (
+    orderId: string,
+    newStatus: string,
+    trackingNumber?: string,
+    shippingMethod?: string
+  ) => {
     try {
       // Prepare update data
       const updateData: any = {
         status: newStatus,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       // Add shipping information if provided
@@ -105,9 +119,9 @@ export function OrdersList({
       }
 
       const { data: orderExists, error: checkError } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('id', orderId)
+        .from("orders")
+        .select("*")
+        .eq("id", orderId)
         .maybeSingle();
 
       if (checkError) {
@@ -125,9 +139,9 @@ export function OrdersList({
       }
 
       const { error: updateError } = await supabase
-        .from('orders')
+        .from("orders")
         .update(updateData)
-        .eq('id', orderId);
+        .eq("id", orderId);
 
       if (updateError) throw updateError;
 
@@ -137,8 +151,8 @@ export function OrdersList({
       });
 
       // If the order is being confirmed, create an invoice
-      if (newStatus === 'pending') {
-        const orderData = orders.find(order => order.id === orderId);
+      if (newStatus === "pending") {
+        const orderData = orders.find((order) => order.id === orderId);
         if (orderData) {
           await createInvoiceForOrder(orderId, orderData);
         }
@@ -146,13 +160,13 @@ export function OrdersList({
 
       // Call the appropriate callback
       switch (newStatus) {
-        case 'processing':
+        case "processing":
           if (onProcessOrder) onProcessOrder(orderId);
           break;
-        case 'shipped':
+        case "shipped":
           if (onShipOrder) onShipOrder(orderId);
           break;
-        case 'pending':
+        case "pending":
           if (onConfirmOrder) onConfirmOrder(orderId);
           break;
       }
@@ -164,6 +178,14 @@ export function OrdersList({
         variant: "destructive",
       });
     }
+  };
+
+  const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
+
+  const handleCopy = (orderId: string) => {
+    navigator.clipboard.writeText(orderId);
+    setCopiedOrderId(orderId);
+    setTimeout(() => setCopiedOrderId(null), 2000);
   };
 
   if (isLoading) {
@@ -178,9 +200,7 @@ export function OrdersList({
 
   if (!orders || orders.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        No orders found
-      </div>
+      <div className="text-center py-8 text-gray-500">No orders found</div>
     );
   }
 
@@ -200,19 +220,17 @@ export function OrdersList({
           <TableHead className="font-semibold">Status</TableHead>
           <TableHead className="font-semibold">Payment Status</TableHead>
           <TableHead className="font-semibold">Tracking</TableHead>
-          {userRole === "admin" && <TableHead className="font-semibold">Actions</TableHead>}
+          {userRole === "admin" && (
+            <TableHead className="font-semibold">Actions</TableHead>
+          )}
         </TableRow>
       </TableHeader>
       <TableBody>
         {orders.map((order) => {
-          const orderId = order.id || '';
+          const orderId = order.id || "";
           // console.log(orderId)
           return (
-            <TableRow 
-              key={orderId}
-              className="cursor-pointer hover:bg-gray-50"
-              onClick={() => onOrderClick(order)}
-            >
+            <TableRow key={orderId} className="cursor-pointer hover:bg-gray-50">
               {userRole === "admin" && onOrderSelect && (
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <Checkbox
@@ -221,24 +239,44 @@ export function OrdersList({
                   />
                 </TableCell>
               )}
-              <TableCell className="font-medium">{order.customerInfo?.name || 'N/A'}</TableCell>
-              <TableCell className="font-medium">{orderId}</TableCell>
+              <TableCell
+                onClick={() => onOrderClick(order)}
+                className="font-medium"
+              >
+                {order.customerInfo?.name || "N/A"}
+              </TableCell>
+              <TableCell>
+                <div
+                  className="p-4 flex items-center gap-2 cursor-pointer"
+                  onClick={() => handleCopy(orderId)}
+                >
+                  <p>{orderId.slice(0, 6)}...</p>
+                  {copiedOrderId === orderId ? (
+                    <ClipboardCheck className="text-green-500" size={20} />
+                  ) : (
+                    <Clipboard
+                      className="text-gray-500 hover:text-black"
+                      size={20}
+                    />
+                  )}
+                </div>
+              </TableCell>
               <TableCell>{getOrderDate(order)}</TableCell>
               <TableCell>{formatTotal(order.total)}</TableCell>
               <TableCell>
-                <Badge 
-                  variant="secondary" 
-                  className={getStatusColor(order.status || '')}
+                <Badge
+                  variant="secondary"
+                  className={getStatusColor(order.status || "")}
                 >
-                  {order.status.toUpperCase() || 'pending'}
+                  {order.status.toUpperCase() || "pending"}
                 </Badge>
               </TableCell>
               <TableCell>
-                <Badge 
-                  variant="secondary" 
-                  className={getStatusColor(order?.payment_status || '')}
+                <Badge
+                  variant="secondary"
+                  className={getStatusColor(order?.payment_status || "")}
                 >
-                  {order?.payment_status.toUpperCase() || 'unpaid'}
+                  {order?.payment_status.toUpperCase() || "unpaid"}
                 </Badge>
               </TableCell>
               <TableCell>
@@ -253,7 +291,7 @@ export function OrdersList({
                           order.shipping.method,
                           order.shipping.trackingNumber!
                         ),
-                        '_blank'
+                        "_blank"
                       );
                     }}
                   >
@@ -267,13 +305,18 @@ export function OrdersList({
                   <OrderActions
                     order={order}
                     onProcessOrder={async (id) => {
-                      await handleStatusChange(id, 'processing');
+                      await handleStatusChange(id, "processing");
                     }}
                     onShipOrder={async (id) => {
-                      await handleStatusChange(id, 'shipped', order.shipping?.trackingNumber, order.shipping?.method);
+                      await handleStatusChange(
+                        id,
+                        "shipped",
+                        order.shipping?.trackingNumber,
+                        order.shipping?.method
+                      );
                     }}
                     onConfirmOrder={async (id) => {
-                      await handleStatusChange(id, 'pending');
+                      await handleStatusChange(id, "pending");
                     }}
                     onDeleteOrder={onDeleteOrder}
                   />

@@ -90,7 +90,7 @@ export const addProductService = async (data: ProductFormValues) => {
 };
 
 export const updateProductService = async (productId: string, data: ProductFormValues) => {
-  console.log("Updating product with data:", data);
+  // console.log("Updating product with data:", data);
 
   try {
     const { error: productError } = await supabase
@@ -132,29 +132,6 @@ export const updateProductService = async (productId: string, data: ProductFormV
       throw deleteError;
     }
 
-    // Add new sizes if they exist
-    // if (data.sizes && data.sizes.length > 0) {
-    //   const sizesData = data.sizes.map(size => ({
-    //     product_id: productId,
-    //     size_value: size.size_value || '0',
-    //     size_unit: size.size_unit || 'unit',
-    //     price: size.price || 0,
-    //     price_per_case: size.pricePerCase || 0,
-    //     stock: size.stock || 0,
-    //     rolls_per_case: size.rolls_per_case || 0,
-    //     shipping_cost: size.shipping_cost || 15
-    //   }));
-
-    //   const { error: sizesError } = await supabase
-    //     .from("product_sizes")
-    //     .insert(sizesData);
-
-    //   if (sizesError) {
-    //     console.error("Error adding new sizes:", sizesError);
-    //     throw sizesError;
-    //   }
-    // }
-    //Please use number to store DB 
 
     console.log(data.sizes)
 

@@ -7,7 +7,8 @@ interface Size {
   size_value: string;
   size_unit: string;
   price: number;
-  pricePerCase?: number;
+  pricePerCase?: any;
+  price_per_case?: number;
   stock: number;
   quantity_per_case: number;
   rolls_per_case?: number;
@@ -75,9 +76,9 @@ export const SizeList = ({
               <span className="text-sm font-medium">$/CS</span>
               <Input
                 type="number"
-                value={size.pricePerCase || 0}
+                value={size.price_per_case || 0}
                 onChange={(e) =>
-                  onUpdateSize(index, "pricePerCase", e.target.value)
+                  onUpdateSize(index, "price_per_case", e.target.value)
                 }
                 className="h-8"
                 min="0"
@@ -118,7 +119,7 @@ export const SizeList = ({
                 }
                 className="h-8"
                 min="0"
-                step="0.01"
+                step="1"
               />
             </div>
             <div>

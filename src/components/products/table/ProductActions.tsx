@@ -15,6 +15,8 @@ interface ProductActionsProps {
 export const ProductActions = ({ product, onEdit, onDelete }: ProductActionsProps) => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
+
+  console.log(product)
   return (
     <div className="flex items-center gap-2">
       <Dialog>

@@ -64,7 +64,7 @@ export const ProductSizeOptions = ({
   return (
     <div className="space-y-3">
       {product.sizes.map((size, index) => {
-       
+       console.log(size)
         const sizeId = `${size.size_value}-${size.size_unit}`;
         const totalPrice = size.price * quantity[size.id] || size.price; // Using single quantity
 
@@ -90,7 +90,7 @@ export const ProductSizeOptions = ({
                     </div>
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {quantityPerCase} units per case
+                    {size.quantity_per_case} Units per case
                   </div>
                 </div>
               </Label>

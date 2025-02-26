@@ -10,10 +10,11 @@ export function OrderTotals({ items, paymentMethod }: OrderTotalsProps) {
   const { cartItems, clearCart } = useCart();
 
 
-  const shipping = cartItems.reduce(
-    (total, item) => total + (item.shipping_cost || 0),
-    0
-  );
+  const shipping =
+  sessionStorage.getItem("shipping") === "true"
+    ? 0
+    : cartItems.reduce((total, item) => total + (item.shipping_cost || 0), 0);
+
   const subtotal = items.reduce(
     (total, item) => total + item.price * item.quantity,
     0

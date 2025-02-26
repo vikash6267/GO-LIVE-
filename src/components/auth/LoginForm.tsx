@@ -125,6 +125,7 @@ export const LoginForm = () => {
         // Step 3: Set session data
         sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("userType", profileData.type);
+        sessionStorage.setItem("shipping", profileData.freeShipping);
         sessionStorage.setItem("userEmail", email);
         sessionStorage.setItem("lastActivity", Date.now().toString());
 

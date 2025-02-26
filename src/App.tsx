@@ -53,7 +53,6 @@ function App() {
   const { toast } = useToast();
   const location = useLocation();
   useAuthCheck();
-
   useEffect(() => {
     // Clear any expired sessions
     const lastActivity = sessionStorage.getItem('lastActivity');

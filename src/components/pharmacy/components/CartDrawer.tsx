@@ -27,7 +27,9 @@ export const CartDrawer = () => {
       (sizeSum, size) => sizeSum + size.price * size.quantity,
       0
     );
-    return sum + itemTotal + shipingCost;
+    const shipp = sessionStorage.getItem("shipping") == "true" ? 0 : shipingCost
+    return sum + itemTotal + shipp ;
+
   }, 0);
 
   useEffect(() => {
@@ -235,7 +237,11 @@ export const CartDrawer = () => {
             <div className="border-t mt-6 pt-6 space-y-4">
               <div className="flex justify-between text-lg font-medium">
                 <span>Shipping Cost</span>
-                <span>${shipingCost}</span>
+                <span>
+                  {sessionStorage.getItem("shipping") == "true"
+                    ? "Free"
+                    : shipingCost}
+                </span>
               </div>
               <div className="flex justify-between text-lg font-medium">
                 <span>Total</span>

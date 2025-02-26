@@ -15,6 +15,7 @@ import { OrderPaymentInfo } from "./details/OrderPaymentInfo";
 import { OrderTotals } from "./details/OrderTotals";
 import { getTrackingUrl } from "./utils/shippingUtils";
 import { useCart } from "@/hooks/use-cart";
+import { useEffect } from "react";
 
 interface OrderPreviewProps {
   orderData: Partial<OrderFormValues>;
@@ -24,10 +25,15 @@ export function OrderPreview({ orderData }: OrderPreviewProps) {
   // Ensure we have default values for all potentially undefined properties
   const { cartItems, clearCart } = useCart();
 
-  const totalShippingCost = cartItems.reduce(
-    (total, item) => total + (item.shipping_cost || 0),
-    0
-  );
+  const totalShippingCost =
+  sessionStorage.getItem("shipping") == "true"
+    ? 0
+    : cartItems.reduce((total, item) => total + (item.shipping_cost || 0), 0);
+
+useEffect(()=>{
+  console.log(totalShippingCost)
+},[])
+
   const safeOrderData = {
     customerInfo: orderData.customerInfo || {
       name: "",

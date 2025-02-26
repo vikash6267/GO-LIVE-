@@ -55,6 +55,7 @@ const ProductShowcase = () => {
               size_value: size.size_value,
               size_unit: size.size_unit,
               price: size.price,
+              quantity_per_case: size.quantity_per_case,
               pricePerCase: size.price_per_case,
               price_per_case: size.price_per_case,
               stock: size.stock,

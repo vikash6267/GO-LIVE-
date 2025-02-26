@@ -37,10 +37,13 @@ export function CreateOrderForm({
   const userProfile = useSelector(selectUserProfile);
   const { cartItems, clearCart } = useCart();
 
-  const totalShippingCost = Math.max(
-    ...cartItems.map((item) => item.shipping_cost || 0)
-  );
+  const totalShippingCost =
+  sessionStorage.getItem("shipping") == "true"
+    ? 0
+    : Math.max(...cartItems.map((item) => item.shipping_cost || 0));
 
+
+ 
   // Initialize form with user profile data
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
@@ -118,6 +121,7 @@ export function CreateOrderForm({
         totalShippingCost || 0
       );
 
+    
       if (userProfile?.id == null) {
         toast({
           title: "User profile not found",

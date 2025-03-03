@@ -45,10 +45,7 @@ export const SidebarProfile = () => {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="p-0 h-auto hover:bg-transparent">
               <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback>AD</AvatarFallback>
-                </Avatar>
+              
                 <div className="text-left">
                   <p className="text-sm font-medium">{userName}</p>
                   <p className="text-xs text-muted-foreground">{userEmail}</p>

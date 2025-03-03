@@ -58,7 +58,7 @@ const TestimonialsSection = () => {
           slidesPerView={1}
           // navigation
           // pagination={{ clickable: true }}
-          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          autoplay={{ delay: 15000, disableOnInteraction: false }}
           loop={true}
           className="testimonials-swiper !pb-12"
           breakpoints={{

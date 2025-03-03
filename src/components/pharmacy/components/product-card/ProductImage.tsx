@@ -49,7 +49,7 @@ export const ProductImage = ({ image, name, offer, stockStatus }: ProductImagePr
         <img 
           src={imageUrl}
           alt={name}
-          className="w-32 h-32 object-contain transform group-hover:scale-110 transition-transform duration-300"
+          className=" h-[90%] object-contain transform group-hover:scale-110 transition-transform duration-300"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.src = '/placeholder.svg';

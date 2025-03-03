@@ -19,6 +19,8 @@ export const OrderItemRow = ({ index, form, products }: OrderItemRowProps) => {
   const selectedProductId = form.getValues(`items.${index}.productId`);
   const selectedProduct = products.find((p) => p.id === selectedProductId);
 
+
+  console.log(selectedProduct)
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center p-4 border rounded-lg shadow-md">

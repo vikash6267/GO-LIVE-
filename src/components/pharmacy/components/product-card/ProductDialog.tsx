@@ -17,13 +17,14 @@ import { ProductDetails } from "../../types/product.types";
 import { Badge } from "@/components/ui/badge";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Swiper, SwiperSlide } from "swiper/react"; // Import Swiper components
 
 interface ProductDialogProps {
   product: ProductDetails;
   isInCart: boolean;
   quantity: { [key: string]: number };
-  onIncreaseQuantity: (id: string) => void; // Add this
-  onDecreaseQuantity: (id: string) => void; // Add this
+  onIncreaseQuantity: (id: string) => void;
+  onDecreaseQuantity: (id: string) => void;
   isAddingToCart: boolean;
   customizations: Record<string, string>;
   onCustomizationChange: (customizations: Record<string, string>) => void;
@@ -44,36 +45,34 @@ export const ProductDialog = ({
   setSelectedSizes,
   selectedSizes,
 }: ProductDialogProps) => {
-  const [imageUrl, setImageUrl] = useState<string>("/placeholder.svg");
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
 
   useEffect(() => {
-    const loadImage = async () => {
-      if (product.images[0] && product.images[0] !== "/placeholder.svg") {
+    const loadImages = async () => {
+      const loadedUrls: string[] = [];
+
+      for (const image of product.images) {
         try {
-          // If the image is already a full URL, use it directly
-          if (product.images[0].startsWith("http")) {
-            setImageUrl(product.images[0]);
-            return;
-          }
-
-          // Get the public URL from Supabase storage
-          const { data } = supabase.storage
-            .from("product-images")
-            .getPublicUrl(product.images[0]);
-
-          if (data?.publicUrl) {
-            console.log("Loading image from:", data.publicUrl); // Debug log
-            setImageUrl(data.publicUrl);
+          if (image.startsWith("http")) {
+            loadedUrls.push(image); // If image is already a full URL, add directly
+          } else {
+            // Get public URL from Supabase storage
+            const { data } = supabase.storage.from("product-images").getPublicUrl(image);
+            if (data?.publicUrl) {
+              loadedUrls.push(data.publicUrl);
+            }
           }
         } catch (error) {
           console.error("Error loading image:", error);
-          setImageUrl("/placeholder.svg");
+          loadedUrls.push("/placeholder.svg"); // Fallback to placeholder
         }
       }
+
+      setImageUrls(loadedUrls);
     };
 
-    loadImage();
-  }, [product.images[0]]);
+    loadImages();
+  }, [product.images]);
 
   return (
     <DialogContent className="max-w-4xl max-h-[90vh]">
@@ -83,19 +82,34 @@ export const ProductDialog = ({
 
       <ScrollArea className="h-[calc(90vh-8rem)] pr-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-          {/* Left Column - Product Image */}
+          {/* Left Column - Product Image Carousel */}
           <div>
-            <div className="aspect-square rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 flex items-center justify-center p-8 transition-all duration-300 group hover:from-emerald-100 hover:to-emerald-200/50">
-              <img
-                src={imageUrl}
-                alt={product.name}
-                className="w-full h-full object-contain transform transition-transform duration-300 group-hover:scale-105"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/placeholder.svg";
-                }}
-              />
-            </div>
+            <Swiper
+              spaceBetween={10}
+              slidesPerView={1}
+              loop={true}
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
+              }}
+        
+            >
+              {imageUrls.map((url, index) => (
+                <SwiperSlide key={index}>
+                  <div className="aspect-square rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 flex items-center justify-center p-8 transition-all duration-300 group hover:from-emerald-100 hover:to-emerald-200/50">
+                    <img
+                      src={url}
+                      alt={product.name}
+                      className="w-full h-full object-contain transform transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "/placeholder.svg";
+                      }}
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
 
             {/* Compliance Badges */}
             <div className="flex flex-wrap gap-2 mt-4">
@@ -113,7 +127,7 @@ export const ProductDialog = ({
 
           {/* Right Column - Product Details */}
           <div className="space-y-6">
-            {/* Size Options - Now more prominent */}
+            {/* Size Options */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Select Size(s)</h3>
               <ProductSizeOptions
@@ -128,7 +142,7 @@ export const ProductDialog = ({
 
             <Separator />
 
-            {/* Key Features - Compact */}
+            {/* Key Features */}
             {product.specifications?.safetyInfo && (
               <div className="space-y-2">
                 <h4 className="text-base font-medium">Key Features:</h4>
@@ -161,14 +175,7 @@ export const ProductDialog = ({
 
             <Separator />
 
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Pricing Details</h3>
-              <ProductPricing
-                basePrice={product.base_price || product.price}
-                offer={product.offer}
-                tierPricing={product.tierPricing}
-              />
-            </div>
+          
 
             <ProductActions
               isInCart={isInCart}

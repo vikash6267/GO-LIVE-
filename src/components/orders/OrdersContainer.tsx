@@ -71,6 +71,7 @@ export const OrdersContainer = ({
           return;
         }
 
+        
         const { data: orders, error } = await supabase
           .from('orders')
           .select('*')

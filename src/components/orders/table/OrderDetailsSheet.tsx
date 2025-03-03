@@ -48,7 +48,7 @@ export const OrderDetailsSheet = ({
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { toast } = useToast();
   const [currentOrder, setCurrentOrder] = useState<OrderFormValues>(order);
-
+console.log(currentOrder)
   // Update currentOrder when order prop changes
   useEffect(() => {
     setCurrentOrder(order);
@@ -89,74 +89,6 @@ export const OrderDetailsSheet = ({
   };
 
 
-  const handlePayNow = async () => {
-    try {
-      setIsProcessingPayment(true);
-
-      let apiLoginId = "5KP3u95bQpv"; // Test API Login ID
-      let transactionKey = "346HZ32z3fP4hTG2"; // Test Transaction Key
-
-      // Get Authorize.Net credentials from Supabase (for production use)
-      const { data: credentials, error: credentialsError } = await supabase
-        .from("secrets")
-        .select("value")
-        .in("name", ["AUTHORIZE_NET_LOGIN_ID", "AUTHORIZE_NET_TRANSACTION_KEY"])
-        .order("name");
-
-      if (!credentialsError && credentials && credentials.length === 2) {
-        // Use production credentials if available
-        apiLoginId = credentials[0].value;
-        transactionKey = credentials[1].value;
-      }
-
-      const response = await processACHPayment({
-        accountType: "checking",
-        accountName: currentOrder.customerInfo.name,
-        routingNumber: "122000661", // Test routing number
-        accountNumber: "1234567890",
-        amount: parseFloat(currentOrder.total),
-        customerEmail: currentOrder.customerInfo.email,
-        customerName: currentOrder.customerInfo.name,
-        apiLoginId,
-        transactionKey,
-        testMode: true,
-      });
-
-      if (response.success) {
-        console.log("Updating Order ID:", currentOrder.id); // Debugging
-
-        // Update order payment status in database
-        const { error: updateError } = await supabase
-          .from("orders")
-          .update({
-            payment_status: "paid", // Use correct column name
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", currentOrder.id);
-
-        if (updateError) throw updateError;
-
-        setCurrentOrder((prev) => ({ ...prev, payment_status: "paid" }));
-
-        toast({
-          title: "Payment Successful",
-          description: `Transaction ID: ${response.transactionId}`,
-        });
-      } else {
-        throw new Error(response.error?.text || "Payment failed");
-      }
-    } catch (error) {
-      console.error("Payment error:", error);
-      toast({
-        title: "Payment Failed",
-        description:
-          error instanceof Error ? error.message : "Failed to process payment",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessingPayment(false);
-    }
-  };
 
 
   if (!currentOrder) return null;
@@ -167,7 +99,7 @@ export const OrderDetailsSheet = ({
         <SheetHeader>
           <SheetTitle>Order Details</SheetTitle>
           <SheetDescription>
-            {isEditing ? "Edit order details" : "View order details"}
+            {isEditing ? "Edit order details " : "View order details"}
           </SheetDescription>
         </SheetHeader>
 

@@ -160,24 +160,7 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
               </div>
             )}
 
-            {product.quantity_per_case && (
-              <div className="bg-emerald-50 p-3 rounded-lg">
-                <span className="font-semibold block mb-1">
-                  Packaging Information:
-                </span>
-                <p className="text-emerald-700">
-                  {product.quantity_per_case} units per case
-                </p>
-                {product.base_price && (
-                  <p className="text-emerald-600 text-sm mt-1">
-                    Cost per unit: $
-                    {formatPrice(
-                      product.base_price / product.quantity_per_case
-                    )}
-                  </p>
-                )}
-              </div>
-            )}
+           
           </div>
         </div>
       </div>

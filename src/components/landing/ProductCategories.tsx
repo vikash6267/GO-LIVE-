@@ -26,22 +26,22 @@ const ProductCategories = () => {
             imageSrc="/lovable-uploads/e9408ea3-9050-4323-a89d-40caa8f41d24.png"
             title="RX VIALS"
             description="Premium prescription vials and containers in various sizes for secure medication dispensing"
-            price="Starting from $35/case"
+            price="Starting from $27/case"
           />
           <ProductCard
-            imageSrc="/lovable-uploads/24122d71-7c1e-4a72-9127-0ada8d79c27a.png"
-            title="OINTMENT JARS"
-            description="High-quality ointment containers and jars in various sizes for pharmaceutical preparations"
-            price="Starting from $37/case"
+            imageSrc="/LIQUID.png"
+            title="LIQUID OVAL "
+            description="Our Oral Syringes ensure accurate, Safe dosing of Liquid Medications, Ideal for Pharmacies and Patients."
+            price="Starting from $29/case"
           />
           <ProductCard
-            imageSrc="/lovable-uploads/d9a9557c-93c2-4357-a1bb-34ee934fedb9.png"
+            imageSrc="/922.png"
             title="RX LABELS"
             description="High-quality prescription labels in various sizes and formats for all pharmacy needs"
-            price="Starting from $8/Roll"
+            price="Starting from $10/Roll"
           />
           <ProductCard
-            imageSrc="/lovable-uploads/38adc0e1-036f-4956-b2a0-609b9833e582.png"
+            imageSrc="/Square-Bottom.png"
             title="RX PAPER BAGS"
             description="Premium prescription paper bags for pharmacies, available in various sizes and styles"
             price="Starting from $55/case"
@@ -84,7 +84,7 @@ const ProductCard = ({
         <img
           src={imageSrc}
           alt={title}
-          className="w-32 h-32 sm:w-40 sm:h-40 object-contain transform transition-all duration-500 ease-in-out group-hover:scale-110 group-hover:brightness-105"
+          className="h-full  object-contain transform transition-all duration-500 ease-in-out group-hover:scale-110 group-hover:brightness-105"
         />
       </div>
     </div>

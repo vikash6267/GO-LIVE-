@@ -60,7 +60,7 @@ const HeroSection = () => {
           <img
             src="/lovable-uploads/320ef3c7-e13e-4702-b3ff-d861e32d31ea.png"
             alt="Hero background"
-            className="w-full h-full object-cover opacity-75"
+            className="w-full h-full object-cover opacity-0"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-[#1A1F2C]/85 via-[#0EA5E9]/60 to-[#8B5CF6]/70"></div>
           <div className="absolute inset-0 bg-gradient-to-tr from-[#403E43]/50 via-[#6E59A5]/30 to-[#9b87f5]/40"></div>

@@ -15,10 +15,26 @@ export const useOrderManagement = () => {
 
   const loadOrders = async () => {
     try {
-      const { data: ordersData, error: ordersError } = await supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Error",
+          description: "Please log in to view orders",
+          variant: "destructive",
+        });
+        return;
+      }
+  
+      let ordersData = null;
+      const role = session.user.email || null;
+      
+      // Refactor for user role checking
+      const adminRoles = ["palak@git.com", "priyanko@admin.com", "Admin@9rx.com"];
+  
+      // Conditionally fetch orders based on role
+      const query = supabase
         .from("orders")
-        .select(
-          `
+        .select(`
           *,
           profiles (
             first_name, 
@@ -28,68 +44,72 @@ export const useOrderManagement = () => {
             type, 
             company_name
           )
-        `
-        )
+        `)
         .is("deleted_at", null)
         .order("created_at", { ascending: false }); // Order by most recent first
-
-      if (ordersError) throw ordersError;
-
-      console.log(ordersData);
-
-      const formattedOrders: OrderFormValues[] = (ordersData as any[]).map(
-        (order) => {
-          const profileData = order.profiles || {};
-
-          return {
-            id: order.id || "",
-            customer: order.profile_id || "",
-            date: order.created_at || new Date().toISOString(),
-            total: (order.total_amount || 0).toString(),
-            status: order.status || "pending", // Make sure to use the status from the database
-            payment_status: order.payment_status || "unpaid", // Make sure to use the status from the database
-            customerInfo: {
-              name:
-                profileData.first_name && profileData.last_name
-                  ? `${profileData.first_name} ${profileData.last_name}`
-                  : "Unknown",
-              email: profileData.email || "",
-              phone: profileData.mobile_phone || "",
-              type: "Pharmacy",
-              address: {
-                street: profileData.company_name || "",
-                city: "",
-                state: "",
-                zip_code: "",
-              },
-            },
-            items: order.items,
-            shipping: {
-              method: order.shipping_method || "custom",
-              cost: order.shipping_cost || 0,
-              trackingNumber: order.tracking_number || "",
-              estimatedDelivery: order.estimated_delivery || "",
-            },
-            payment: {
-              method: "manual",
-              notes: "",
-            },
-            specialInstructions: order.notes || "",
-            shippingAddress: {
-              fullName:
-                profileData.first_name && profileData.last_name
-                  ? `${profileData.first_name} ${profileData.last_name}`
-                  : "",
-              street: "",
+  
+      if (!adminRoles.includes(role)) {
+        // If user is not admin, fetch orders for their profile only
+        query.eq('profile_id', session.user.id);
+      }
+  
+      const { data, error } = await query;
+      if (error) throw error;
+  
+      console.log(data);
+  
+      const formattedOrders: OrderFormValues[] = (data as any[]).map((order) => {
+        const profileData = order.profiles || {};
+  
+        return {
+          id: order.id || "",
+          customer: order.profile_id || "",
+          date: order.created_at || new Date().toISOString(),
+          total: (order.total_amount || 0).toString(),
+          status: order.status || "pending",
+          payment_status: order.payment_status || "unpaid",
+          customerInfo: {
+            name:
+              profileData.first_name && profileData.last_name
+                ? `${profileData.first_name} ${profileData.last_name}`
+                : "Unknown",
+            email: profileData.email || "",
+            phone: profileData.mobile_phone || "",
+            type: "Pharmacy",
+            address: {
+              street: profileData.company_name || "",
               city: "",
               state: "",
               zip_code: "",
             },
-          };
-        }
-      );
-
+          },
+          items: order.items || [], // Ensure order.items exists
+          shipping: {
+            method: order.shipping_method || "custom",
+            cost: order.shipping_cost || 0,
+            trackingNumber: order.tracking_number || "",
+            estimatedDelivery: order.estimated_delivery || "",
+          },
+          payment: {
+            method: "manual",
+            notes: "",
+          },
+          specialInstructions: order.notes || "",
+          shippingAddress: {
+            fullName:
+              profileData.first_name && profileData.last_name
+                ? `${profileData.first_name} ${profileData.last_name}`
+                : "",
+            street: "",
+            city: "",
+            state: "",
+            zip_code: "",
+          },
+        };
+      });
+  
       setOrders(formattedOrders);
+  
     } catch (error) {
       console.error("Error loading orders:", error);
       toast({
@@ -99,6 +119,7 @@ export const useOrderManagement = () => {
       });
     }
   };
+  
 
   // Refresh orders when the component mounts
   useEffect(() => {

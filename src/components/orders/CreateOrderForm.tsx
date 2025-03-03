@@ -56,9 +56,9 @@ export function CreateOrderForm({
       payment_status: "unpaid",
       customerInfo: {
         name:
-          userProfile?.display_name ||
+        initialData?.customerInfo.name ||
           `${userProfile?.first_name || ""} ${userProfile?.last_name || ""}`,
-        email: userProfile?.email || "",
+        email: initialData?.customerInfo?.email || "",
         phone: userProfile?.mobile_phone || "",
         type: "Pharmacy",
         address: {
@@ -84,6 +84,7 @@ export function CreateOrderForm({
     },
   });
 
+  console.log(initialData)
   // Load pending order items from localStorage if they exist
   useEffect(() => {
     const pendingOrderItems = localStorage.getItem("pendingOrderItems");

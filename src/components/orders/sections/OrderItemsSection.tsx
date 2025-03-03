@@ -13,7 +13,7 @@ interface OrderItemsSectionProps {
 export function OrderItemsSection({ orderItems, form }) {
   const [products, setProducts] = useState([]);
   const { toast } = useToast();
-
+console.log(orderItems)
   useEffect(() => {
     const fetchProducts = async () => {
       const { data, error } = await supabase.from('products').select('*');
@@ -40,7 +40,7 @@ export function OrderItemsSection({ orderItems, form }) {
         <h2 className="text-xl font-semibold">Order Items</h2>
       </div>
 
-      {orderItems.map((item, index) => (
+      {allValues?.items.map((item, index) => (
         <OrderItemRow
           key={item.id}
           index={index}

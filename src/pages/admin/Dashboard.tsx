@@ -2,8 +2,18 @@ import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
-import { DollarSign, ShoppingCart, FileText, AlertTriangle, TrendingUp, Users, PackageSearch, Bell } from "lucide-react";
+import {
+  DollarSign,
+  ShoppingCart,
+  FileText,
+  AlertTriangle,
+  TrendingUp,
+  Users,
+  PackageSearch,
+  Bell,
+} from "lucide-react";
 import { fetchDashboardData } from "./dashboardService";
+import { supabase } from "@/integrations/supabase/client";
 
 const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState({
@@ -14,6 +24,85 @@ const AdminDashboard = () => {
     productCount: 0,
   });
 
+  const [dashboardData2, setDashboardData2] = useState({
+    change: "0%",
+    subtitle: "No data available",
+    trend: "neutral",
+  });
+  const [userCounts, setUserCounts] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      const { data: orders, error } = await supabase
+        .from("orders")
+        .select("total_amount, shipping_cost, tax_amount, created_at");
+
+      if (error) {
+        console.error("Error fetching orders:", error);
+        return;
+      }
+
+      // Process revenue by month
+      const revenueData = {};
+      let currentMonthRevenue = 0;
+      let lastMonthRevenue = 0;
+      const currentMonth = new Date().getMonth();
+      const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+
+      orders.forEach(
+        ({ total_amount, shipping_cost, tax_amount, created_at }) => {
+          const date = new Date(created_at);
+          const month = date.getMonth();
+          const monthShort = date.toLocaleString("default", { month: "short" });
+          const revenue =
+            (total_amount || 0) + (shipping_cost || 0) + (tax_amount || 0);
+
+          revenueData[monthShort] = (revenueData[monthShort] || 0) + revenue;
+
+          if (month === currentMonth) {
+            currentMonthRevenue += revenue;
+          } else if (month === lastMonth) {
+            lastMonthRevenue += revenue;
+          }
+        }
+      );
+
+      // Convert to array format for recharts
+      const formattedData = Object.keys(revenueData).map((month) => ({
+        month,
+        revenue: revenueData[month],
+      }));
+
+      // Calculate percentage change
+      let changePercentage = "0%";
+      let subtitle = "No data available";
+      let trend = "neutral";
+
+      if (lastMonthRevenue > 0) {
+        const percentageChange =
+          ((currentMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100;
+        changePercentage = `${percentageChange.toFixed(1)}%`;
+
+        if (percentageChange > 0) {
+          subtitle = "Compared to last month";
+          trend = "up";
+        } else if (percentageChange < 0) {
+          subtitle = "Decrease from last month";
+          trend = "down";
+        }
+      }
+
+      setDashboardData2({
+        change: changePercentage,
+        subtitle,
+        trend,
+      });
+    };
+
+    fetchOrders();
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchDashboardData();
@@ -23,14 +112,58 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchUserCounts = async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("type")
+        .neq("type", "admin"); // Admin ko exclude karna
+
+      if (error) {
+        console.error("Error fetching user types:", error);
+        return;
+      }
+
+      const typeCounts = data.reduce((acc, user) => {
+        acc[user.type] = (acc[user.type] || 0) + 1;
+        return acc;
+      }, {});
+
+      const formattedCounts = Object.entries(typeCounts).map(
+        ([type, count]) => ({
+          type,
+          count,
+        })
+      );
+
+      setUserCounts(formattedCounts);
+    };
+
+    const fetchTotalProducts = async () => {
+      const { count, error } = await supabase
+        .from("products")
+        .select("*", { count: "exact", head: true });
+
+      if (error) {
+        console.error("Error fetching total products count:", error);
+        return;
+      }
+
+      setTotalProducts(count);
+    };
+
+    fetchTotalProducts();
+    fetchUserCounts();
+  }, []);
+
   const stats = [
     {
       title: "Total Revenue",
       value: `$${dashboardData.totalRevenue}`,
-      change: "+15.2%",
+      change: dashboardData2.change,
       icon: <DollarSign className="h-5 w-5 text-primary" />,
-      subtitle: "Compared to last month",
-      trend: "up" as const,
+      subtitle: dashboardData2.subtitle,
+      trend: dashboardData2.trend,
     },
     {
       title: "Active Orders",
@@ -63,9 +196,12 @@ const AdminDashboard = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Admin Dashboard
+            </h1>
             <p className="text-muted-foreground">
-              Manage your business, view analytics, and handle administrative tasks.
+              Manage your business, view analytics, and handle administrative
+              tasks.
             </p>
           </div>
         </div>
@@ -75,8 +211,12 @@ const AdminDashboard = () => {
             <Card key={index} className="hover:shadow-lg transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between space-y-0 pb-2">
-                  <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                  <div className="rounded-full bg-primary/10 p-2">{stat.icon}</div>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {stat.title}
+                  </p>
+                  <div className="rounded-full bg-primary/10 p-2">
+                    {stat.icon}
+                  </div>
                 </div>
                 <div className="flex flex-col gap-1">
                   <p className="text-2xl font-bold">{stat.value}</p>
@@ -111,28 +251,32 @@ const AdminDashboard = () => {
 
           <Card className="col-span-2">
             <CardContent className="p-6">
-              <h3 className="text-lg font-medium mb-4">Quick Stats</h3>
+              <h3 className="text-lg font-semibold mb-4">Quick Stats</h3>
+
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                {/* Active Users Section */}
+                <div className="flex items-center justify-between border-b pb-2">
                   <div className="flex items-center space-x-2">
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <Users className="h-5 w-5 text-muted-foreground" />
                     <span className="text-sm">Active Users</span>
                   </div>
-                  <span className="text-sm font-medium">1,234</span>
+                  <div className="text-sm font-medium space-y-1 text-right">
+                    {userCounts.map((user) => (
+                      <div key={user.type} className="capitalize">
+                        {user.type}:{" "}
+                        <span className="font-semibold">{user.count}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Products Section */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <PackageSearch className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Products</span>
+                    <PackageSearch className="h-5 w-5 text-muted-foreground" />
+                    <span className="text-sm">Total Products</span>
                   </div>
-                  <span className="text-sm font-medium">{dashboardData?.productCount}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Bell className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">Notifications</span>
-                  </div>
-                  <span className="text-sm font-medium">12</span>
+                  <span className="text-sm font-semibold">{totalProducts}</span>
                 </div>
               </div>
             </CardContent>

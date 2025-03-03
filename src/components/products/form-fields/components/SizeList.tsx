@@ -100,7 +100,7 @@ export const SizeList = ({
               <span className="text-sm font-medium">Shipping/CS</span>
               <Input
                 type="number"
-                value={size.shipping_cost || 15}
+                value={size.shipping_cost}
                 onChange={(e) =>
                   onUpdateSize(index, "shipping_cost", e.target.value)
                 }

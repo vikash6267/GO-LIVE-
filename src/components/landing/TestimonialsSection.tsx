@@ -16,7 +16,7 @@ import "swiper/css/pagination";
 
 const TestimonialsSection = () => {
   return (
-    <section className="relative py-20 bg-[#ecfdf5] overflow-hidden">
+    <section className="relative  bg-[#ecfdf5] overflow-hidden">
       <div className="absolute inset-0 bg-grid-white/5 bg-[size:3rem_3rem] pointer-events-none mix-blend-plus-lighter" />
 
       {/* Top Content */}

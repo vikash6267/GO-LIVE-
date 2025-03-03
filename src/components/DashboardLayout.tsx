@@ -110,14 +110,14 @@ export function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-gray-50/50">
+      <div className="min-h-screen flex  bg-gray-50/50">
         <Sidebar
-          className={`border-r border-gray-200 ${
+          className={`  ${
             isMobile ? "w-full max-w-[280px]" : ""
           }`}
         >
           <SidebarContent>
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full bg-white  z-50 max-w-[200px]">
               <SidebarHeader />
 
               <SidebarGroup>
@@ -134,7 +134,7 @@ export function DashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <main className="flex-1 flex flex-col min-h-screen">
+        <main className="flex-1 flex flex-col min-h-screen z-0">
           <TopBar />
           <div className="flex-1 p-2 md:p-6 lg:p-4 overflow-y-auto">
             <div className="mx-auto max-w-7xl">{children}</div>

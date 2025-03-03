@@ -18,6 +18,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { processACHPayment } from "../utils/authorizeNetUtils";
 import { supabase } from "@/supabaseClient";
+import PaymentForm from "@/components/PaymentModal";
 
 interface OrderDetailsSheetProps {
   order: OrderFormValues;
@@ -162,7 +163,7 @@ export const OrderDetailsSheet = ({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full md:max-w-3xl overflow-y-auto">
+      <SheetContent className="w-full md:max-w-3xl overflow-y-auto z-50">
         <SheetHeader>
           <SheetTitle>Order Details</SheetTitle>
           <SheetDescription>
@@ -200,15 +201,8 @@ export const OrderDetailsSheet = ({
             <OrderWorkflowStatus status={currentOrder.status} />
 
             {currentOrder.payment_status !== "paid" && (
-              <div className="flex justify-end">
-                <Button
-                  onClick={handlePayNow}
-                  disabled={isProcessingPayment}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  <CreditCard className="mr-2 h-4 w-4" />
-                  {isProcessingPayment ? "Processing..." : "Pay Now"}
-                </Button>
+              <div className="flex justify-end text-red-900 font-bold">
+                UnPaid
               </div>
             )}
 

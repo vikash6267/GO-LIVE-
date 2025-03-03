@@ -22,6 +22,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/supabaseClient";
 import { Clipboard, ClipboardCheck } from "lucide-react";
 import { useState } from "react";
+import PaymentForm from "@/components/PaymentModal";
 
 interface OrdersListProps {
   orders: OrderFormValues[];
@@ -55,6 +56,8 @@ export function OrdersList({
   onOrderSelect,
 }: OrdersListProps) {
   const { toast } = useToast();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectCustomerInfo, setSelectCustomerInfo] = useState<any>({});
 
   const createInvoiceForOrder = async (
     orderId: string,
@@ -276,7 +279,20 @@ export function OrdersList({
                   variant="secondary"
                   className={getStatusColor(order?.payment_status || "")}
                 >
-                  {order?.payment_status.toUpperCase() || "unpaid"}
+                  {order?.payment_status.toUpperCase() || "UNPAID"}
+
+                  {order?.payment_status.toLowerCase() === "unpaid" && (
+                    <button
+                      onClick={() => {
+                        
+                        setSelectCustomerInfo(order)
+                        setModalIsOpen(true)}}
+                      className="ml-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                    >
+                      Pay Now
+                    </button>
+                  )}
+
                 </Badge>
               </TableCell>
               <TableCell>
@@ -321,10 +337,16 @@ export function OrdersList({
                     onDeleteOrder={onDeleteOrder}
                   />
                 </TableCell>
+
               )}
             </TableRow>
+
+            
           );
         })}
+
+     { modalIsOpen && selectCustomerInfo && <PaymentForm modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} customer={selectCustomerInfo.customerInfo} amountP={selectCustomerInfo.total} orderId={selectCustomerInfo.id} orders={orders}/>}
+
       </TableBody>
     </Table>
   );

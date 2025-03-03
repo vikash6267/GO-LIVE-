@@ -21,13 +21,26 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
 
   useEffect(() => {
     const loadImage = async () => {
-      if (product.image_url) {
-        const { data } = supabase.storage
-          .from("product-images")
-          .getPublicUrl(product.image_url);
+      if (product.images[0] && product.images[0] !== "/placeholder.svg") {
+        try {
+          // If the image is already a full URL, use it directly
+          if (product.images[0].startsWith("http")) {
+            setImageUrl(product.images[0]);
+            return;
+          }
 
-        if (data?.publicUrl) {
-          setImageUrl(data.publicUrl);
+          // Get the public URL from Supabase storage
+          const { data } = supabase.storage
+            .from("product-images")
+            .getPublicUrl(product.images[0]);
+
+          if (data?.publicUrl) {
+            console.log("Loading image from:", data.publicUrl); // Debug log
+            setImageUrl(data.publicUrl);
+          }
+        } catch (error) {
+          console.error("Error loading image:", error);
+          setImageUrl("/placeholder.svg");
         }
       }
     };

@@ -22,9 +22,9 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     pricePerCase: "",
     stock: "",
     price_per_case:'',
-    quantity_per_case: "",
+    quantity_per_case: "100",
     rolls_per_case: "",
-    shipping_cost: "15"
+    shipping_cost: "0"
   });
 
   const handleAddSize = () => {
@@ -38,6 +38,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     }
 
     const currentSizes = form.getValues("sizes") || [];
+    let PPC = (parseFloat(newSize.price) / parseFloat(newSize.quantity_per_case || "1")).toFixed(2);
 
     const sizeToAdd = {
       size_value: newSize.size_value,
@@ -46,7 +47,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
       stock: parseInt(newSize.stock) || 0,
       quantity_per_case: parseFloat(newSize.quantity_per_case) || 0,
       pricePerCase: parseFloat(newSize.price_per_case) || 0,
-      price_per_case: parseFloat(newSize.price_per_case) || 0,
+      price_per_case:parseFloat(PPC) || 0,
       rolls_per_case: parseInt(newSize.rolls_per_case) || 0,
       shipping_cost: parseFloat(newSize.shipping_cost) || 15
     } as const;
@@ -74,7 +75,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
       stock: "",
       quantity_per_case: "",
       rolls_per_case: "",
-      shipping_cost: "15"
+      shipping_cost: "0"
     });
 
     toast({
@@ -102,19 +103,18 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     const currentSizes = form.getValues("sizes") || [];
     const updatedSizes = [...currentSizes];
   
-if(field === "price" || field === "quantity_per_case" ){
-  console.log(updatedSizes?.[index])
-let PPC = Number(updatedSizes?.[index].price  / updatedSizes?.[index].quantity_per_case).toFixed(2)
-
-
-
-updatedSizes[index] = {
-  ...updatedSizes[index],
-  ["price_per_case"]: Number(PPC), // Ensure stock updates properly
-};
-
-
-}
+    if (field === "price" || field === "quantity_per_case") {
+      let newPrice = field === "price" ? parseFloat(value as string) : updatedSizes[index].price;
+      let newQuantity = field === "quantity_per_case" ? parseFloat(value as string) : updatedSizes[index].quantity_per_case;
+      
+      let PPC = newQuantity > 0 ? (newPrice / newQuantity).toFixed(2) : "0.00";
+    
+      updatedSizes[index] = {
+        ...updatedSizes[index],
+        price_per_case: Number(PPC),
+      };
+    }
+    
     // Ensure value is correctly converted
     const parsedValue =
       typeof value === "string" && field !== "size_value" && field !== "size_unit"

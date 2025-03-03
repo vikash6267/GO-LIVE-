@@ -148,7 +148,7 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
                           {size.size_value} {size.size_unit}
                         </span>
                         <span className="text-sm text-gray-500">
-                          {size.price_per_case} units per case
+                          {size.quantity_per_case} units per case
                         </span>
                       </div>
                       <span className="font-medium text-emerald-600">

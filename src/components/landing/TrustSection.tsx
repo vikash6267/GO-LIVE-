@@ -2,7 +2,7 @@ import { Building2, Clock, Users } from "lucide-react";
 
 const TrustSection = () => {
   return (
-    <section className=" bg-emerald-50">
+    <section className=" bg-emerald-50 mb-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 sm:mb-16">
           <span className="text-emerald-600 font-semibold tracking-wider uppercase text-sm">Why Trust Us</span>

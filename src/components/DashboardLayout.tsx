@@ -108,8 +108,8 @@ export function DashboardLayout({
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50/50">
         <Sidebar
-          className={`border-r border-gray-200 ${
-            isMobile ? "w-full max-w-[280px]" : ""
+          className={`border-r border-v bg-white ${
+            isMobile ? "w-full max-w-[280px] " : " bg-white"
           }`}
         >
           <SidebarContent>

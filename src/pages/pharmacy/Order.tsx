@@ -50,7 +50,7 @@ export default function PharmacyOrder() {
         </div>
 
         <div className="rounded-lg border bg-card p-6">
-          <CreateOrderForm initialData={{ customerInfo }} />
+          <CreateOrderForm initialData={{ customerInfo }} isEditing={false} />
         </div>
       </div>
     </DashboardLayout>

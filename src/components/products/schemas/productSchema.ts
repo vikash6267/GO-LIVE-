@@ -16,14 +16,14 @@ export const CATEGORY_CONFIGS = {
     requiresCase: true,
   },
   "LIQUID OVALS": {
-    sizeUnits: ["mL", "oz"],
+    sizeUnits: ["mL", "OZ"],
     defaultUnit: "mL",
     hasRolls: false,
     requiresCase: true,
   },
   "OINTMENT JARS": {
-    sizeUnits: ["oz", "gram"],
-    defaultUnit: "oz",
+    sizeUnits: ["OZ", "gram"],
+    defaultUnit: "OZ",
     hasRolls: false,
     requiresCase: true,
   },

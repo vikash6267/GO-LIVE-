@@ -177,21 +177,8 @@ export function PaymentSection({ form }: { form: any }) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Payment Information</h2>
 
-      {apiCredentials.testMode && (
-        <Alert>
-          <AlertDescription>
-            Test mode is enabled. Use these test account numbers:
-            <ul className="list-disc list-inside mt-2">
-              <li>0000 - Successful payment</li>
-              <li>1234 - Insufficient funds</li>
-              <li>5678 - Account closed</li>
-              <li>9012 - Authorization failed</li>
-            </ul>
-          </AlertDescription>
-        </Alert>
-      )}
+ 
 
       <FormField
         control={form.control}

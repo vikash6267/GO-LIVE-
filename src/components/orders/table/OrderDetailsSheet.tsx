@@ -31,6 +31,7 @@ interface OrderDetailsSheetProps {
   onConfirmOrder?: (orderId: string) => void;
   onDeleteOrder?: (orderId: string) => Promise<void>;
   userRole?: "admin" | "pharmacy" | "group" | "hospital";
+  
 }
 
 export const OrderDetailsSheet = ({
@@ -43,6 +44,7 @@ export const OrderDetailsSheet = ({
   onShipOrder,
   onConfirmOrder,
   onDeleteOrder,
+
   userRole = "pharmacy",
 }: OrderDetailsSheetProps) => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
@@ -105,7 +107,7 @@ console.log(currentOrder)
 
         {isEditing ? (
           <div className="mt-6">
-            <CreateOrderForm initialData={currentOrder} />
+            <CreateOrderForm initialData={currentOrder} isEditing={isEditing} />
             <Button
               variant="outline"
               onClick={() => setIsEditing(false)}
@@ -118,6 +120,7 @@ console.log(currentOrder)
           <div className="mt-6 space-y-6">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold">Order Status</h3>
+           Order Number:   {currentOrder.order_number}
               {userRole === "admin" && (
                 <Button
                   onClick={() => setIsEditing(true)}

@@ -56,7 +56,7 @@ export function DashboardLayout({
     pharmacy: [
       // { icon: LayoutDashboard, label: "Dashboard", path: "/pharmacy/dashboard" },
       { icon: Package, label: "Products", path: "/pharmacy/products" },
-      { icon: ShoppingCart, label: "Order Products", path: "/pharmacy/order" },
+      { icon: ShoppingCart, label: "Your Cart", path: "/pharmacy/order" },
       { icon: FileText, label: "My Orders", path: "/pharmacy/orders" },
       { icon: Settings, label: "Settings", path: "/pharmacy/settings" },
     ],
@@ -108,7 +108,7 @@ export function DashboardLayout({
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-gray-50/50">
         <Sidebar
-          className={`border-r border-v bg-white ${
+          className={`border-r border-v bg-white z-50 ${
             isMobile ? "w-full max-w-[280px] " : " bg-white"
           }`}
         >

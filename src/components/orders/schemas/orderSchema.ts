@@ -69,6 +69,7 @@ export const orderFormSchema = z.object({
   total: z.string(),
   status: z.string(),
   payment_status: z.string(), // ✅ Add this line
+  order_number : z.string(), 
 
   customerInfo: customerInfoSchema,
   items: z.array(orderItemSchema),

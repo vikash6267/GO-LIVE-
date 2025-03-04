@@ -19,15 +19,19 @@ import { supabase } from "@/supabaseClient";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserProfile } from "../../store/selectors/userSelectors";
 import { useCart } from "@/hooks/use-cart";
-
+import axios from "../../../axiosconfig"
 export interface CreateOrderFormProps {
   initialData?: Partial<OrderFormValues>;
   onFormChange?: (data: Partial<OrderFormValues>) => void;
+  isEditing?:  boolean
+
 }
 
 export function CreateOrderForm({
   initialData,
   onFormChange,
+  isEditing
+
 }: CreateOrderFormProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -68,6 +72,7 @@ export function CreateOrderForm({
           zip_code: userProfile?.zip_code || "",
         },
       },
+      order_number: "",
       items: cartItems,
       shipping: {
         method: "FedEx",
@@ -193,9 +198,16 @@ export function CreateOrderForm({
         throw new Error(orderError.message);
       }
 
+      console.log(orderResponse)
       const newOrder = orderResponse[0];
       console.log("Order saved:", newOrder);
 
+      try {
+        await axios.post("/order-place", newOrder);
+        console.log("Order status sent successfully to backend.");
+      } catch (apiError) {
+        console.error("Failed to send order status to backend:", apiError);
+      }
       // Prepare and save order items
       const orderItemsData = data.items.map((item) => ({
         order_id: newOrder.id,
@@ -260,92 +272,7 @@ export function CreateOrderForm({
     }
   };
 
-  const addCartItemsToOrder = () => {
-    console.log(cartItems);
-    if (cartItems.length === 0) {
-      toast({
-        title: "Cart is empty",
-        description: "There are no items in the cart to add.",
-        variant: "destructive",
-      });
-      return;
-    }
 
-    const validCartItems = cartItems.filter((item) => item.productId);
-    console.log(validCartItems);
-
-    if (validCartItems.length === 0) {
-      toast({
-        title: "No valid items",
-        description: "The cart does not contain valid items.",
-        variant: "destructive",
-      });
-      return;
-    }
-    const newOrderItems = validCartItems.map((item) => ({
-      productId: item.productId,
-      quantity: item.quantity,
-      price: item.price,
-      notes: item.notes || "",
-      sizes: item.sizes
-        ? item.sizes.map((size) => ({
-            id: size.id,
-            price: size.price,
-            quantity: size.quantity,
-            size_unit: size.size_unit,
-            size_value: size.size_value,
-          }))
-        : [],
-    }));
-
-    form.setValue("items", []); // Reset form items
-    setOrderItems([]); // Reset state order items
-
-    form.setValue("items", [...form.getValues("items"), ...newOrderItems]);
-    setOrderItems((prevOrderItems) => [
-      ...prevOrderItems,
-      ...newOrderItems.map((_, index) => ({
-        id: prevOrderItems.length + index + 1,
-      })),
-    ]);
-  };
-
-  const addOrderItem = () => {
-    setOrderItems([...orderItems, { id: orderItems.length + 1 }]);
-
-    const currentItems = form.getValues("items") || [];
-    form.setValue("items", [
-      ...currentItems,
-      {
-        productId: "",
-        quantity: 1,
-        price: 0,
-        notes: "",
-        sizes: [
-          { id: "", price: 0, quantity: 1, size_unit: "", size_value: "" },
-        ], // Default size entry
-      },
-    ]);
-  };
-
-  const removeOrderItem = (index: number) => {
-    if (orderItems.length > 1) {
-      setOrderItems((prevOrderItems) => {
-        const updatedOrderItems = prevOrderItems.filter((_, i) => i !== index);
-        form.setValue(
-          "items",
-          form.getValues("items").filter((_, i) => i !== index)
-        );
-        return updatedOrderItems;
-      });
-    } else {
-      toast({
-        title: "Cannot remove the last item",
-        description: "At least one item must remain in the order.",
-        variant: "destructive",
-      });
-    }
-  };
 
   return (
     <Form {...form}>
@@ -362,6 +289,7 @@ export function CreateOrderForm({
           orderData={form.getValues()}
           isSubmitting={isSubmitting}
           isValidating={isValidating}
+          isEditing={isEditing}
         />
       </form>
     </Form>

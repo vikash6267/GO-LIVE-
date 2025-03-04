@@ -45,7 +45,7 @@ export const ProductImage = ({ image, name, offer, stockStatus }: ProductImagePr
 
   return (
     <div className="mb-4 relative">
-      <div className="aspect-square rounded-xl bg-emerald-50 flex items-center justify-center p-4 group-hover:bg-emerald-100/80 transition-colors">
+      <div className="aspect-square rounded-xl bg-gray-400/80 flex items-center justify-center p-4 group-hover:bg-gray-900/50 transition-colors">
         <img 
           src={imageUrl}
           alt={name}

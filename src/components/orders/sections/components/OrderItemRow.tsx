@@ -19,9 +19,8 @@ export const OrderItemRow = ({ index, form, products }: OrderItemRowProps) => {
   const selectedProductId = form.getValues(`items.${index}.productId`);
   const selectedProduct = products.find((p) => p.id === selectedProductId);
 
+  console.log(selectedProduct);
 
-  console.log(selectedProduct)
-  
   return (
     <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center p-4 border rounded-lg shadow-md">
       {/* Product Name */}
@@ -46,10 +45,13 @@ export const OrderItemRow = ({ index, form, products }: OrderItemRowProps) => {
         <FormLabel className="text-gray-700 font-semibold">Sizes</FormLabel>
         <p className="text-gray-900 font-medium">
           {Array.isArray(form.getValues(`items.${index}.sizes`))
-            ? form
-                .getValues(`items.${index}.sizes`)
-                .map((size) => `${size.size_value} ${size.size_unit}`) // Format size correctly
-                .join(", ")
+            ? form.getValues(`items.${index}.sizes`).map((size, i) => (
+                <span key={i}>
+                  {size.size_value}
+                  {size.size_unit.toUpperCase()} ({size.quantity}),
+                  <br />
+                </span>
+              ))
             : "N/A"}
         </p>
       </div>
@@ -58,7 +60,7 @@ export const OrderItemRow = ({ index, form, products }: OrderItemRowProps) => {
       <div>
         <FormLabel className="text-gray-700 font-semibold">Price</FormLabel>
         <p className="text-gray-900 font-medium">
-          ${form.getValues(`items.${index}.price`) || "0.00"}
+          ${form.getValues(`items.${index}.price`).toFixed(2) || "0.00"}
         </p>
       </div>
     </div>

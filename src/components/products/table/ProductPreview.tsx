@@ -55,7 +55,7 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
       </DialogHeader>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
         <div>
-          <div className="aspect-square rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 flex items-center justify-center p-8 transition-all duration-300 group hover:from-emerald-100 hover:to-emerald-200/50">
+          <div className="aspect-square rounded-xl bg-gradient-to-br from-gray-300 to-gray-500/50  hover:from-gray-700 hover:to-gray-900/50 flex items-center justify-center p-8 transition-all duration-300 group ">
             <img
               src={imageUrl}
               alt={product.name}
@@ -77,11 +77,7 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
                 {badge}
               </Badge>
             ))}
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div>
+               <div className=" my-3">
             <h2 className="text-2xl font-bold leading-tight mb-3">
               {product.name}
             </h2>
@@ -89,8 +85,13 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
               {product.description}
             </p>
           </div>
+          </div>
+        </div>
 
-          <Separator className="my-4" />
+        <div className="space-y-6">
+       
+
+          <Separator className="mb-4" />
 
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">

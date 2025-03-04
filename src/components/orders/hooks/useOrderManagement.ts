@@ -84,6 +84,7 @@ export const useOrderManagement = () => {
               zip_code: "",
             },
           },
+          order_number : order.order_number,
           items: order.items || [], // Ensure order.items exists
           shipping: {
             method: order.shipping_method || "custom",

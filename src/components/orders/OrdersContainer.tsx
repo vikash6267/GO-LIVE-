@@ -117,6 +117,7 @@ export const OrdersContainer = ({
               <div className="mt-4">
                 <CreateOrderForm 
                   onFormChange={(data) => console.log('Form changed:', data)}
+                  isEditing={false}
                 />
               </div>
             </SheetContent>

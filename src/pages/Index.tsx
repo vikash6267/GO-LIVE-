@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import HeroSection from "@/components/landing/HeroSection";
@@ -12,15 +11,15 @@ const Index = () => {
 
   useEffect(() => {
     // Check if user is already logged in
-    const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-    const userType = sessionStorage.getItem('userType');
+    const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
+    const userType = sessionStorage.getItem("userType");
 
     if (isLoggedIn && userType) {
       const dashboardRoutes: Record<string, string> = {
-        admin: '/admin/dashboard',
-        pharmacy: '/pharmacy/dashboard',
-        hospital: '/hospital/dashboard',
-        group: '/group/dashboard'
+        admin: "/admin/dashboard",
+        pharmacy: "/pharmacy/products",
+        hospital: "/hospital/dashboard",
+        group: "/group/dashboard",
       };
 
       const route = dashboardRoutes[userType];

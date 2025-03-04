@@ -28,7 +28,7 @@ export const LoginForm = () => {
     if (isLoggedIn && userType) {
       const dashboardRoutes = {
         admin: "/admin/dashboard",
-        pharmacy: "/pharmacy/dashboard",
+        pharmacy: "/pharmacy/products",
         hospital: "/hospital/dashboard",
         group: "/group/dashboard",
       };
@@ -141,7 +141,7 @@ export const LoginForm = () => {
         // Step 6: Navigate to appropriate dashboard
         const dashboardRoutes = {
           admin: "/admin/dashboard",
-          pharmacy: "/pharmacy/dashboard",
+          pharmacy: "/pharmacy/products",
           hospital: "/hospital/dashboard",
           group: "/group/dashboard",
         };

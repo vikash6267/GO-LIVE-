@@ -102,7 +102,7 @@ const ProductShowcase = () => {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <HeroSection />
-        <CartDrawer />
+        {/* <CartDrawer /> */}
       </div>
 
       <SearchFilters

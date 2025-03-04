@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Package2 } from "lucide-react";
 
@@ -19,9 +18,13 @@ export const HeroSection = () => {
       <div className="relative z-10 max-w-xl">
         <h2 className="text-3xl font-bold mb-4">Special Offers This Week</h2>
         <p className="text-emerald-50 mb-6">
-          Exclusive deals on premium pharmacy supplies. Limited time offers available.
+          Exclusive deals on premium pharmacy supplies. Limited time offers
+          available.
         </p>
-        <Button variant="secondary" className="bg-white text-emerald-600 hover:bg-emerald-50">
+        <Button
+          variant="secondary"
+          className="bg-white text-emerald-600 hover:bg-emerald-50"
+        >
           View All Offers
         </Button>
       </div>

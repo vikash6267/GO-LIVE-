@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { SignupForm } from "@/components/auth/SignupForm";
@@ -16,27 +22,27 @@ const Login = () => {
 
   useEffect(() => {
     // Check if user is already logged in
-    const userType = sessionStorage.getItem('userType');
-    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    const userType = sessionStorage.getItem("userType");
+    const isLoggedIn = sessionStorage.getItem("isLoggedIn");
 
-    if (isLoggedIn === 'true' && userType) {
+    if (isLoggedIn === "true" && userType) {
       // console.log('User already logged in:', userType);
       // Redirect based on user type
       switch (userType) {
-        case 'pharmacy':
-          navigate('/pharmacy/dashboard');
+        case "pharmacy":
+          navigate("/pharmacy/products");
           break;
-        case 'admin':
-          navigate('/admin/dashboard');
+        case "admin":
+          navigate("/admin/dashboard");
           break;
-        case 'hospital':
-          navigate('/hospital/dashboard');
+        case "hospital":
+          navigate("/hospital/dashboard");
           break;
-        case 'group':
-          navigate('/group/dashboard');
+        case "group":
+          navigate("/group/dashboard");
           break;
         default:
-          console.error('Unknown user type:', userType);
+          console.error("Unknown user type:", userType);
           toast({
             title: "Error",
             description: "Invalid user type. Please log in again.",

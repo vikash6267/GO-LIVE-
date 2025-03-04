@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
+import { CartDrawer } from "../pharmacy/components/CartDrawer";
 
 interface Notification {
   id: string;
@@ -38,18 +39,21 @@ export const TopBar = () => {
     },
   ]);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const markAsRead = (id: string) => {
-    setNotifications(notifications.map(notification =>
-      notification.id === id ? { ...notification, read: true } : notification
-    ));
+    setNotifications(
+      notifications.map((notification) =>
+        notification.id === id ? { ...notification, read: true } : notification
+      )
+    );
   };
 
   return (
     <div className="h-16 border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 bg-white z-10">
       <SidebarTrigger />
       <div className="flex items-center gap-4">
+        <CartDrawer />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">
@@ -70,14 +74,20 @@ export const TopBar = () => {
                   onClick={() => markAsRead(notification.id)}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <span className={`text-sm ${notification.read ? 'text-gray-500' : 'font-medium'}`}>
+                    <span
+                      className={`text-sm ${
+                        notification.read ? "text-gray-500" : "font-medium"
+                      }`}
+                    >
                       {notification.message}
                     </span>
                     {!notification.read && (
                       <span className="h-2 w-2 rounded-full bg-blue-500" />
                     )}
                   </div>
-                  <span className="text-xs text-gray-500">{notification.time}</span>
+                  <span className="text-xs text-gray-500">
+                    {notification.time}
+                  </span>
                 </DropdownMenuItem>
               ))
             ) : (

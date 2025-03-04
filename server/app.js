@@ -16,6 +16,7 @@ app.use(express.urlencoded({ limit: "500mb", extended: true }));
 const cookieParser = require("cookie-parser");
 
 const logger = require("morgan");
+const { orderSatusCtrl } = require("./controllers/orderStatus");
 app.use(logger("dev"));
 
 app.use(cookieParser());
@@ -23,6 +24,9 @@ app.use(cookieParser());
 // CORS setup
 const allowedOrigins = [
   "http://localhost:8080",
+  "http://localhost:3000",
+  "https://www.9rx.com",
+  "https://9rx.com"
 ];
 
 app.use(
@@ -273,6 +277,9 @@ console.log(req.body)
       .json({ error: "Internal Server Error", details: error.message });
   }
 });
+
+
+app.post("/order-status", orderSatusCtrl)
 
 
 

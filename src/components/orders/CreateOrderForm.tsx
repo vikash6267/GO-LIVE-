@@ -84,7 +84,7 @@ export function CreateOrderForm({
     },
   });
 
-  console.log(initialData)
+
   // Load pending order items from localStorage if they exist
   useEffect(() => {
     const pendingOrderItems = localStorage.getItem("pendingOrderItems");
@@ -113,6 +113,8 @@ export function CreateOrderForm({
       setIsSubmitting(true);
       console.log("Starting order submission:", data);
 
+
+      
       // Validate order items
       validateOrderItems(data.items);
 
@@ -173,6 +175,7 @@ export function CreateOrderForm({
         items: data.items,
         notes: data.specialInstructions,
         shipping_method: data.shipping?.method,
+        customerInfo: data.customerInfo,
         tracking_number: data.shipping?.trackingNumber,
         estimated_delivery:
           data.shipping?.estimatedDelivery ||
@@ -347,7 +350,7 @@ export function CreateOrderForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <CustomerSelectionField form={form} />
+        <CustomerSelectionField form={form} initialData={initialData} />
 
         <OrderItemsSection orderItems={cartItems} form={form} />
 

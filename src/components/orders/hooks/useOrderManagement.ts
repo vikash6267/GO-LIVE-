@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { OrderFormValues } from "../schemas/orderSchema";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/supabaseClient";
+import axios from "../../../../axiosconfig";
 
 export const useOrderManagement = () => {
   const { toast } = useToast();
@@ -68,7 +69,7 @@ export const useOrderManagement = () => {
           total: (order.total_amount || 0).toString(),
           status: order.status || "pending",
           payment_status: order.payment_status || "unpaid",
-          customerInfo: {
+          customerInfo: order.customerInfo ||  {
             name:
               profileData.first_name && profileData.last_name
                 ? `${profileData.first_name} ${profileData.last_name}`
@@ -95,7 +96,13 @@ export const useOrderManagement = () => {
             notes: "",
           },
           specialInstructions: order.notes || "",
-          shippingAddress: {
+          shippingAddress: order.customerInfo ? {
+            fullName: order.customerInfo.name || "",
+          street: order.customerInfo.address.street || "",
+          city:order.customerInfo.address.city || "",
+          state: order.customerInfo.address.state || "",
+          zip_code: order.customerInfo.address.zip_code || "",
+          } : {
             fullName:
               profileData.first_name && profileData.last_name
                 ? `${profileData.first_name} ${profileData.last_name}`
@@ -168,25 +175,38 @@ export const useOrderManagement = () => {
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
-      const { error } = await supabase
+      // Update order and get the updated order in response
+      const { data: updatedOrder, error } = await supabase
         .from("orders")
         .update({
           status: newStatus,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", orderId);
-
+        .eq("id", orderId)
+        .select("*") // Returns the updated order
+        .single(); // Ensures only one order is fetched
+  
       if (error) throw error;
-
-      // After successful update, reload all orders to ensure we have the latest data
+  
+      // Log the updated order
+      console.log("Updated Order:", updatedOrder);
+  
+     // Send the updated order to the backend
+    try {
+      await axios.post("/order-status", updatedOrder);
+      console.log("Order status sent successfully to backend.");
+    } catch (apiError) {
+      console.error("Failed to send order status to backend:", apiError);
+    }
+      // Reload orders to sync state
       await loadOrders();
-
+  
       toast({
         title: "Success",
         description: `Order status updated to ${newStatus}`,
       });
-
-      return true;
+  
+      return updatedOrder; // Return the updated order
     } catch (error) {
       console.error("Error updating order status:", error);
       toast({
@@ -197,6 +217,7 @@ export const useOrderManagement = () => {
       throw error;
     }
   };
+  
 
   const handleProcessOrder = async (orderId: string) => {
     return updateOrderStatus(orderId, "processing");

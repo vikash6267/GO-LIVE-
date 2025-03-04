@@ -9,6 +9,7 @@ import { supabase } from "@/supabaseClient";
 
 interface CustomerSelectionFieldProps {
   form: UseFormReturn<any>;
+  initialData : any
 }
 
 // Improved customer validation schema
@@ -25,10 +26,11 @@ const customerValidationSchema = z.object({
   }),
 });
 
-export function CustomerSelectionField({ form }: CustomerSelectionFieldProps) {
+export function CustomerSelectionField({ form ,initialData}: CustomerSelectionFieldProps) {
   const { toast } = useToast();
   const [isValidating, setIsValidating] = useState(false);
   const userProfile = useSelector(selectUserProfile);
+  console.log(initialData)
 
   const fetchCustomerInfo = async (userId) => {
     try {
@@ -56,15 +58,15 @@ export function CustomerSelectionField({ form }: CustomerSelectionFieldProps) {
 
       // Map data to the customerInfo schema
       const customerInfo = {
-        name: data.display_name || `${data.first_name} ${data.last_name}`,
-        email: data.email || "",
-        phone: data.mobile_phone || "",
+        name: initialData.customerInfo.name || `${data.first_name} ${data.last_name}`,
+        email:initialData.customerInfo.email || data.email || "",
+        phone: initialData.customerInfo.phone ||data.mobile_phone || "",
         type: "Pharmacy" as const,
         address: {
-          street: data.company_name || "N/A",
-          city: "N/A", // Populate with relevant field if available
-          state: "N/A", // Populate with relevant field if available
-          zip_code: "00000", // Replace with actual data if available
+          street: initialData.customerInfo.address.street || data.company_name || "N/A",
+          city: initialData.customerInfo.address.city || "N/A", // Populate with relevant field if available
+          state: initialData.customerInfo.address.state || "N/A", // Populate with relevant field if available
+          zip_code: initialData.customerInfo.address.zip_code ||"00000", // Replace with actual data if available
         },
       };
 

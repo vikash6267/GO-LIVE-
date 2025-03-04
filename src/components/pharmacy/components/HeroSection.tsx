@@ -3,7 +3,7 @@ import { Package2 } from "lucide-react";
 
 export const HeroSection = () => {
   return (
-    <div className="relative rounded-2xl overflow-hidden p-8 text-white">
+    <div className="relative rounded-2xl overflow-hidden p-8 text-white min-w-full">
       {/* Background image container */}
       <div className="absolute inset-0 z-0">
         <img
@@ -15,7 +15,7 @@ export const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/90 to-emerald-500/90"></div>
       </div>
 
-      <div className="relative z-10 max-w-xl">
+      <div className="relative z-10 min-w-full">
         <h2 className="text-3xl font-bold mb-4">Special Offers This Week</h2>
         <p className="text-emerald-50 mb-6">
           Exclusive deals on premium pharmacy supplies. Limited time offers

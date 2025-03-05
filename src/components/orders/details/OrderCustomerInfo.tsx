@@ -11,7 +11,7 @@ export function OrderCustomerInfo({ customerInfo }: OrderCustomerInfoProps) {
 
   return (
     <div className="space-y-2">
-      <h3 className="font-semibold">Customer Information</h3>
+      <h3 className="font-semibold">Billing Information</h3>
       <div className="grid grid-cols-2 gap-2 text-sm">
         <p>Name: {customerInfo.name || "N/A"}</p>
         <p>Email: {customerInfo.email || "N/A"}</p>

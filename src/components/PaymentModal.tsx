@@ -109,6 +109,23 @@ const PaymentForm = ({
 
         if (updateError) throw updateError;
 
+
+        const { data, error } = await supabase
+        .from("invoices")
+        .update({
+          payment_status: "paid", // Use correct column name
+          updated_at: new Date().toISOString(),
+        })
+        .eq("order_id", orderId);
+
+
+      if (error) {
+        console.error('Error creating invoice:', error);
+        throw error;
+      }
+
+      console.log('Invoice created successfully:', data);
+
         setModalIsOpen(false)
         toast({
           title: "Payment Successfull",

@@ -58,7 +58,9 @@ export function DashboardLayout({
       { icon: Package, label: "Products", path: "/pharmacy/products" },
       { icon: ShoppingCart, label: "Your Cart", path: "/pharmacy/order" },
       { icon: FileText, label: "My Orders", path: "/pharmacy/orders" },
+      { icon: Receipt, label: "Invoices", path: "/pharmacy/invoices" },
       { icon: Settings, label: "Settings", path: "/pharmacy/settings" },
+
     ],
     group: [
       {

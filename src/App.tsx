@@ -8,6 +8,7 @@ import AdminProducts from "./pages/admin/Products";
 import AdminInventory from "./pages/admin/Inventory";
 import AdminOrders from "./pages/admin/Orders";
 import AdminInvoices from "./pages/admin/Invoices";
+import PharmacyInvoices from "./pages/pharmacy/Invoices";
 import AdminGroupPricing from "./pages/admin/GroupPricing";
 import AdminSettings from "./pages/admin/Settings";
 import PharmacyDashboard from "./pages/pharmacy/Dashboard";
@@ -101,6 +102,7 @@ function App() {
           <AdminOrders />
         </ProtectedRoute>
       } />
+ 
       <Route path="/admin/invoices" element={
         <ProtectedRoute allowedRoles={['admin']}>
           <AdminInvoices />
@@ -143,7 +145,12 @@ function App() {
           <PharmacySettings />
         </ProtectedRoute>
       } />
-      
+
+           <Route path="/pharmacy/invoices" element={
+        <ProtectedRoute allowedRoles={['pharmacy']}>
+          <PharmacyInvoices />
+        </ProtectedRoute>
+      } />
       {/* Group Routes */}
       <Route path="/group/dashboard" element={
         <ProtectedRoute allowedRoles={['group']}>

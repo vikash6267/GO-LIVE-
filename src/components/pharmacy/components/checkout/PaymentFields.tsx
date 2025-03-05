@@ -40,8 +40,8 @@ export function PaymentFields({ form }: PaymentFieldsProps) {
               </FormControl>
               <SelectContent>
                 <SelectItem value="card">Credit Card</SelectItem>
-                <SelectItem value="ach">ACH/eCheck </SelectItem>
-                <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                {/* <SelectItem value="ach">ACH/eCheck </SelectItem> */}
+                {/* <SelectItem value="bank_transfer">Bank Transfer</SelectItem> */}
               </SelectContent>
             </Select>
             <FormMessage />

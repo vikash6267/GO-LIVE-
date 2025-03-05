@@ -191,7 +191,7 @@ export function PaymentSection({ form }: { form: any }) {
               </FormControl>
               <SelectContent>
                 <SelectItem value="card">Credit Card </SelectItem>
-                <SelectItem value="ach">ACH/eCheck </SelectItem>
+                {/* <SelectItem value="ach">ACH/eCheck </SelectItem> */}
                 {/* <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
                 <SelectItem value="manual">Manual Payment</SelectItem> */}
               </SelectContent>

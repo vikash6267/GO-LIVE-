@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectUserProfile } from "../../store/selectors/userSelectors";
 import { useCart } from "@/hooks/use-cart";
 import axios from "../../../axiosconfig"
+import { InvoiceStatus, PaymentMethod } from "../invoices/types/invoice.types";
 export interface CreateOrderFormProps {
   initialData?: Partial<OrderFormValues>;
   onFormChange?: (data: Partial<OrderFormValues>) => void;
@@ -169,9 +170,11 @@ export function CreateOrderForm({
       const defaultEstimatedDelivery = new Date();
       defaultEstimatedDelivery.setDate(defaultEstimatedDelivery.getDate() + 10);
 
+
+      
       // Prepare order data
       const orderData = {
-        order_number: data.id || generateOrderId(),
+        order_number:  generateOrderId(),
         profile_id: userProfile.id,
         status: data.status,
         total_amount: calculatedTotal,
@@ -202,6 +205,62 @@ export function CreateOrderForm({
       const newOrder = orderResponse[0];
       console.log("Order saved:", newOrder);
 
+
+      const { data: invoiceNumber } = await supabase.rpc('generate_invoice_number');
+
+
+
+
+      const estimatedDeliveryDate = new Date(newOrder.estimated_delivery);
+
+// Calculate the due_date by adding 30 days to the estimated delivery
+const dueDate = new Date(estimatedDeliveryDate);
+dueDate.setDate(dueDate.getDate() + 30); // Add 30 days
+
+// Format the due_date as a string in ISO 8601 format with time zone (UTC in this case)
+const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00.000Z"
+
+      const invoiceData = {
+        invoice_number: invoiceNumber,
+        order_id: newOrder.id,
+        due_date: formattedDueDate,
+        profile_id: newOrder.profile_id,
+        status: "pending" as InvoiceStatus,
+        amount: parseFloat(calculatedTotal) || 0,
+        tax_amount: orderData.tax_amount || 0,
+        total_amount: parseFloat(calculatedTotal),
+          payment_status: newOrder.payment_status,
+        payment_method: newOrder.paymentMethod as PaymentMethod,
+        payment_notes: newOrder.notes || null,
+        items: newOrder.items || [],
+        customer_info: {
+          name: newOrder.customerInfo?.name,
+          email: newOrder.customerInfo?.email || '',
+          phone: newOrder.customerInfo?.phone || ''
+        },
+        shipping_info: orderData.customerInfo.address || {},
+        subtotal: calculatedTotal || parseFloat(calculatedTotal)
+      };
+
+      console.log('Creating invoice with data:', invoiceData);
+
+
+      
+      const { invoicedata2, error } = await supabase
+        .from("invoices")
+        .insert(invoiceData)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating invoice:', error);
+        throw error;
+      }
+
+      console.log('Invoice created successfully:', invoicedata2);
+
+
+      
       try {
         await axios.post("/order-place", newOrder);
         console.log("Order status sent successfully to backend.");

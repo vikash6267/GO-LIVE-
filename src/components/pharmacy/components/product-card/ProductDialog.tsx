@@ -152,10 +152,10 @@ export const ProductDialog = ({
               />
             </div>
 
-            <Separator />
+          
 
             {/* Key Features */}
-            {product.specifications?.safetyInfo && (
+            {/* {product.specifications?.safetyInfo && (
               <div className="space-y-2">
                 <h4 className="text-base font-medium">Key Features:</h4>
                 <ul className="grid grid-cols-2 gap-2">
@@ -172,7 +172,7 @@ export const ProductDialog = ({
                     ))}
                 </ul>
               </div>
-            )}
+            )} */}
 
             {product.customization?.allowed && (
               <>

@@ -56,7 +56,7 @@ export function InvoiceFilters({ onFilterChange }: InvoiceFiltersProps) {
           </SelectContent>
         </Select>
 
-        <Input
+        {/* <Input
           type="date"
           placeholder="From Date"
           value={filters.dateFrom || ''}
@@ -82,12 +82,12 @@ export function InvoiceFilters({ onFilterChange }: InvoiceFiltersProps) {
           placeholder="Max Amount"
           value={filters.amountMax || ''}
           onChange={(e) => handleFilterChange('amountMax', e.target.value ? Number(e.target.value) : undefined)}
-        />
+        /> */}
       </div>
 
-      <Button variant="outline" onClick={clearFilters}>
+      {/* <Button variant="outline" onClick={clearFilters}>
         Clear Filters
-      </Button>
+      </Button> */}
     </div>
   );
 }

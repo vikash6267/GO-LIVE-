@@ -65,33 +65,33 @@ export function OrdersList({
   ) => {
     try {
       // Generate invoice number using the database function
-      const { data: invoiceNumberData, error: invoiceNumberError } =
-        await supabase.rpc("generate_invoice_number");
+      // const { data: invoiceNumberData, error: invoiceNumberError } =
+      //   await supabase.rpc("generate_invoice_number");
 
-      if (invoiceNumberError) throw invoiceNumberError;
+      // if (invoiceNumberError) throw invoiceNumberError;
 
-      const invoiceNumber = invoiceNumberData;
+      // const invoiceNumber = invoiceNumberData;
 
-      // Create the invoice
-      const { error: createError } = await supabase.from("invoices").insert({
-        invoice_number: invoiceNumber,
-        order_id: orderId,
-        profile_id: orderData.customer,
-        status: "needs_payment_link",
-        amount: parseFloat(orderData.total),
-        total_amount: parseFloat(orderData.total),
-        due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
-        items: orderData.items,
-        customer_info: orderData.customerInfo,
-        shipping_info: orderData.shipping,
-      });
+      // // Create the invoice
+      // const { error: createError } = await supabase.from("invoices").insert({
+      //   invoice_number: invoiceNumber,
+      //   order_id: orderId,
+      //   profile_id: orderData.customer,
+      //   status: "needs_payment_link",
+      //   amount: parseFloat(orderData.total),
+      //   total_amount: parseFloat(orderData.total),
+      //   due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // 30 days from now
+      //   items: orderData.items,
+      //   customer_info: orderData.customerInfo,
+      //   shipping_info: orderData.shipping,
+      // });
 
-      if (createError) throw createError;
+      // if (createError) throw createError;
 
-      toast({
-        title: "Invoice Created",
-        description: `Invoice ${invoiceNumber} has been created and needs payment link`,
-      });
+      // toast({
+      //   title: "Invoice Created",
+      //   description: `Invoice ${invoiceNumber} has been created and needs payment link`,
+      // });
     } catch (error) {
       console.error("Error creating invoice:", error);
       toast({
@@ -115,6 +115,10 @@ export function OrdersList({
         updated_at: new Date().toISOString(),
       };
 
+
+      console.log("shippingMethod" ,shippingMethod)
+      console.log("trackingNumber" ,trackingNumber)
+      return
       // Add shipping information if provided
       if (trackingNumber && shippingMethod) {
         updateData.tracking_number = trackingNumber;
@@ -217,7 +221,7 @@ export function OrdersList({
             </TableHead>
           )}
           <TableHead className="font-semibold">Customer Name</TableHead>
-          <TableHead className="font-semibold">Order Id</TableHead>
+       
           <TableHead className="font-semibold">Order Date</TableHead>
           <TableHead className="font-semibold">Total</TableHead>
           <TableHead className="font-semibold">Status</TableHead>
@@ -248,22 +252,7 @@ export function OrdersList({
               >
                 {order.customerInfo?.name || "N/A"}
               </TableCell>
-              <TableCell>
-                <div
-                  className="p-4 flex items-center gap-2 cursor-pointer"
-                  onClick={() => handleCopy(orderId)}
-                >
-                  <p>{orderId.slice(0, 6)}...</p>
-                  {copiedOrderId === orderId ? (
-                    <ClipboardCheck className="text-green-500" size={20} />
-                  ) : (
-                    <Clipboard
-                      className="text-gray-500 hover:text-black"
-                      size={20}
-                    />
-                  )}
-                </div>
-              </TableCell>
+             
               <TableCell>{getOrderDate(order)}</TableCell>
               <TableCell>{formatTotal(order.total)}</TableCell>
               <TableCell>

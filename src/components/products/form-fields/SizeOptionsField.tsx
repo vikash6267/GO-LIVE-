@@ -19,6 +19,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     size_value: "",
     size_unit: categoryConfig.defaultUnit,
     price: "",
+    sku: "",
     pricePerCase: "",
     stock: "",
     price_per_case:'',
@@ -42,6 +43,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
 
     const sizeToAdd = {
       size_value: newSize.size_value,
+      sku: newSize.sku || "",
       size_unit: newSize.size_unit || categoryConfig.defaultUnit,
       price: parseFloat(newSize.price) || 0,
       stock: parseInt(newSize.stock) || 0,
@@ -70,6 +72,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
       size_value: "",
       size_unit: categoryConfig.defaultUnit,
       price: "",
+      sku: "",
       pricePerCase: "",
       price_per_case:"",
       stock: "",
@@ -102,7 +105,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
   const handleUpdateSize = (index: number, field: string, value: string | number) => {
     const currentSizes = form.getValues("sizes") || [];
     const updatedSizes = [...currentSizes];
-  
+ 
     if (field === "price" || field === "quantity_per_case") {
       let newPrice = field === "price" ? parseFloat(value as string) : updatedSizes[index].price;
       let newQuantity = field === "quantity_per_case" ? parseFloat(value as string) : updatedSizes[index].quantity_per_case;
@@ -117,7 +120,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     
     // Ensure value is correctly converted
     const parsedValue =
-      typeof value === "string" && field !== "size_value" && field !== "size_unit"
+      typeof value === "string" && field !== "size_value" && field !== "size_unit" && field !== "sku"
         ? parseFloat(value) || 0
         : value;
   

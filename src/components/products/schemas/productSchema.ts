@@ -68,6 +68,7 @@ export const productFormSchema = z.object({
   sizes: z.array(z.object({
     size_value: z.string().min(1, "Size value is required"),
     size_unit: z.string(),
+    sku: z.string(),
     price: z.coerce.number().min(0, "Price must be positive"),
    
     price_per_case: z.coerce.number().min(0, "Price per case must be positive"),

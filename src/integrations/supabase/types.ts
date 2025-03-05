@@ -541,6 +541,7 @@ export type Database = {
           rolls_per_case: number | null;
           shipping_cost: number | null;
           size_unit: string;
+          sku: any;
 
           size_value: string;
           stock: number;
@@ -556,6 +557,7 @@ export type Database = {
           rolls_per_case?: number | null;
           shipping_cost?: number | null;
           size_unit: string;
+          sku: any;
 
           size_value: string;
           stock?: number;
@@ -572,6 +574,7 @@ export type Database = {
           shipping_cost?: number | null;
           size_unit?: string;
           size_value?: string;
+          sku: any;
 
           stock?: number;
           updated_at?: string | null;

@@ -4,6 +4,7 @@ export interface ProductSize {
   product_id: string;
   size_value: string;
   size_unit: string;
+  sku?: any;
   price: number;
   price_per_case: number;
   stock: number;

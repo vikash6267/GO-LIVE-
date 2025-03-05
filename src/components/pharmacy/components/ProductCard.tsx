@@ -28,6 +28,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedSizesSKU, setSelectedSizesSKU] = useState<string[]>([]);
 
   const [quantity, setQuantity] = useState<{ [key: string]: number }>({});
   const navigate = useNavigate();
@@ -181,7 +182,9 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         onIncreaseQuantity={handleIncreaseQuantity}
         onDecreaseQuantity={handleDecreaseQuantity}
         setSelectedSizes={setSelectedSizes}
+        setSelectedSizesSKU={setSelectedSizesSKU}
         selectedSizes={selectedSizes}
+        selectedSizesSKU={selectedSizesSKU}
       />
     </Dialog>
   );

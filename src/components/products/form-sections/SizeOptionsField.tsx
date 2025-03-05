@@ -22,6 +22,8 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     size_value: "",
     size_unit: "",
     price: "",
+  sku: '',
+
     pricePerCase: "",
     stock: "0"
   });
@@ -37,6 +39,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     const currentSizes = form.getValues("sizes") || [];
     form.setValue("sizes", [...currentSizes, {
       size_value: newSize.size_value,
+      sku: newSize.sku || "",
       size_unit: newSize.size_unit,
       price: parseFloat(newSize.price),
       pricePerCase: parseFloat(newSize.pricePerCase) || 0,
@@ -47,6 +50,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
       size_value: "",
       size_unit: "",
       price: "",
+      sku:"",
       pricePerCase: "",
       stock: "0"
     });
@@ -70,11 +74,18 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
             onChange={(e) => setNewSize({ ...newSize, size_value: e.target.value })}
             placeholder="e.g., Small"
           />
+          <FormLabel>SKU</FormLabel>
+          <Input
+            type="text"
+            value={newSize.size_value}
+            onChange={(e) => setNewSize({ ...newSize, size_value: e.target.value })}
+            placeholder="e.g., Small"
+          />
         </div>
         <div>
           <FormLabel>Unit</FormLabel>
           <Input
-            value={newSize.size_unit}
+            value={newSize.sku}
             onChange={(e) => setNewSize({ ...newSize, size_unit: e.target.value })}
             placeholder="e.g., ml"
           />

@@ -68,6 +68,7 @@ export const addProductService = async (data: ProductFormValues) => {
       size_value: size.size_value || '0',
       size_unit: size.size_unit || 'unit',
       price: size.price || 0,
+      sku: size.sku || "",
       price_per_case: Number(size.price_per_case) || 0,
 
       stock: size.stock || 0,
@@ -144,6 +145,7 @@ export const updateProductService = async (productId: string, data: ProductFormV
       price: Number(size.price) || 0,
       stock: Number(size.stock) || 0, 
       price_per_case: Number(size.price_per_case) || 0,
+      sku: size.sku || "",
 
           quantity_per_case: Number(size.quantity_per_case) || 1, // ✅ Ensure conversion
       rolls_per_case: Number(size.rolls_per_case) || 1,

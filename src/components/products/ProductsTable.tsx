@@ -116,6 +116,7 @@ export const ProductsTable = ({
                     product={product}
                     onEdit={onEdit}
                     onDelete={onDelete}
+                    
                   />
                 </TableCell>
               </TableRow>

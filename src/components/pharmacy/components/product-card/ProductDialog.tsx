@@ -30,7 +30,9 @@ interface ProductDialogProps {
   onCustomizationChange: (customizations: Record<string, string>) => void;
   onAddToCart: () => void;
   setSelectedSizes: (sizeIds: string[]) => void;
+  setSelectedSizesSKU: (sizeIds: string[]) => void;
   selectedSizes: string[];
+  selectedSizesSKU: string[];
 }
 
 export const ProductDialog = ({
@@ -44,9 +46,11 @@ export const ProductDialog = ({
   onAddToCart,
   setSelectedSizes,
   selectedSizes,
+  selectedSizesSKU,
+  setSelectedSizesSKU
 }: ProductDialogProps) => {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-
+console.log(selectedSizesSKU)
   useEffect(() => {
     const loadImages = async () => {
       const loadedUrls: string[] = [];
@@ -129,6 +133,8 @@ export const ProductDialog = ({
               <div className="bg-gray-50 p-3 rounded-lg">
                 <span className="font-semibold block mb-1">SKU:</span>
                 <p className="text-gray-600">{product?.sku}</p>
+                {selectedSizesSKU.map((size) => size.split(" ")[0])}
+
               </div>
               <div className="bg-gray-50 p-3 rounded-lg">
                 <span className="font-semibold block mb-1">Category:</span>
@@ -149,6 +155,8 @@ export const ProductDialog = ({
                 product={product}
                 selectedSizes={selectedSizes}
                 onSizeSelect={setSelectedSizes}
+                selectedSizesSKU={selectedSizesSKU}
+                onSizeSelectSKU={setSelectedSizesSKU}
               />
             </div>
 
@@ -191,6 +199,8 @@ export const ProductDialog = ({
               isInCart={isInCart}
               isAddingToCart={isAddingToCart}
               onAddToCart={onAddToCart}
+              selectedSizesSKU={selectedSizesSKU}
+
               disabled={selectedSizes.length === 0}
             />
           </div>

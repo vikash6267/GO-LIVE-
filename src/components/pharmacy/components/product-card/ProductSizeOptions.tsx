@@ -8,7 +8,9 @@ import { Label } from "@/components/ui/label";
 interface ProductSizeOptionsProps {
   product: ProductDetails;
   selectedSizes?: string[];
+  selectedSizesSKU?: string[];
   onSizeSelect?: (sizeId: string[]) => void;
+  onSizeSelectSKU?: (sizeId: string[]) => void;
   quantity: { [key: string]: number };
   onIncreaseQuantity: (id:string) => void; // No sizeId required
   onDecreaseQuantity: (id:string) => void; // No sizeId required
@@ -21,12 +23,21 @@ export const ProductSizeOptions = ({
   product,
   selectedSizes = [],
   onSizeSelect,
+  selectedSizesSKU = [],
+  onSizeSelectSKU,
 }: ProductSizeOptionsProps) => {
   const handleSizeToggle = (sizeId: string) => {
     if (selectedSizes.includes(sizeId)) {
       onSizeSelect?.(selectedSizes.filter((s) => s !== sizeId));
     } else {
       onSizeSelect?.([...selectedSizes, sizeId]);
+    }
+  };
+  const handleSizeToggleSKU = (sizeSKU: string) => {
+    if (selectedSizesSKU.includes(sizeSKU)) {
+      onSizeSelectSKU?.(selectedSizesSKU.filter((s) => s !== sizeSKU));
+    } else {
+      onSizeSelectSKU?.([...selectedSizesSKU, sizeSKU]);
     }
   };
 
@@ -66,6 +77,7 @@ export const ProductSizeOptions = ({
       {product.sizes.map((size, index) => {
        console.log(size)
         const sizeId = `${size.size_value}-${size.size_unit}`;
+        const sizeSKU = `${size.sku} - ${size.id}` || "";
         const totalPrice = size.price * quantity[size.id] || size.price; // Using single quantity
 
         return (
@@ -74,7 +86,11 @@ export const ProductSizeOptions = ({
               <Checkbox
                 id={`size-${index}`}
                 checked={selectedSizes.includes(sizeId)}
-                onCheckedChange={() => handleSizeToggle(sizeId)}
+                onCheckedChange={() => {
+                  handleSizeToggle(sizeId);
+                  handleSizeToggleSKU(sizeSKU)
+                  
+                }}
               />
               <Label
                 htmlFor={`size-${index}`}

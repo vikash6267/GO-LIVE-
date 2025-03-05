@@ -20,6 +20,7 @@ interface SizeVariationFieldProps {
 export const SizeVariationField = ({ form }: SizeVariationFieldProps) => {
   const [newSize, setNewSize] = useState({
     name: "",
+    sku: "",
     size_value: "",
     size_unit: "",
     price: "",
@@ -38,6 +39,7 @@ export const SizeVariationField = ({ form }: SizeVariationFieldProps) => {
     const currentSizes = form.getValues("sizes") || [];
     form.setValue("sizes", [...currentSizes, {
       size_value: newSize.size_value,
+      sku: newSize.sku || "",
       size_unit: newSize.size_unit,
       price: parseFloat(newSize.price),
       pricePerCase: parseFloat(newSize.pricePerCase) || 0,
@@ -50,6 +52,7 @@ export const SizeVariationField = ({ form }: SizeVariationFieldProps) => {
       size_value: "",
       size_unit: "",
       price: "",
+      sku:"",
       pricePerCase: "",
       stock: "0"
     });

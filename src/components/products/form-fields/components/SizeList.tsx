@@ -7,6 +7,8 @@ interface Size {
   size_value: string;
   size_unit: string;
   price: number;
+  sku?: any;
+
   pricePerCase?: any;
   price_per_case?: number;
   stock: number;
@@ -72,6 +74,18 @@ export const SizeList = ({
                 />
               </div>
             )}
+            <div>
+              <span className="text-sm font-medium">SKU</span>
+              <Input
+                type="text"
+                value={size.sku || ""}
+                onChange={(e) =>
+                  onUpdateSize(index, "sku", e.target.value)
+                }
+                className="h-8"
+            
+              />
+            </div>
             <div>
               <span className="text-sm font-medium">$/CS</span>
               <Input

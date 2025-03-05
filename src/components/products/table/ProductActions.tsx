@@ -10,6 +10,8 @@ interface ProductActionsProps {
   product: Product;
   onEdit: (product: Product) => void;
   onDelete: (id: string) => void;
+  selectedSizesSKU?: string[];
+
 }
 
 export const ProductActions = ({ product, onEdit, onDelete }: ProductActionsProps) => {

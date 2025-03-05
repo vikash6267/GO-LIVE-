@@ -2,6 +2,7 @@
 export interface SizeVariation {
   size_value: string;
   size_unit: string;
+  sku?: any;
   price: number;
   pricePerCase: number;
   price_per_case: number;

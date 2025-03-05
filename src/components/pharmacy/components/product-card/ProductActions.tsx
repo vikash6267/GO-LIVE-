@@ -4,6 +4,7 @@ import { ShoppingCart, Check, Loader2 } from "lucide-react";
 
 interface ProductActionsProps {
   isInCart: boolean;
+  selectedSizesSKU: string[];
   isAddingToCart: boolean;
   onAddToCart: () => void;
   disabled?: boolean;  // Added disabled prop as optional
@@ -13,6 +14,8 @@ export const ProductActions = ({
   isInCart, 
   isAddingToCart, 
   onAddToCart,
+  selectedSizesSKU,
+
   disabled = false  // Default to false if not provided
 }: ProductActionsProps) => {
   return (

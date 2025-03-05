@@ -29,6 +29,15 @@ export const AddSizeForm = ({ newSize, onSizeChange, onAddSize, category }: AddS
         />
       </div>
       <div>
+        <FormLabel>SKU</FormLabel>
+        <Input
+          type="text"
+          value={newSize.sku}
+          onChange={(e) => onSizeChange({ ...newSize, sku: e.target.value })}
+          placeholder={`e.g., 500`}
+        />
+      </div>
+      <div>
         <FormLabel>Unit</FormLabel>
         <Select
           value={newSize.size_unit}

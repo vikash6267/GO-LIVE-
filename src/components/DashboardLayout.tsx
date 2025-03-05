@@ -69,7 +69,7 @@ export function DashboardLayout({
             label: "Dashboard",
             path: "/group/dashboard",
           },
-          { icon: BarChart3, label: "Analytics", path: "/group/analytics" },
+          // { icon: BarChart3, label: "Analytics", path: "/group/analytics" },
           { icon: ClipboardList, label: "Reports", path: "/group/reports" },
         ],
       },

@@ -1,4 +1,3 @@
-
 export interface ProductSpecifications {
   dimensions?: string;
   material?: string;
@@ -8,7 +7,7 @@ export interface ProductSpecifications {
 }
 
 export interface CustomizationOption {
-  type: 'text' | 'logo';
+  type: "text" | "logo";
   label: string;
   description?: string;
   price?: number;
@@ -36,6 +35,7 @@ export interface ProductDetails {
   offer: string;
   image: string;
   shipping_cost: number;
+  sku: string;
 
   images: string[];
   image_url: string;

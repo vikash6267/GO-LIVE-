@@ -57,7 +57,9 @@ export const ProductDialog = ({
             loadedUrls.push(image); // If image is already a full URL, add directly
           } else {
             // Get public URL from Supabase storage
-            const { data } = supabase.storage.from("product-images").getPublicUrl(image);
+            const { data } = supabase.storage
+              .from("product-images")
+              .getPublicUrl(image);
             if (data?.publicUrl) {
               loadedUrls.push(data.publicUrl);
             }
@@ -92,7 +94,6 @@ export const ProductDialog = ({
                 delay: 3000,
                 disableOnInteraction: false,
               }}
-        
             >
               {imageUrls.map((url, index) => (
                 <SwiperSlide key={index}>
@@ -122,6 +123,17 @@ export const ProductDialog = ({
                   {badge}
                 </Badge>
               ))}
+            </div>
+            <br />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <span className="font-semibold block mb-1">SKU:</span>
+                <p className="text-gray-600">{product?.sku}</p>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <span className="font-semibold block mb-1">Category:</span>
+                <p className="text-gray-600">{product.category}</p>
+              </div>
             </div>
           </div>
 
@@ -174,8 +186,6 @@ export const ProductDialog = ({
             )}
 
             <Separator />
-
-          
 
             <ProductActions
               isInCart={isInCart}

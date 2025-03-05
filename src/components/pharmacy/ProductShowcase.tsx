@@ -44,6 +44,7 @@ const ProductShowcase = () => {
           image_url: item.image_url || item.image || "/placeholder.svg",
           offer: "",
           endsIn: "",
+          sku: item.sku,
           productId: item.id.toString(),
           specifications: {
             safetyInfo: item.description || "",

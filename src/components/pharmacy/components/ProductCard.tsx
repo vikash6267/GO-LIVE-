@@ -153,8 +153,11 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold mb-1">{product.name}</h3>
-                <p className="text-gray-600 text-sm">{product.description}</p>
+                <h3 className="text-lg text-center font-semibold mb-1">
+                  {product.name}
+                </h3>
+
+                {/* <p className="text-gray-600 text-sm">{product.description}</p> */}
               </div>
 
               {/* <ProductPricing

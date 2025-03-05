@@ -275,26 +275,28 @@ export function OrdersList({
                 </Badge>
               </TableCell>
               <TableCell>
-                <Badge
-                  variant="secondary"
-                  className={getStatusColor(order?.payment_status || "")}
-                >
-                  {order?.payment_status.toUpperCase() || "UNPAID"}
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant="secondary"
+                    className={getStatusColor(order?.payment_status || "")}
+                  >
+                    {order?.payment_status.toUpperCase() || "UNPAID"}
+                  </Badge>
 
                   {order?.payment_status.toLowerCase() === "unpaid" && (
                     <button
                       onClick={() => {
-                        
-                        setSelectCustomerInfo(order)
-                        setModalIsOpen(true)}}
-                      className="ml-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+                        setSelectCustomerInfo(order);
+                        setModalIsOpen(true);
+                      }}
+                      className="bg-green-600 text-[14px] text-white px-5 py-1 rounded-md transition"
                     >
-                      Pay Now
+                      Pay
                     </button>
                   )}
-
-                </Badge>
+                </div>
               </TableCell>
+
               <TableCell>
                 {order.shipping?.trackingNumber && (
                   <Button
@@ -337,16 +339,21 @@ export function OrdersList({
                     onDeleteOrder={onDeleteOrder}
                   />
                 </TableCell>
-
               )}
             </TableRow>
-
-            
           );
         })}
 
-     { modalIsOpen && selectCustomerInfo && <PaymentForm modalIsOpen={modalIsOpen} setModalIsOpen={setModalIsOpen} customer={selectCustomerInfo.customerInfo} amountP={selectCustomerInfo.total} orderId={selectCustomerInfo.id} orders={orders}/>}
-
+        {modalIsOpen && selectCustomerInfo && (
+          <PaymentForm
+            modalIsOpen={modalIsOpen}
+            setModalIsOpen={setModalIsOpen}
+            customer={selectCustomerInfo.customerInfo}
+            amountP={selectCustomerInfo.total}
+            orderId={selectCustomerInfo.id}
+            orders={orders}
+          />
+        )}
       </TableBody>
     </Table>
   );

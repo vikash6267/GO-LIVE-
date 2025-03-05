@@ -18,7 +18,7 @@ const GroupDashboard = () => {
   const locations: Location[] = Array.from({ length: 40 }, (_, i) => {
     const date = new Date();
     date.setDate(date.getDate() - Math.floor(Math.random() * 10));
-    
+
     return {
       id: i + 1,
       name: `Pharmacy Location ${i + 1}`,
@@ -43,7 +43,7 @@ const GroupDashboard = () => {
       change: "+2",
       trend: "up" as const,
       description: "from last month",
-      tooltip: "Number of active pharmacy locations"
+      tooltip: "Number of active pharmacy locations",
     },
     {
       title: "Total Staff",
@@ -52,7 +52,7 @@ const GroupDashboard = () => {
       change: "+12",
       trend: "up" as const,
       description: "new members",
-      tooltip: "Total staff members across all locations"
+      tooltip: "Total staff members across all locations",
     },
     {
       title: "Monthly Revenue",
@@ -61,7 +61,7 @@ const GroupDashboard = () => {
       change: "+8.2%",
       trend: "up" as const,
       description: "vs last month",
-      tooltip: "Combined revenue from all locations"
+      tooltip: "Combined revenue from all locations",
     },
     {
       title: "Growth Rate",
@@ -70,8 +70,8 @@ const GroupDashboard = () => {
       change: "+2.4%",
       trend: "up" as const,
       description: "vs last quarter",
-      tooltip: "Overall business growth rate"
-    }
+      tooltip: "Overall business growth rate",
+    },
   ];
 
   // Function to get icon component based on type
@@ -102,29 +102,29 @@ const GroupDashboard = () => {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, index) => (
-            <EnhancedStatsCard 
-              key={index} 
-              {...stat} 
+            <EnhancedStatsCard
+              key={index}
+              {...stat}
               icon={getIconComponent(stat.iconType)}
             />
           ))}
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          <Card className="lg:col-span-2">
+        <div className="grid gap-6 ">
+          {/* <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle>Location Overview</CardTitle>
             </CardHeader>
             <CardContent>
               <LocationMap locations={locations} />
             </CardContent>
-          </Card>
-          
-          <div className="lg:col-span-1">
+          </Card> */}
+
+          <div className="">
             <QuickActions />
           </div>
         </div>
-        
+
         <Card className="overflow-hidden">
           <CardHeader className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <CardTitle>Locations</CardTitle>
@@ -140,8 +140,8 @@ const GroupDashboard = () => {
         </Card>
       </div>
 
-      <AddPharmacyModal 
-        open={isAddPharmacyOpen} 
+      <AddPharmacyModal
+        open={isAddPharmacyOpen}
         onOpenChange={setIsAddPharmacyOpen}
         onPharmacyAdded={handlePharmacyAdded}
       />

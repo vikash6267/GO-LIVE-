@@ -13,7 +13,7 @@ interface OrderItemsSectionProps {
 export function OrderItemsSection({ orderItems, form }) {
   const [products, setProducts] = useState([]);
   const { toast } = useToast();
-console.log(orderItems)
+
   useEffect(() => {
     const fetchProducts = async () => {
       const { data, error } = await supabase.from('products').select('*');

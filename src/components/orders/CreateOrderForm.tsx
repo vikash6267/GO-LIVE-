@@ -73,6 +73,22 @@ export function CreateOrderForm({
           zip_code: userProfile?.zip_code || "",
         },
       },
+
+      shippingAddress: {
+        fullName:
+        initialData?.customerInfo.name ||
+          `${userProfile?.first_name || ""} ${userProfile?.last_name || ""}`,
+        email: initialData?.customerInfo?.email || "",
+        phone: userProfile?.mobile_phone || "",
+        address: {
+          street: userProfile?.company_name || "",
+          city: userProfile?.city || "",
+          state: userProfile?.state || "",
+          zip_code: userProfile?.zip_code || "",
+        },
+      },
+
+
       order_number: "",
       items: cartItems,
       shipping: {
@@ -184,6 +200,7 @@ export function CreateOrderForm({
         notes: data.specialInstructions,
         shipping_method: data.shipping?.method,
         customerInfo: data.customerInfo,
+        shippingAddress: data.shippingAddress,
         tracking_number: data.shipping?.trackingNumber,
         estimated_delivery:
           data.shipping?.estimatedDelivery ||

@@ -56,10 +56,10 @@ const paymentSchema = z.object({
 // Add shippingAddress schema
 const shippingAddressSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
-  street: z.string().min(1, "Street is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
-  zip_code: z.string().min(5, "Zip code is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().min(0, "Phone number must be at least 10 digits"),
+  address: addressSchema,
+ 
 });
 
 export const orderFormSchema = z.object({

@@ -97,7 +97,7 @@ export const ProductDialog = ({
             >
               {imageUrls.map((url, index) => (
                 <SwiperSlide key={index}>
-                  <div className="aspect-square rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 flex items-center justify-center p-8 transition-all duration-300 group hover:from-emerald-100 hover:to-emerald-200/50">
+                  <div className="aspect-square rounded-xl bg-gradient-to-br bg-gray-400 to-emerald-100/50 flex items-center justify-center p-8 transition-all duration-300 group hover:bg-gray-500 hover:to-emerald-200/50">
                     <img
                       src={url}
                       alt={product.name}

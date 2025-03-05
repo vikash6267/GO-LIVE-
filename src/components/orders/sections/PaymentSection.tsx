@@ -177,9 +177,6 @@ export function PaymentSection({ form }: { form: any }) {
 
   return (
     <div className="space-y-4">
-
- 
-
       <FormField
         control={form.control}
         name="payment.method"
@@ -193,7 +190,7 @@ export function PaymentSection({ form }: { form: any }) {
                 </SelectTrigger>
               </FormControl>
               <SelectContent>
-                <SelectItem value="card">Credit Card (2% fee)</SelectItem>
+                <SelectItem value="card">Credit Card </SelectItem>
                 <SelectItem value="ach">ACH/eCheck </SelectItem>
                 {/* <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
                 <SelectItem value="manual">Manual Payment</SelectItem> */}

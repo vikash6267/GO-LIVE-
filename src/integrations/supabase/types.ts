@@ -344,6 +344,7 @@ export type Database = {
           id: string;
           manager: string | null;
           name: string;
+          address?: any;
           profile_id: string | null;
           status: Database["public"]["Enums"]["user_status"];
           type: string;

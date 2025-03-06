@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -24,20 +23,20 @@ export const SignupForm = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     // console.log(`Input changed - Field: ${id}, Value: ${value}`);
-    setFormData(prev => ({ ...prev, [id]: value }));
+    setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     // console.log("Starting signup process with data:", formData);
-  
+
     if (!validateSignupForm(formData, toast)) {
       // console.log("Form validation failed");
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     try {
       // Step 1: Create auth user
       // console.log("Attempting to create auth user...");
@@ -52,7 +51,7 @@ export const SignupForm = () => {
           },
         },
       });
-  
+
       if (authError) {
         console.error("Auth error during signup:", authError);
         throw authError;
@@ -62,9 +61,9 @@ export const SignupForm = () => {
         console.error("No user data returned from auth signup");
         throw new Error("No user data returned from auth signup");
       }
-  
+
       console.log("Auth user created successfully:", authData.user.id);
-  
+
       // Step 2: Create profile
       const profileData = {
         id: authData.user.id,
@@ -81,34 +80,51 @@ export const SignupForm = () => {
       };
 
       // console.log("Attempting to create profile with data:", profileData);
-  
+
       const { error: profileError } = await supabase
         .from("profiles")
         .upsert([profileData]);
-  
+
       if (profileError) {
         // console.error("Profile creation error:", profileError);
         // If profile creation fails, we should clean up the auth user
-        const { error: deleteError } = await supabase.auth.admin.deleteUser(authData.user.id);
+        const { error: deleteError } = await supabase.auth.admin.deleteUser(
+          authData.user.id
+        );
         if (deleteError) {
-          console.error("Failed to clean up auth user after profile creation failed:", deleteError);
+          console.error(
+            "Failed to clean up auth user after profile creation failed:",
+            deleteError
+          );
         }
         throw profileError;
       }
-  
+
       console.log("Profile created successfully");
       toast({
         title: "Account Created",
-        description: "Your account has been created successfully. Please check your email to verify your account.",
+        description:
+          "Your account has been created successfully. Please check your email to verify your account.",
       });
-  
-      navigate("/login");
+
+      setFormData({
+        email: "",
+        password: "",
+        confirmPassword: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+      });
+
+      // navigate("/login", { state: { defaultTab: "login" } });
+      window.location.reload();
     } catch (error: any) {
       // console.error("Detailed signup error:", error);
       // console.error("Error stack trace:", error.stack);
       toast({
         title: "Error",
-        description: error.message || "Failed to create account. Please try again.",
+        description:
+          error.message || "Failed to create account. Please try again.",
         variant: "destructive",
       });
     } finally {

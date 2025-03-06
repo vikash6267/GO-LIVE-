@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from "@/types/product";
 import { ProductFormValues } from "@/components/products/schemas/productSchema";
@@ -10,14 +9,17 @@ export const fetchProductsService = async (
   searchQuery: string
 ) => {
   const offset = (page - 1) * pageSize;
-  
+
   let query = supabase
     .from("products")
-    .select(`
+    .select(
+      `
       *,
       sizes:product_sizes(*)
-    `, { count: 'exact' })
-    .order('created_at', { ascending: false })
+    `,
+      { count: "exact" }
+    )
+    .order("created_at", { ascending: false })
     .range(offset, offset + pageSize - 1);
 
   if (category !== "all") {
@@ -34,8 +36,9 @@ export const fetchProductsService = async (
 export const addProductService = async (data: ProductFormValues) => {
   const productData = {
     sku: data.sku,
+    key_features: data.key_features,
     name: data.name,
-    description: data.description || '',
+    description: data.description || "",
     category: data.category,
     base_price: data.base_price || 0,
     current_stock: data.current_stock || 0,
@@ -45,10 +48,10 @@ export const addProductService = async (data: ProductFormValues) => {
     customization: {
       allowed: data.customization?.allowed ?? false,
       options: data.customization?.options ?? [],
-      price: data.customization?.price ?? 0
+      price: data.customization?.price ?? 0,
     },
-    image_url: data.image_url || '',
-    images: data.images || []
+    image_url: data.image_url || "",
+    images: data.images || [],
   };
 
   const { data: newProduct, error: productError } = await supabase
@@ -63,10 +66,10 @@ export const addProductService = async (data: ProductFormValues) => {
   }
 
   if (data.sizes && data.sizes.length > 0 && newProduct) {
-    const sizesData = data.sizes.map(size => ({
+    const sizesData = data.sizes.map((size) => ({
       product_id: newProduct.id,
-      size_value: size.size_value || '0',
-      size_unit: size.size_unit || 'unit',
+      size_value: size.size_value || "0",
+      size_unit: size.size_unit || "unit",
       price: size.price || 0,
       sku: size.sku || "",
       price_per_case: Number(size.price_per_case) || 0,
@@ -74,8 +77,7 @@ export const addProductService = async (data: ProductFormValues) => {
       stock: size.stock || 0,
       rolls_per_case: Number(size.rolls_per_case) || 0,
       shipping_cost: Number(size.shipping_cost) || 15,
-      quantity_per_case: size.quantity_per_case
-
+      quantity_per_case: size.quantity_per_case,
     }));
 
     const { error: sizesError } = await supabase
@@ -91,7 +93,10 @@ export const addProductService = async (data: ProductFormValues) => {
   return newProduct;
 };
 
-export const updateProductService = async (productId: string, data: ProductFormValues) => {
+export const updateProductService = async (
+  productId: string,
+  data: ProductFormValues
+) => {
   // console.log("Updating product with data:", data);
 
   try {
@@ -99,8 +104,9 @@ export const updateProductService = async (productId: string, data: ProductFormV
       .from("products")
       .update({
         sku: data.sku,
+        key_features: data.key_features,
         name: data.name,
-        description: data.description || '',
+        description: data.description || "",
         category: data.category,
         base_price: data.base_price || 0,
         current_stock: data.current_stock || 0,
@@ -110,11 +116,11 @@ export const updateProductService = async (productId: string, data: ProductFormV
         customization: {
           allowed: data.customization?.allowed ?? false,
           options: data.customization?.options ?? [],
-          price: data.customization?.price ?? 0
+          price: data.customization?.price ?? 0,
         },
-        image_url: data.image_url || '',
+        image_url: data.image_url || "",
         images: data.images || [],
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq("id", productId);
 
@@ -134,41 +140,35 @@ export const updateProductService = async (productId: string, data: ProductFormV
       throw deleteError;
     }
 
+    console.log(data.sizes);
 
-    console.log(data.sizes)
-
-    
-    const sizesData = data.sizes.map(size => ({
+    const sizesData = data.sizes.map((size) => ({
       product_id: productId,
       size_value: size.size_value || "0",
       size_unit: size.size_unit || "unit",
       price: Number(size.price) || 0,
-      stock: Number(size.stock) || 0, 
+      stock: Number(size.stock) || 0,
       price_per_case: Number(size.price_per_case) || 0,
       sku: size.sku || "",
 
-          quantity_per_case: Number(size.quantity_per_case) || 1, // ✅ Ensure conversion
+      quantity_per_case: Number(size.quantity_per_case) || 1, // ✅ Ensure conversion
       rolls_per_case: Number(size.rolls_per_case) || 1,
-      shipping_cost: size.shipping_cost , // ✅ Ensure conversion
+      shipping_cost: size.shipping_cost, // ✅ Ensure conversion
     }));
-    
-    
-    console.log(sizesData)
-    
 
+    console.log(sizesData);
 
     const { error: sizesError } = await supabase
       .from("product_sizes")
       .insert(sizesData)
       .select(); // Fetch inserted data to confirm
-    
+
     if (sizesError) {
       console.error("Error inserting sizes:", sizesError);
       throw sizesError;
     } else {
       console.log("Sizes inserted successfully!");
     }
-    
 
     return { success: true };
   } catch (error) {

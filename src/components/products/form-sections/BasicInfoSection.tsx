@@ -1,4 +1,3 @@
-
 import {
   FormControl,
   FormField,
@@ -26,9 +25,14 @@ interface BasicInfoSectionProps {
   generateSKU: (category: string) => string;
 }
 
-export const BasicInfoSection = ({ form, generateSKU }: BasicInfoSectionProps) => {
+export const BasicInfoSection = ({
+  form,
+  generateSKU,
+}: BasicInfoSectionProps) => {
   const [isEditingDescription, setIsEditingDescription] = useState(false);
-  const [tempDescription, setTempDescription] = useState(form.getValues("description") || "");
+  const [tempDescription, setTempDescription] = useState(
+    form.getValues("description") || ""
+  );
   const [isBold, setIsBold] = useState(false);
   const [fontSize, setFontSize] = useState("base");
 
@@ -121,6 +125,19 @@ export const BasicInfoSection = ({ form, generateSKU }: BasicInfoSectionProps) =
           </FormItem>
         )}
       />
+      <FormField
+        control={form.control}
+        name="key_features"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>key features</FormLabel>
+            <FormControl>
+              <Input placeholder="Auto key_features" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       <FormField
         control={form.control}
@@ -149,14 +166,11 @@ export const BasicInfoSection = ({ form, generateSKU }: BasicInfoSectionProps) =
                     variant="ghost"
                     size="sm"
                     onClick={toggleBold}
-                    className={`h-8 w-8 p-0 ${isBold ? 'bg-gray-100' : ''}`}
+                    className={`h-8 w-8 p-0 ${isBold ? "bg-gray-100" : ""}`}
                   >
                     <Bold className="h-4 w-4" />
                   </Button>
-                  <Select
-                    value={fontSize}
-                    onValueChange={handleFontSizeChange}
-                  >
+                  <Select value={fontSize} onValueChange={handleFontSizeChange}>
                     <SelectTrigger className="w-[110px] h-8">
                       <Type className="h-4 w-4 mr-2" />
                       <SelectValue placeholder="Font size" />
@@ -174,8 +188,18 @@ export const BasicInfoSection = ({ form, generateSKU }: BasicInfoSectionProps) =
                 <Input
                   placeholder="Product Description"
                   value={isEditingDescription ? tempDescription : field.value}
-                  onChange={isEditingDescription ? (e) => setTempDescription(e.target.value) : field.onChange}
-                  className={`pr-20 text-${fontSize} ${isBold ? 'font-bold' : 'font-medium'} ${isEditingDescription ? 'border-primary ring-2 ring-primary/20' : ''}`}
+                  onChange={
+                    isEditingDescription
+                      ? (e) => setTempDescription(e.target.value)
+                      : field.onChange
+                  }
+                  className={`pr-20 text-${fontSize} ${
+                    isBold ? "font-bold" : "font-medium"
+                  } ${
+                    isEditingDescription
+                      ? "border-primary ring-2 ring-primary/20"
+                      : ""
+                  }`}
                   disabled={!isEditingDescription}
                 />
               </FormControl>

@@ -1,4 +1,3 @@
-
 import { ProductFormValues } from "../schemas/productSchema";
 
 export const validateProductForm = (values: ProductFormValues) => {
@@ -14,13 +13,16 @@ export const validateProductForm = (values: ProductFormValues) => {
   if (!values.sku) {
     errors.sku = "SKU is required";
   }
+  if (!values.key_features) {
+    errors.key_features = "key_features is required";
+  }
 
   if (!values.category) {
     errors.category = "Category is required";
   }
 
   // Price Validation
-  if (typeof values.base_price !== 'number' || values.base_price < 0) {
+  if (typeof values.base_price !== "number" || values.base_price < 0) {
     errors.base_price = "Base price must be a positive number";
   }
 
@@ -38,16 +40,20 @@ export const validateProductForm = (values: ProductFormValues) => {
   if (values.sizes) {
     values.sizes.forEach((size, index) => {
       if (size.price < 0) {
-        errors[`sizes.${index}.price` as keyof ProductFormValues] = "Price must be positive";
+        errors[`sizes.${index}.price` as keyof ProductFormValues] =
+          "Price must be positive";
       }
       if (!size.size_unit) {
-        errors[`sizes.${index}.size_unit` as keyof ProductFormValues] = "Size unit is required";
+        errors[`sizes.${index}.size_unit` as keyof ProductFormValues] =
+          "Size unit is required";
       }
       if (!size.size_value) {
-        errors[`sizes.${index}.size_value` as keyof ProductFormValues] = "Size value is required";
+        errors[`sizes.${index}.size_value` as keyof ProductFormValues] =
+          "Size value is required";
       }
       if (size.stock < 0) {
-        errors[`sizes.${index}.stock` as keyof ProductFormValues] = "Stock cannot be negative";
+        errors[`sizes.${index}.stock` as keyof ProductFormValues] =
+          "Stock cannot be negative";
       }
     });
   }
@@ -57,7 +63,7 @@ export const validateProductForm = (values: ProductFormValues) => {
 
 export const validateImageUpload = (file: File) => {
   const maxSize = 5 * 1024 * 1024; // 5MB
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
 
   if (!allowedTypes.includes(file.type)) {
     return "File type not supported. Please upload a JPG, PNG, or GIF file.";

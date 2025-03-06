@@ -47,10 +47,10 @@ export const ProductDialog = ({
   setSelectedSizes,
   selectedSizes,
   selectedSizesSKU,
-  setSelectedSizesSKU
+  setSelectedSizesSKU,
 }: ProductDialogProps) => {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
-console.log(selectedSizesSKU)
+  console.log(selectedSizesSKU);
   useEffect(() => {
     const loadImages = async () => {
       const loadedUrls: string[] = [];
@@ -118,13 +118,13 @@ console.log(selectedSizesSKU)
 
             {/* Compliance Badges */}
             <div className="flex flex-wrap gap-2 mt-4">
-              {["USP 671 Tested", "Child-Resistant"].map((badge) => (
+              {product.key_features?.split(",").map((feature) => (
                 <Badge
-                  key={badge}
+                  key={feature.trim()}
                   variant="secondary"
                   className="bg-emerald-50 text-emerald-700 border border-emerald-200"
                 >
-                  {badge}
+                  {feature.trim()}
                 </Badge>
               ))}
             </div>
@@ -133,8 +133,7 @@ console.log(selectedSizesSKU)
               <div className="bg-gray-50 p-3 rounded-lg">
                 <span className="font-semibold block mb-1">SKU:</span>
                 {/* <p className="text-gray-600">{product?.sku}</p> */}
-                {selectedSizesSKU.map((size) => (size.split(" ")[0]) )}
-
+                {selectedSizesSKU.map((size) => size.split(" ")[0])}
               </div>
               <div className="bg-gray-50 p-3 rounded-lg">
                 <span className="font-semibold block mb-1">Category:</span>
@@ -159,8 +158,6 @@ console.log(selectedSizesSKU)
                 onSizeSelectSKU={setSelectedSizesSKU}
               />
             </div>
-
-          
 
             {/* Key Features */}
             {/* {product.specifications?.safetyInfo && (
@@ -200,7 +197,6 @@ console.log(selectedSizesSKU)
               isAddingToCart={isAddingToCart}
               onAddToCart={onAddToCart}
               selectedSizesSKU={selectedSizesSKU}
-
               disabled={selectedSizes.length === 0}
             />
           </div>

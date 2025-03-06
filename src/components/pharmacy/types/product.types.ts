@@ -37,6 +37,7 @@ export interface ProductDetails {
   image: string;
   shipping_cost: number;
   sku: string;
+  key_features: string;
 
   images: string[];
   image_url: string;

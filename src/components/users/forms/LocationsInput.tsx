@@ -34,7 +34,11 @@ export function LocationsInput({ form }: LocationsInputProps) {
       },
     };
 
-    form.setValue("locations", [...locations, newLocation]);
+    form.setValue("locations", [...locations, newLocation], {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    
   };
 
   const handleImportLocations = (importedLocations: LocationData[]) => {

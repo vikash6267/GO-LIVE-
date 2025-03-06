@@ -19,7 +19,7 @@ import {
 import { AddressFields } from "../AddressFields";
 import { Minus, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface LocationCardProps {
   location: LocationData;
@@ -39,13 +39,29 @@ export function LocationCard({
 
   const handleSave = () => {
     const currentLocation = form.getValues(`locations.${index}`);
-
+  console.log(currentLocation)
+    // ✅ Check if `shippingAddress` exists before using it
+    if (currentLocation?.address && (currentLocation.address as any).shippingAddress) {
+      const { shippingAddress } = currentLocation.address as any;
+  
+      currentLocation.address = {
+        ...currentLocation.address,
+        ...shippingAddress, // ✅ Moves fields to `address`
+      };
+  
+      delete (currentLocation.address as any).shippingAddress; // ❌ Remove `shippingAddress`
+    }
+  
+    console.log("Updated Location Data:", currentLocation);
+  
+    // 🛑 Validate required fields
     if (
-      !currentLocation.name ||
-      !currentLocation.address.street1 ||
-      !currentLocation.address.city ||
-      !currentLocation.address.state ||
-      !currentLocation.address.zip_code
+      !currentLocation?.name || 
+      !currentLocation?.address?.street1 || 
+      !currentLocation?.address?.city || 
+      !currentLocation?.address?.state || 
+      !currentLocation?.address?.zip_code || 
+      !currentLocation?.address?.faxNumber // ✅ Now correctly stored in `address`
     ) {
       toast({
         title: "Missing Information",
@@ -54,12 +70,39 @@ export function LocationCard({
       });
       return;
     }
-
+  
+    // ✅ Ensure form updates its values
+    form.setValue(`locations.${index}`, currentLocation, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  
     toast({
       title: "Location Saved",
       description: `${currentLocation.name} has been saved successfully.`,
     });
   };
+  
+  useEffect(() => {
+    const currentLocation = form.getValues(`locations.${index}`);
+  
+    if (currentLocation?.address) {
+      (currentLocation.address as any).shippingAddress = {
+        street1: currentLocation.address.street1 || "",
+        street2: currentLocation.address.street2 || "",
+        city: currentLocation.address.city || "",
+        state: currentLocation.address.state || "",
+        zip_code: currentLocation.address.zip_code || "",
+        faxNumber: currentLocation.address.faxNumber || "",
+      };
+  
+      form.setValue(`locations.${index}`, currentLocation, {
+        shouldDirty: false,
+        shouldValidate: false,
+      });
+    }
+  }, [form, index]);
+  
 
   return (
     <Card>

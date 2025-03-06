@@ -67,6 +67,7 @@ export const updateUserProfile = async (
       mobile_phone: values.mobilePhone?.trim() || null,
       billing_address: values.billingAddress || {},
       shipping_address: values.shippingAddress || {},
+      locations: values.locations || [{}],
       same_as_shipping: values.sameAsShipping || false,
       freeShipping: values.freeShipping || false,
       tax_preference: values.taxPreference || "Taxable",

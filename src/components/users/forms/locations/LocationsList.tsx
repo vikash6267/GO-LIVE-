@@ -18,6 +18,7 @@ export function LocationsList({ locations, form }: LocationsListProps) {
 
   return (
     <div className="space-y-4">
+      
       {locations.map((location, index) => (
         <LocationCard
           key={index}

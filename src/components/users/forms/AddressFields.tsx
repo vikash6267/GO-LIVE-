@@ -1,5 +1,4 @@
 import { UseFormReturn } from "react-hook-form";
-import { UserFormData } from "../schemas/userFormSchemas";
 import { AddressInput } from "./address/AddressInput";
 import { StateSelect } from "./address/StateSelect";
 
@@ -10,7 +9,7 @@ interface AddressFieldsProps {
 }
 
 export function AddressFields({ form, type, prefix = "" }: AddressFieldsProps) {
-  const fieldName = (field: string) => `${type}Address.${field}`;
+  const fieldName = (field: string) => `${prefix ? `${prefix}.` : ""}${type}Address.${field}`;
 
   return (
     <div className="space-y-4">
@@ -34,7 +33,6 @@ export function AddressFields({ form, type, prefix = "" }: AddressFieldsProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <AddressInput form={form} fieldName={fieldName("city")} label="City" />
-
         <StateSelect form={form} fieldName={fieldName("state")} />
       </div>
 

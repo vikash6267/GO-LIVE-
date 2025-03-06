@@ -20,6 +20,7 @@ export function SharedUserForm({
   submitLabel,
   isSubmitting = false,
 }: SharedUserFormProps) {
+  
   const handleSubmit = async (values: BaseUserFormData) => {
     console.log(
       "SharedUserForm: Starting form submission with values:",
@@ -111,6 +112,7 @@ export function SharedUserForm({
   };
 
   const userType = form.watch("type");
+
 
   return (
     <Form {...form}>

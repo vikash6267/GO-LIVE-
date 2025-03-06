@@ -77,6 +77,27 @@ export function AddUserModal({
       paymentTerms: "DueOnReceipt",
       enablePortal: false,
       portalLanguage: "English",
+      locations: [  // ✅ Fix: Change from object `{}` to an array `[]`
+        {
+          name: "",
+          type: "headquarters",  // Provide a valid default type
+          status: "active",  // Provide a valid default status
+          address: {
+            attention: "",
+            countryRegion: "",
+            street1: "",
+            street2: "",
+            city: "",
+            state: "",
+            zip_code: "",
+            phone: "",
+            faxNumber: "",
+          },
+          manager: "",
+          contactEmail: "",
+          contactPhone: "",
+        }
+      ],
     },
   });
 

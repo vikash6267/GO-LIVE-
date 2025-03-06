@@ -66,18 +66,18 @@ export function EditUserModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent 
+      <DialogContent
         className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"
         aria-describedby="edit-user-description"
       >
         <DialogHeader>
           <DialogTitle>Edit Customer Profile</DialogTitle>
         </DialogHeader>
-        
+
         <div id="edit-user-description" className="sr-only">
           Edit customer profile information including personal details, contact information, and preferences
         </div>
-        
+
         {formState.isLoading && (
           <div className="flex items-center justify-center p-4">
             <Loader2 className="h-6 w-6 animate-spin" />

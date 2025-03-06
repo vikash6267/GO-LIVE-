@@ -58,17 +58,20 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
 
   const handleDownloadPDF = async () => {
     if (!invoiceRef.current) return;
-
-    const canvas = await html2canvas(invoiceRef.current, { scale: 2 });
+  
+    await new Promise((resolve) => setTimeout(resolve, 500)); // Wait before capturing
+  
+    const canvas = await html2canvas(invoiceRef.current, { scale: 1.5 });
     const imgData = canvas.toDataURL("image/png");
-
+  
     const pdf = new jsPDF("p", "mm", "a4");
-    const imgWidth = 210; // A4 width in mm
+    const imgWidth = 210;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
+  
     pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
     pdf.save(`Invoice_${invoice.id}.pdf`);
   };
+  
 
   console.log(invoice)
   return (

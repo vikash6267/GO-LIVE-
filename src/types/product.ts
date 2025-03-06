@@ -1,4 +1,3 @@
-
 export interface ProductSize {
   id: string;
   product_id: string;
@@ -17,6 +16,7 @@ export interface ProductSize {
 export interface Product {
   id: string;
   sku: string;
+  key_features: string;
   name: string;
   description: string;
   category: string;
@@ -28,7 +28,7 @@ export interface Product {
   quantity_per_case?: number;
   shipping_cost?: number;
   size_unit?: string;
-  
+
   size_value?: number;
   base_price: number;
   image_url?: string;

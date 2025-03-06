@@ -45,6 +45,7 @@ const ProductShowcase = () => {
           offer: "",
           endsIn: "",
           sku: item.sku,
+          key_features: item.key_features,
           productId: item.id.toString(),
           specifications: {
             safetyInfo: item.description || "",
@@ -57,6 +58,7 @@ const ProductShowcase = () => {
               size_unit: size.size_unit,
               price: size.price,
               sku: size.sku || "",
+              key_features: size.key_features || "",
               quantity_per_case: size.quantity_per_case,
               pricePerCase: size.price_per_case,
               price_per_case: size.price_per_case,

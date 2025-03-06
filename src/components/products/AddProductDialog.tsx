@@ -1,6 +1,11 @@
-
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -27,13 +32,14 @@ export function AddProductDialog({
   onSubmit,
   isSubmitting = false,
   onProductAdded,
-  initialData
+  initialData,
 }: AddProductDialogProps) {
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
       name: initialData?.name || "",
       sku: initialData?.sku || "",
+      key_features: initialData?.key_features || "",
       description: initialData?.description || "",
       category: initialData?.category || "",
       images: initialData?.images || [],
@@ -46,21 +52,16 @@ export function AddProductDialog({
       customization: initialData?.customization || {
         allowed: false,
         options: [],
-        price: 0
+        price: 0,
       },
       trackInventory: initialData?.trackInventory ?? true,
-      image_url: initialData?.image_url || ""
-    }
+      image_url: initialData?.image_url || "",
+    },
   });
 
-
-
-
-  
-  useEffect(()=>{
-    console.log(initialData)
-      },[open])
-
+  useEffect(() => {
+    console.log(initialData);
+  }, [open]);
 
   const handleSubmit = async (values: ProductFormValues) => {
     try {
@@ -77,26 +78,31 @@ export function AddProductDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[725px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{initialData ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+          <DialogTitle>
+            {initialData ? "Edit Product" : "Add New Product"}
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <BasicInfoSection 
-              form={form} 
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-6"
+          >
+            <BasicInfoSection
+              form={form}
               generateSKU={(category) => {
                 const timestamp = Date.now().toString().slice(-4);
                 const prefix = category.slice(0, 3).toUpperCase();
                 return `${prefix}-${timestamp}`;
               }}
             />
-            <ImageUploadField 
-              form={form} 
+            <ImageUploadField
+              form={form}
               validateImage={(file) => {
                 const maxSize = 5 * 1024 * 1024;
                 if (file.size > maxSize) {
                   return "Image size should be less than 5MB";
                 }
-                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
                 if (!allowedTypes.includes(file.type)) {
                   return "Only JPG, PNG and GIF images are allowed";
                 }
@@ -106,18 +112,22 @@ export function AddProductDialog({
             <SizeOptionsField form={form} />
             <InventorySection form={form} />
             <DialogFooter>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isSubmitting}
                 className="w-full md:w-auto"
               >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    <span>{initialData ? 'Updating' : 'Adding'} Product...</span>
+                    <span>
+                      {initialData ? "Updating" : "Adding"} Product...
+                    </span>
                   </>
+                ) : initialData ? (
+                  "Update Product"
                 ) : (
-                  initialData ? "Update Product" : "Add Product"
+                  "Add Product"
                 )}
               </Button>
             </DialogFooter>

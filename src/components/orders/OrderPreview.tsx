@@ -31,12 +31,20 @@ export function OrderPreview({ orderData }: OrderPreviewProps) {
     : cartItems.reduce((total, item) => total + (item.shipping_cost || 0), 0);
 
 useEffect(()=>{
-  console.log(totalShippingCost)
+  console.log(orderData)
 },[])
 
   const safeOrderData = {
     customerInfo: orderData.customerInfo || {
       name: "",
+      email: "",
+      phone: "",
+      type: "Pharmacy",
+      address: { street: "", city: "", state: "", zip_code: "" },
+    },
+
+    shippingAddress : orderData.shippingAddress || {
+      fullName: "",
       email: "",
       phone: "",
       type: "Pharmacy",
@@ -56,6 +64,7 @@ useEffect(()=>{
     specialInstructions: orderData.specialInstructions || "",
   };
 
+  
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -73,7 +82,7 @@ useEffect(()=>{
         </SheetHeader>
 
         <div className="mt-6 space-y-6">
-          <OrderCustomerInfo customerInfo={safeOrderData.customerInfo} />
+          <OrderCustomerInfo customerInfo={safeOrderData.customerInfo} shippingAddress={safeOrderData.shippingAddress} />
           <OrderItemsList items={safeOrderData.items} />
 
           <div className="space-y-2">

@@ -153,7 +153,7 @@ console.log(currentOrder)
               </div>
             )}
 
-            <OrderCustomerInfo customerInfo={currentOrder.customerInfo} />
+            <OrderCustomerInfo customerInfo={currentOrder.customerInfo} shippingAddress={currentOrder.shippingAddress} />
             <OrderItemsList items={currentOrder.items} />
             <OrderPaymentInfo
               payment={currentOrder.payment}

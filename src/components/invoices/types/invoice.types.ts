@@ -10,7 +10,7 @@ export interface InvoiceItem {
 }
 
 export interface CustomerInfo {
-  name: string;
+  name: any;
   phone: string;
   email: string;
 }

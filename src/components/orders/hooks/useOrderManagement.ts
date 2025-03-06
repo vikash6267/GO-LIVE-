@@ -61,7 +61,7 @@ export const useOrderManagement = () => {
   
       const formattedOrders: OrderFormValues[] = (data as any[]).map((order) => {
         const profileData = order.profiles || {};
-  
+  console.log(data)
         return {
           id: order.id || "",
           customer: order.profile_id || "",
@@ -97,12 +97,17 @@ export const useOrderManagement = () => {
             notes: "",
           },
           specialInstructions: order.notes || "",
-          shippingAddress: order.customerInfo ? {
-            fullName: order.customerInfo.name || "",
-          street: order.customerInfo.address.street || "",
-          city:order.customerInfo.address.city || "",
-          state: order.customerInfo.address.state || "",
-          zip_code: order.customerInfo.address.zip_code || "",
+          shippingAddress: order.shippingAddress ? {
+            fullName: order.shippingAddress.fullName || "",
+            email: order.shippingAddress.email || "",
+            phone: order.shippingAddress.phone || "",
+      
+            address: {
+              street: order.shippingAddress.address.street || "",
+              city: order.shippingAddress.address.city || "",
+              state: order.shippingAddress.address.state || "",
+              zip_code: order.shippingAddress.address.zip_code || "",
+            },
           } : {
             fullName:
               profileData.first_name && profileData.last_name

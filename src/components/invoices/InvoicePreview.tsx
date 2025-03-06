@@ -10,13 +10,14 @@ import { useToast } from "@/components/ui/use-toast";
 interface InvoicePreviewProps {
   invoice?: {
     id: string;
+    invoice_number:any,
     customerInfo?: {
       name: string;
       phone: string;
       email: string;
     };
     shippingInfo?: {
-      name: string;
+      fullName: string;
       phone: string;
       email: string;
     };
@@ -69,6 +70,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
     pdf.save(`Invoice_${invoice.id}.pdf`);
   };
 
+  console.log(invoice)
   return (
     <SheetContent className=" sm:min-w-[900px] overflow-y-auto min-w-[30vw]">
       <div ref={invoiceRef} className="border p-6 space-y-8 bg-white">
@@ -85,14 +87,16 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
               className=" h-12 sm:h-16 relative z-10 contrast-200"
             />
 
-            <h2 className="text-xl font-bold mt-2">
-              {settings.business_name || "9RX"}
-            </h2>
             
           </div>
           <div className="mt-3 ml-5">936 Broad River Ln,<br /> Charlotte, <br /> NC 28211</div>
         </div>
-          <SheetTitle className="text-3xl">Invoice</SheetTitle>
+
+     <div>
+     <SheetTitle className="text-3xl">Invoice</SheetTitle>
+     <p className=" opacity-80 font-bold text-sm ">{invoice.invoice_number}  </p>
+     </div>
+
         </div>
 
         {/* Customer & Shipping Details */}
@@ -105,7 +109,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
           </div>
           <div>
             <h3 className="font-semibold">Ship To</h3>
-            <p>{invoice.shippingInfo?.name || "N/A"}</p>
+            <p>{invoice.shippingInfo?.fullName || "N/A"}</p>
             <p>{invoice.shippingInfo?.phone || "N/A"}</p>
             <p>{invoice.shippingInfo?.email || "N/A"}</p>
           </div>

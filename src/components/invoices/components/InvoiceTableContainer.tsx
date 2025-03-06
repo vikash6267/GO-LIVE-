@@ -169,6 +169,7 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
   const sortedInvoices = sortInvoices(invoices, sortConfig);
 
   const transformInvoiceForPreview = (invoice: Invoice) => {
+    console.log(invoice)
     try {
       const items = typeof invoice.items === 'string' ? JSON.parse(invoice.items) : invoice.items;
       const customerInfo = typeof invoice.customer_info === 'string' 
@@ -179,6 +180,7 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
         : invoice.shipping_info;
 
       return {
+        invoice_number :invoice.invoice_number,
         id: invoice.id,
         customerInfo,
         shippingInfo,

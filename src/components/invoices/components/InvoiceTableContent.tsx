@@ -44,7 +44,12 @@ export function InvoiceTableContent({
               <TableCell>{invoice.invoice_number}</TableCell>
               <TableCell>{invoice.orders?.order_number}</TableCell>
               <TableCell>
-                {invoice.profiles?.first_name} {invoice.profiles?.last_name}
+                {
+                  typeof invoice.customer_info === "object" && invoice.customer_info !== null && "name" in invoice.customer_info
+                    ? invoice.customer_info.name
+                    : `${invoice.profiles?.first_name ?? ""} ${invoice.profiles?.last_name ?? ""}`.trim()
+                }
+
               </TableCell>
               <TableCell>${invoice.amount.toFixed(2)}</TableCell>
               <TableCell>
@@ -52,7 +57,7 @@ export function InvoiceTableContent({
               </TableCell>
               <TableCell>{new Date(invoice.due_date).toLocaleDateString()}</TableCell>
               <TableCell onClick={(e) => e.stopPropagation()}>
-                <InvoiceRowActions 
+                <InvoiceRowActions
                   invoice={invoice}
                   onPreview={onPreview}
                   onActionComplete={onActionComplete}

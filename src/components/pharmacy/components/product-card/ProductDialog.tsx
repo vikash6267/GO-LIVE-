@@ -132,8 +132,8 @@ console.log(selectedSizesSKU)
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-gray-50 p-3 rounded-lg">
                 <span className="font-semibold block mb-1">SKU:</span>
-                <p className="text-gray-600">{product?.sku}</p>
-                {selectedSizesSKU.map((size) => size.split(" ")[0])}
+                {/* <p className="text-gray-600">{product?.sku}</p> */}
+                {selectedSizesSKU.map((size) => (size.split(" ")[0]) )}
 
               </div>
               <div className="bg-gray-50 p-3 rounded-lg">

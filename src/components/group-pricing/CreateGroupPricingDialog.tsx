@@ -291,7 +291,8 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
   }, [isOpen]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+  <div>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button 
           className="bg-gradient-to-r from-[#e6b980] to-[#eacda3] hover:opacity-90 text-gray-800"
@@ -300,7 +301,8 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
           <Plus className="h-4 w-4" /> Add Pricing
         </Button>
       </DialogTrigger>
-      <DialogContent className="bg-white">
+    <div className=" ">
+    <DialogContent className="bg-white max-h-50">
         <DialogHeader>
           <DialogTitle className="text-gray-800">
             {initialData ? "Edit" : "Create"} Group Pricing
@@ -310,39 +312,42 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
           </DialogDescription>
         </DialogHeader>
         {loading && !form.formState.isSubmitting ? (
-          <div className="flex items-center justify-center py-8">
+          <div className="flex items-center justify-center py-8 ">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
         ) : (
+         <div className="h-[70vh] overscroll-y overflow-y-scroll"> 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-              <BasicInfoFields form={form} />
-              <ProductSelection form={form} products={products} />
-              <DiscountFields form={form} />
-              <QuantityFields form={form} />
-              <GroupPharmacyFields
-                form={form}
-                groups={groups}
-                pharmacies={pharmacies}
-              />
-              <Button 
-                type="submit" 
-                className="w-full bg-gradient-to-r from-[#e6b980] to-[#eacda3] hover:opacity-90 text-gray-800"
-                disabled={loading}
-              >
-                {loading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></div>
-                    <span>Submitting...</span>
-                  </div>
-                ) : (
-                  <span>{initialData ? "Update" : "Create"} Group Pricing</span>
-                )}
-              </Button>
-            </form>
-          </Form>
+         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 ">
+           <BasicInfoFields form={form} />
+           <ProductSelection form={form} products={products} />
+           <DiscountFields form={form} />
+           <QuantityFields form={form} />
+           <GroupPharmacyFields
+             form={form}
+             groups={groups}
+             pharmacies={pharmacies}
+           />
+           <Button 
+             type="submit" 
+             className="w-full bg-gradient-to-r from-[#e6b980] to-[#eacda3] hover:opacity-90 text-gray-800"
+             disabled={loading}
+           >
+             {loading ? (
+               <div className="flex items-center gap-2">
+                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></div>
+                 <span>Submitting...</span>
+               </div>
+             ) : (
+               <span>{initialData ? "Update" : "Create"} Group Pricing</span>
+             )}
+           </Button>
+         </form>
+       </Form></div>
         )}
       </DialogContent>
+    </div>
     </Dialog>
+  </div>
   );
 }

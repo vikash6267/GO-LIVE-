@@ -160,10 +160,13 @@ export function CustomerSelectionField({ form ,initialData}: CustomerSelectionFi
         const shpiingInfo = await fetchShippingInfo(userProfile?.id);
         if (customerInfo) {
           form.setValue("customerInfo", customerInfo);
+          form.trigger("customerInfo"); // Trigger validation
         }
         if (shpiingInfo) {
           form.setValue("shippingAddress", shpiingInfo);
+          form.trigger("shippingAddress"); // Trigger validation
         }
+        
       } catch (error) {
         console.error("Error setting customer info:", error);
         toast({
@@ -178,7 +181,7 @@ export function CustomerSelectionField({ form ,initialData}: CustomerSelectionFi
     };
 
     setCustomerInfo();
-  }, [userProfile?.id]);
+  }, [userProfile?.id,form]);
 
   return (
     <div className="space-y-6">

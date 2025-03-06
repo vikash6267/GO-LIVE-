@@ -42,6 +42,8 @@ export function CreateOrderForm({
   const userProfile = useSelector(selectUserProfile);
   const { cartItems, clearCart } = useCart();
 
+
+  console.log(userProfile)
   const totalShippingCost =
   sessionStorage.getItem("shipping") == "true"
     ? 0
@@ -62,7 +64,7 @@ export function CreateOrderForm({
       customerInfo: {
         name:
         initialData?.customerInfo.name ||
-          `${userProfile?.first_name || ""} ${userProfile?.last_name || ""}`,
+          `${initialData?.customerInfo.name || ""} ${userProfile?.last_name || ""}`,
         email: initialData?.customerInfo?.email || "",
         phone: userProfile?.mobile_phone || "",
         type: "Pharmacy",
@@ -250,12 +252,12 @@ const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00
         payment_method: newOrder.paymentMethod as PaymentMethod,
         payment_notes: newOrder.notes || null,
         items: newOrder.items || [],
-        customer_info: {
+        customer_info: newOrder.customerInfo ||  {
           name: newOrder.customerInfo?.name,
           email: newOrder.customerInfo?.email || '',
           phone: newOrder.customerInfo?.phone || ''
         },
-        shipping_info: orderData.customerInfo.address || {},
+        shipping_info: orderData.shippingAddress || {},
         subtotal: calculatedTotal || parseFloat(calculatedTotal)
       };
 

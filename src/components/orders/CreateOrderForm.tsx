@@ -25,13 +25,17 @@ export interface CreateOrderFormProps {
   initialData?: Partial<OrderFormValues>;
   onFormChange?: (data: Partial<OrderFormValues>) => void;
   isEditing?:  boolean
+  use?:  string,
+  locationId?:any
 
 }
 
 export function CreateOrderForm({
   initialData,
   onFormChange,
-  isEditing
+  isEditing,
+  use,
+  locationId
 
 }: CreateOrderFormProps) {
   const { toast } = useToast();
@@ -355,7 +359,7 @@ const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <CustomerSelectionField form={form} initialData={initialData} />
+        <CustomerSelectionField form={form} initialData={initialData} locationId={locationId} />
 
         <OrderItemsSection orderItems={cartItems} form={form} />
 

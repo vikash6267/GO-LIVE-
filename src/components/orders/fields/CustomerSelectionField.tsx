@@ -10,6 +10,7 @@ import { supabase } from "@/supabaseClient";
 interface CustomerSelectionFieldProps {
   form: UseFormReturn<any>;
   initialData : any
+  locationId : any
 }
 
 // Improved customer validation schema
@@ -26,7 +27,7 @@ const customerValidationSchema = z.object({
   }),
 });
 
-export function CustomerSelectionField({ form ,initialData}: CustomerSelectionFieldProps) {
+export function CustomerSelectionField({ form ,initialData,locationId}: CustomerSelectionFieldProps) {
   const { toast } = useToast();
   const [isValidating, setIsValidating] = useState(false);
   const userProfile = useSelector(selectUserProfile);
@@ -96,7 +97,7 @@ export function CustomerSelectionField({ form ,initialData}: CustomerSelectionFi
       const { data, error } = await supabase
         .from("profiles")
         .select(
-          "first_name, last_name, email, mobile_phone, type, company_name, display_name ,shipping_address "
+          "first_name, last_name, email, mobile_phone, type, company_name, display_name ,shipping_address, locations "
         )
         .eq("status", "active")
         .eq("id", userId)

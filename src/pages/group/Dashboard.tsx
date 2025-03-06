@@ -12,6 +12,31 @@ import { useSelector } from "react-redux";
 import { selectUserProfile } from "@/store/selectors/userSelectors";
 import { supabase } from "@/integrations/supabase/client";
 
+
+export const fetchCustomerLocation = async (userId) => {
+  try {
+    const { data, error } = await supabase
+      .from("locations")
+      .select("*")
+      .eq("profile_id", userId);
+
+    if (error) {
+      console.error("Failed to fetch customer information:", error);
+      throw new Error("Failed to fetch customer information: " + error.message);
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error("No customer information found.");
+    }
+
+    console.log("Fetched Data:", data);
+
+    return data; // ✅ FIXED: Ab locations ki jagah data return ho raha hai
+  } catch (error) {
+    console.error("Error fetching customer info:", error);
+    return null;
+  }
+};
 const GroupDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddPharmacyOpen, setIsAddPharmacyOpen] = useState(false);
@@ -66,30 +91,7 @@ const GroupDashboard = () => {
 
 
 
-  const fetchCustomerLocation = async (userId) => {
-    try {
-      const { data, error } = await supabase
-        .from("locations")
-        .select("*")
-        .eq("profile_id", userId);
-  
-      if (error) {
-        console.error("Failed to fetch customer information:", error);
-        throw new Error("Failed to fetch customer information: " + error.message);
-      }
-  
-      if (!data || data.length === 0) {
-        throw new Error("No customer information found.");
-      }
-  
-      console.log("Fetched Data:", data);
-  
-      return data; // ✅ FIXED: Ab locations ki jagah data return ho raha hai
-    } catch (error) {
-      console.error("Error fetching customer info:", error);
-      return null;
-    }
-  };
+
   
 
   const fetchLocations = async () => {

@@ -98,9 +98,9 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
               <div className="bg-gray-50 p-3 rounded-lg">
                 <span className="font-semibold block mb-1">SKU:</span>
                 <p className="text-gray-600">{product.sku}</p>
-                {selectedSizesSKU.map((size)=>{
+                {/* {selectedSizesSKU?.map((size)=>{
                   size.slice()
-                })}
+                })} */}
               </div>
               <div className="bg-gray-50 p-3 rounded-lg">
                 <span className="font-semibold block mb-1">Category:</span>

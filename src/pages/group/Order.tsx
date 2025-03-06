@@ -1,7 +1,7 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { CreateOrderForm } from "@/components/orders/CreateOrderForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { OrderFormValues } from "@/components/orders/schemas/orderSchema";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
@@ -13,22 +13,69 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { useSelector } from "react-redux";
+import { selectUserProfile } from "@/store/selectors/userSelectors";
+import { fetchCustomerLocation } from "./Dashboard";
 
 export default function GroupOrder() {
   const [orderData, setOrderData] = useState<Partial<OrderFormValues>>({});
   const [selectedPharmacy, setSelectedPharmacy] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const userProfile = useSelector(selectUserProfile);
+  const [dbLocations,setDbLocations] = useState([])
+
+
+
+    const fetchLocations = async () => {
+      if (!userProfile?.id) return; // Agar ID nahi hai to return kar do
+      try {
+        const res = await fetchCustomerLocation(userProfile.id);
+        if (!res) return;
+  
+        const formatLocations = (data) => {
+          return data.map((location, index) => ({
+            id: location.id || index + 1,
+            name: location.name?.trim() ? location.name : `Location ${index + 1}`, // Agar name undefined ya empty ho to default set karega
+            address:location.address         
+            ,
+                contact_email: location.contact_email || "N/A",
+            contact_phone: location.contact_phone || "N/A",
+            created_at: location.created_at ? new Date(location.created_at).toISOString() : "N/A",
+            updated_at: location.updated_at ? new Date(location.updated_at).toISOString() : "N/A",
+            profile_id: location.profile_id || "N/A",
+            type: location.type || "N/A",
+            status: location.status || "pending",
+            manager: location.manager || "N/A",
+            ordersThisMonth: Math.floor(Math.random() * 100), // Dummy data
+          }));
+        };
+        
+        
+  
+        const formattedLocations = formatLocations(res);
+        console.log("Formatted Locations:", formattedLocations);
+  
+        setDbLocations(formattedLocations);
+        console.log("User Profile:", userProfile);
+      } catch (error) {
+        console.error("Error fetching locations:", error);
+      }
+    };
+  
+  
+    useEffect(() => {
+    
+    
+      fetchLocations();
+    }, [userProfile]);
+
 
   // Get group info from session storage
   const groupInfo = {
     name: sessionStorage.getItem("groupName") || "",
     id: sessionStorage.getItem("groupId") || "",
-    pharmacies: [
-      { id: "1", name: "Pharmacy A", location: "New York" },
-      { id: "2", name: "Pharmacy B", location: "Los Angeles" },
-      { id: "3", name: "Pharmacy C", location: "Chicago" },
-    ], // This would typically come from an API
+    pharmacies: dbLocations
   };
 
   // Simulate loading state
@@ -59,18 +106,44 @@ export default function GroupOrder() {
         customerInfo: {
           type: "Pharmacy",
           name: selectedPharmacyData.name,
-          email: sessionStorage.getItem("userEmail") || "",
-          phone: sessionStorage.getItem("userPhone") || "",
+          email: selectedPharmacyData.contact_email || "",
+          phone: selectedPharmacyData.contact_phone|| "",
           address: {
-            street: sessionStorage.getItem("pharmacyStreet") || "",
-            city: selectedPharmacyData.location,
-            state: sessionStorage.getItem("pharmacyState") || "",
-            zip_code: sessionStorage.getItem("pharmacyzip_code") || "",
+            street: selectedPharmacyData.address.street1 || "",
+            city: selectedPharmacyData.address.city,
+            state: selectedPharmacyData.address.state || "",
+            zip_code: selectedPharmacyData.address.zip_code || "",
           },
         },
       });
     }
   };
+
+  useEffect(() => {
+    if (selectedPharmacy) {
+      const selectedPharmacyData = groupInfo.pharmacies.find(
+        (p) => p.id === selectedPharmacy
+      );
+  
+      if (selectedPharmacyData) {
+        setOrderData({
+          customerInfo: {
+            type: "Pharmacy",
+            name: selectedPharmacyData.name,
+            email: selectedPharmacyData.contact_email || "",
+            phone: selectedPharmacyData.contact_phone || "",
+            address: {
+              street: selectedPharmacyData.address.street1 || "",
+              city: selectedPharmacyData.address.city,
+              state: selectedPharmacyData.address.state || "",
+              zip_code: selectedPharmacyData.address.zip_code || "",
+            },
+          },
+        });
+      }
+    }
+  }, [selectedPharmacy]); // Jab bhi pharmacy change ho, orderData update ho
+  
 
   const handleFormChange = (data: Partial<OrderFormValues>) => {
     setOrderData(data);
@@ -126,6 +199,8 @@ export default function GroupOrder() {
             <CreateOrderForm
               initialData={orderData}
               onFormChange={handleFormChange}
+              locationId={selectedPharmacy}
+              use="group"
             />
           )}
         </Card>

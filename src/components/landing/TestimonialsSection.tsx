@@ -7,7 +7,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import valley from "../../assests/home/1.png"
 import vistara from "../../assests/home/2.png"
-import cannon from "../../assests/home/2.png"
+import cannon from "../../assests/home/3.png"
 
 // Import Swiper styles
 import "swiper/css";
@@ -151,7 +151,7 @@ const testimonials = [
     name: "Ryan Yanicko",
     title: "Cannon Pharmacy Mooresville",
     image:
-     cannon,
+      cannon,
     quote:
       "Snehal and 9Rx have been excellent to work with getting our pharmacy bags and labels designed and delivered. They took the time to address our concerns and make sure the product was exactly to our specifications. The product quality is excellent and they are very reliable with ordering and delivery of the products.",
   },
@@ -159,7 +159,7 @@ const testimonials = [
     name: "Mark Cantrell",
     title: "Operations Manager, Cannon Pharmacy Main",
     image:
-    cannon,
+      cannon,
     quote:
       "It has been a pleasure and wonderful experience working with 9rx. The products are wonderful and are customized to our exact specifications perfectly. The service and customer service are unparalleled and unmatched by any vendor that I have or currently work with. We are extremely pleased and lucky to have the amazing opportunity to do business with 9rx. We HIGHLY recommend this company and its services. Extremely Impressed and Pleased.",
   },
@@ -172,29 +172,15 @@ const testimonials = [
       "I am incredibly impressed with the service I have received from 9RX when purchasing our pharmacy supplies (prescription labels, custom bags and medication droppers/adaptors). 9RX is truly reliable, offering high-quality items that meet all of our needs. The ordering process was straightforward, and the products arrived on time and in excellent condition. What stood out the most, however, was the excellent customer service. Snehal and the team have been responsive, knowledgeable, and always available to assist with any questions or concerns. I can confidently recommend 9RX to anyone looking for top-notch pharmacy supplies and reliable service.",
   },
   {
-    name: "John Smith",
+    name: "Manan Patel",
     title: "Independent Pharmacy Owner",
     image:
-     vistara,
+      vistara,
     quote:
       "I'm extremely satisfied with my purchases of pharmacy vials and other supplies from 9-Rx.com past 8 months and more. The quality of the products is very good and the service was fast and reliable. What helped my all businesses the most was the affordability of the pharmacy supplies when reimbursement rate is very challenging now a days. But what truly sets then apart is the trustworthiness of the team. They're knowledgeable, responsive, and genuinely care about their customers. Overall, I highly recommend for all your pharmacy needs. Thanks Much Snehal and Rajesh.",
   },
-  {
-    name: "Emily Johnson",
-    title: "Clinical Pharmacist",
-    image:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&h=300",
-    quote:
-      "The attention to detail and quality of 9RX's products have made a significant difference in our daily operations. Their custom prescription labels are durable and the print quality is exceptional. Customer service is always prompt and helpful. I appreciate how they've streamlined our ordering process.",
-  },
-  {
-    name: "David Chen",
-    title: "Hospital Pharmacy Director",
-    image:
-      "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&h=300",
-    quote:
-      "Working with 9RX has been a game-changer for our hospital pharmacy. Their reliable delivery schedules and consistent product quality have helped us maintain our high standards of patient care. The team is always proactive about communicating any potential supply chain issues, which is invaluable in our industry.",
-  },
+
+
 ];
 
 export default TestimonialsSection;

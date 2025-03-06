@@ -24,7 +24,7 @@ export function AddressInput({
 }: AddressInputProps) {
   // Create a valid HTML id from the fieldName by replacing dots with dashes
   const inputId = fieldName.replace(/\./g, "-");
-console.log(fieldName)
+
   // Determine appropriate autocomplete value based on field name
   const getAutocomplete = () => {
     if (fieldName.includes("street")) return "street-address";

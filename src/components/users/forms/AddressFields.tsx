@@ -4,7 +4,7 @@ import { StateSelect } from "./address/StateSelect";
 
 interface AddressFieldsProps {
   form: UseFormReturn<any>;
-  type: "billing" | "shipping" | "address";
+  type?: "billing" | "shipping" | "address";
   prefix?: string;
 }
 

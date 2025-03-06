@@ -677,6 +677,7 @@ export type Database = {
           first_name: string;
           group_station: string | null;
           id: string;
+          locations?: any;
           language_preference: string | null;
           last_active: string | null;
           last_login: string | null;
@@ -731,6 +732,8 @@ export type Database = {
           pharmacy_license?: string | null;
           portal_language?: string | null;
           preferred_contact_method?: string | null;
+          locations?: any;
+
           role?: string | null;
           same_as_shipping?: boolean | null;
           freeShipping?: boolean | null;
@@ -773,6 +776,8 @@ export type Database = {
           pharmacy_license?: string | null;
           portal_language?: string | null;
           preferred_contact_method?: string | null;
+          locations?: any;
+
           role?: string | null;
           same_as_shipping?: boolean | null;
           shipping_address?: Json | null;

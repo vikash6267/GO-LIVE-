@@ -10,9 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Filter, ArrowUpDown, Download } from "lucide-react";
 import { useState } from "react";
+import LocationsModalView from "./component/LocationVIew";
+
 
 interface LocationsTableProps {
-  locations: Location[];
+  locations: any[];
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
@@ -30,6 +32,10 @@ export function LocationsTable({
   const [sortBy, setSortBy] = useState("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [onView, setOnView] = useState(false);
+
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active": return "bg-green-100 text-green-800";
@@ -38,29 +44,39 @@ export function LocationsTable({
     }
   };
 
-  const handleView = (locationId: number) => {
-    toast({
-      title: "Location Details",
-      description: "Opening location details view...",
-    });
-  };
+const handleView = (locationId: number) => {
+  setOnView(true);
 
+  // Filter the selected location
+  const filteredLocation = locations.find(loc => loc.id === locationId);
+  setSelectedLocation(filteredLocation || null);
+
+  console.log("Filtered Location:", filteredLocation);
+
+  // toast({
+  //   title: "Location Details",
+  //   description: "Opening location details view...",
+  // });
+};
   const handleEdit = (locationId: number) => {
-    toast({
-      title: "Edit Location",
-      description: "Opening location editor...",
-    });
+   
+
+    const filteredLocation = locations.find(loc => loc.id === locationId);
+    setSelectedLocation(filteredLocation || null);
+
+    
+   
   };
 
   const handleExport = () => {
     const csvContent = [
-      ["Name", "Address", "Status", "Manager", "Orders This Month", "Last Active"].join(","),
+      ["Name", "Address", "Status", "Manager", , "Last Active"].join(","),
       ...filteredLocations.map(location => [
         location.name,
         location.address,
         location.status,
         location.manager,
-        location.ordersThisMonth,
+        // location.ordersThisMonth,
         location.lastActive
       ].join(","))
     ].join("\n");
@@ -85,20 +101,11 @@ export function LocationsTable({
 
   const filteredLocations = locations
     .filter(location => 
-      (location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      location.address.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (filterStatus === "all" || location.status === filterStatus)
-    )
+      (location.name.toLowerCase().includes(searchTerm.toLowerCase()) ))
     .sort((a, b) => {
       const modifier = sortOrder === "asc" ? 1 : -1;
       if (sortBy === "name") return modifier * a.name.localeCompare(b.name);
-      if (sortBy === "status") return modifier * a.status.localeCompare(b.status);
-      if (sortBy === "lastActive") {
-        return modifier * (new Date(b.lastActive).getTime() - new Date(a.lastActive).getTime());
-      }
-      if (sortBy === "ordersThisMonth") {
-        return modifier * ((a.ordersThisMonth || 0) - (b.ordersThisMonth || 0));
-      }
+  
       return 0;
     });
 
@@ -161,9 +168,9 @@ export function LocationsTable({
           <Table>
             <LocationTableHeader />
             <TableBody>
-              {filteredLocations.map((location) => (
+              {filteredLocations.map((location,index) => (
                 <LocationTableRow
-                  key={location.id}
+                  key={index}
                   location={location}
                   onView={handleView}
                   onEdit={handleEdit}
@@ -173,6 +180,13 @@ export function LocationsTable({
             </TableBody>
           </Table>
         </div>
+      </div>
+
+      <div>
+{
+
+ onView &&  <LocationsModalView location={selectedLocation} onClose={()=>setOnView(false)} />
+}
       </div>
       
       <LocationTablePagination

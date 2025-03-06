@@ -24,18 +24,18 @@ export function LocationTableHeader() {
             Manager
           </div>
         </TableHead>
-        <TableHead className="bg-white">
+        {/* <TableHead className="bg-white">
           <div className="flex items-center gap-2">
             <ShoppingCart className="h-4 w-4" />
             Orders This Month
           </div>
-        </TableHead>
-        <TableHead className="bg-white">
+        </TableHead> */}
+        {/* <TableHead className="bg-white">
           <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
             Last Active
           </div>
-        </TableHead>
+        </TableHead> */}
         <TableHead className="bg-white">Actions</TableHead>
       </TableRow>
     </TableHeader>

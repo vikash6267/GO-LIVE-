@@ -133,7 +133,11 @@ export const ProductDialog = ({
               <div className="bg-gray-50 p-3 rounded-lg">
                 <span className="font-semibold block mb-1">SKU:</span>
                 {/* <p className="text-gray-600">{product?.sku}</p> */}
-                {selectedSizesSKU.map((size) => size.split(" ")[0])}
+                {selectedSizesSKU.map((size, index) => (
+  <span key={index}>
+    {size.split(" ")[0]} <br />
+  </span>
+))}
               </div>
               <div className="bg-gray-50 p-3 rounded-lg">
                 <span className="font-semibold block mb-1">Category:</span>

@@ -148,7 +148,7 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
                       className="flex justify-between items-center bg-white p-2 rounded-lg shadow-sm"
                     >
                       <div className="flex flex-col">
-                        <span className="font-medium">
+                        <span className="font-medium uppercase">
                           {size.size_value} {size.size_unit}
                         </span>
                         <span className="text-sm text-gray-500">

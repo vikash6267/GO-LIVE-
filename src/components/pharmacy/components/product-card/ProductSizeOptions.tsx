@@ -61,7 +61,7 @@ export const ProductSizeOptions = ({
                 </div>
               </div>
               {quantityPerCase > 0 && (
-                <div className="text-sm text-muted-foreground">
+                <div className="text-sm u text-muted-foreground">
                   {quantityPerCase} units per case
                 </div>
               )}
@@ -98,7 +98,7 @@ export const ProductSizeOptions = ({
               >
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">
+                    <span className="font-medium uppercase">
                       {size.size_value} {size.size_unit}
                     </span>
                     <div className="text-emerald-600 font-semibold">

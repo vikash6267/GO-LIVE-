@@ -45,11 +45,11 @@ export const ProductImage = ({ image, name, offer, stockStatus }: ProductImagePr
 
   return (
     <div className="mb-4 relative">
-      <div className="aspect-square rounded-xl bg-gray-400/80 flex items-center justify-center p-4 group-hover:bg-gray-900/50 transition-colors">
+      <div className="aspect-square rounded-xl bg-gray-400/80 flex items-center justify-center p-4 group-hover:bg-gray-200 transition-colors">
         <img 
           src={imageUrl}
           alt={name}
-          className=" h-[90%] object-contain transform group-hover:scale-110 transition-transform duration-300"
+          className=" h-[100%] object-contain transform group-hover:scale-105 transition-transform duration-300"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.src = '/placeholder.svg';

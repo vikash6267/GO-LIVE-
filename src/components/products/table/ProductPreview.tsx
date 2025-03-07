@@ -55,11 +55,11 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
       </DialogHeader>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
         <div>
-          <div className="aspect-square rounded-xl bg-gradient-to-br from-gray-300 to-gray-500/50  hover:from-gray-700 hover:to-gray-900/50 flex items-center justify-center p-8 transition-all duration-300 group ">
+          <div className="aspect-square rounded-xl bg-gradient-to-br from-gray-300 to-gray-500/50  hover:from-gray-200 hover:to-gray-200 flex items-center justify-center p-8 transition-all duration-300 group ">
             <img
               src={imageUrl}
               alt={product.name}
-              className="w-full h-full object-contain transform transition-transform duration-300 group-hover:scale-105"
+              className="w-full h-full object-contain transform transition-transform duration-300 group-hover:scale-105 scale-110"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = "/placeholder.svg";
@@ -68,7 +68,7 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
           </div>
 
           <div className="flex flex-wrap gap-2 mt-4">
-            {["USP 671 Tested", "Child-Resistant"].map((badge) => (
+            {["USP 671 Tested", "Child-Resistant "].map((badge) => (
               <Badge
                 key={badge}
                 variant="secondary"

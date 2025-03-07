@@ -83,7 +83,7 @@ const HeroSection = () => {
               ))}
             </div>
             <span className="ml-3 sm:ml-4 text-sm sm:text-base md:text-lg font-medium text-white">
-              Trusted by 150+ Pharmacies
+              Trusted by 250+ Pharmacies
             </span>
           </div>
 

@@ -16,7 +16,7 @@ app.use(express.urlencoded({ limit: "500mb", extended: true }));
 const cookieParser = require("cookie-parser");
 
 const logger = require("morgan");
-const { orderSatusCtrl, orderPlacedCtrl } = require("./controllers/orderStatus");
+const { orderSatusCtrl, orderPlacedCtrl, userNotificationCtrl } = require("./controllers/orderStatus");
 app.use(logger("dev"));
 
 app.use(cookieParser());
@@ -73,11 +73,11 @@ app.post("/pay", async (req, res) => {
         zip: rawZip,
         country
       } = req.body;
-  
+
       // Convert necessary fields
       const amount = rawAmount ? parseFloat(rawAmount) : 0; // Convert amount to number safely
       const zip = rawZip ? parseInt(rawZip, 10) : 0; // Convert zip to number safely
-  
+
       // Ensure cardNumber, expirationDate, and cvv remain strings
       const parsedData = {
         paymentType,
@@ -92,9 +92,9 @@ app.post("/pay", async (req, res) => {
         zip,
         country
       };
-  
+
       console.log(parsedData);
-  
+
       return res.status(200).json({ message: "Parsed successfully", data: parsedData });
     } catch (error) {
       console.error("Error parsing data:", error);
@@ -102,8 +102,8 @@ app.post("/pay", async (req, res) => {
     }
 
 
-console.log(req.body)
-    
+    console.log(req.body)
+
     // Validate required fields
     if (!amount) {
       return res.status(400).json({ error: "Amount is required" });
@@ -118,7 +118,7 @@ console.log(req.body)
     // Create merchant authentication
     const merchantAuthenticationType = createMerchantAuthenticationType();
 
-    
+
     // Set up payment method
     let paymentType;
     if (cardNumber) {
@@ -159,8 +159,8 @@ console.log(req.body)
         ? cardholderName.split(" ").slice(1).join(" ")
         : ""
       : nameOnAccount.split(" ").length > 1
-      ? nameOnAccount.split(" ").slice(1).join(" ")
-      : "";
+        ? nameOnAccount.split(" ").slice(1).join(" ")
+        : "";
 
     billTo.setFirstName(firstName || "Customer");
     billTo.setLastName(lastName || "Customer");
@@ -211,7 +211,7 @@ console.log(req.body)
         if (
           response.getMessages() &&
           response.getMessages().getResultCode() ===
-            ApiContracts.MessageTypeEnum.OK
+          ApiContracts.MessageTypeEnum.OK
         ) {
           const transactionResponse = response.getTransactionResponse();
 
@@ -281,6 +281,7 @@ console.log(req.body)
 
 app.post("/order-status", orderSatusCtrl)
 app.post("/order-place", orderPlacedCtrl)
+app.post("/user-verification", userNotificationCtrl)
 
 
 

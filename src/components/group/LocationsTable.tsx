@@ -12,7 +12,7 @@ import { Filter, ArrowUpDown, Download } from "lucide-react";
 import { useState } from "react";
 import LocationsModalView from "./component/LocationVIew";
 import { supabase } from "@/integrations/supabase/client";
-import EditLocationPopup from "./component/EditLocation";
+import { EditLocationPopup } from "./component/EditLocation";
 
 
 interface LocationsTableProps {
@@ -20,10 +20,10 @@ interface LocationsTableProps {
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
-  fetchLocations: () => void;
+  fetchLocations?: () => void;
 }
 
-export function LocationsTable({ 
+export function LocationsTable({
   locations,
   currentPage,
   totalPages,
@@ -35,7 +35,7 @@ export function LocationsTable({
   const [filterStatus, setFilterStatus] = useState("all");
   const [sortBy, setSortBy] = useState("name");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  
+
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [onView, setOnView] = useState(false);
   const [onEdit, setOnEdit] = useState(false);
@@ -49,67 +49,67 @@ export function LocationsTable({
     }
   };
 
-const handleView = (locationId: number) => {
-  setOnView(true);
+  const handleView = (locationId: number) => {
+    setOnView(true);
 
-  // Filter the selected location
-  const filteredLocation = locations.find(loc => loc.id === locationId);
-  setSelectedLocation(filteredLocation || null);
+    // Filter the selected location
+    const filteredLocation = locations.find(loc => loc.id === locationId);
+    setSelectedLocation(filteredLocation || null);
 
-  console.log("Filtered Location:", filteredLocation);
+    console.log("Filtered Location:", filteredLocation);
 
-  // toast({
-  //   title: "Location Details",
-  //   description: "Opening location details view...",
-  // });
-};
+    // toast({
+    //   title: "Location Details",
+    //   description: "Opening location details view...",
+    // });
+  };
 
-const handleEdit = async (locationId: number) => {
-  try {
-    setOnEdit(true)
-    // Ensure locationId is valid
-    if (!locationId) {
-      throw new Error("Invalid location ID");
+  const handleEdit = async (locationId: number) => {
+    try {
+      setOnEdit(true)
+      // Ensure locationId is valid
+      if (!locationId) {
+        throw new Error("Invalid location ID");
+      }
+
+      // Fetch location data from Supabase
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", String(locationId))
+        .single();
+
+      // Check if an error occurred during fetch
+      if (error) {
+        console.error("Error fetching location:", error.message);
+        alert("Failed to fetch location details. Please try again.");
+        return;
+      }
+
+      // Handle case where no data is found
+      if (!data) {
+        console.warn("No location found for ID:", locationId);
+        alert("Location not found. Please check the ID.");
+        return;
+      }
+
+      // Set selected location state
+      console.log("Fetched Location Data:", data);
+      setSelectedLocation(data);
+    } catch (err) {
+      console.error("Unexpected error in handleEdit:", err);
+      alert("An unexpected error occurred. Please try again later.");
     }
+  };
 
-    // Fetch location data from Supabase
-    const { data, error } = await supabase
-      .from("locations")
-      .select("*")
-      .eq("id", String(locationId))
-      .single();
-
-    // Check if an error occurred during fetch
-    if (error) {
-      console.error("Error fetching location:", error.message);
-      alert("Failed to fetch location details. Please try again.");
-      return;
+  const handleSubmit = async () => {
+    try {
+      console.log("object")
+    } catch (err) {
+      console.error("Unexpected error in handleEdit:", err);
+      alert("An unexpected error occurred. Please try again later.");
     }
-
-    // Handle case where no data is found
-    if (!data) {
-      console.warn("No location found for ID:", locationId);
-      alert("Location not found. Please check the ID.");
-      return;
-    }
-
-    // Set selected location state
-    console.log("Fetched Location Data:", data);
-    setSelectedLocation(data);
-  } catch (err) {
-    console.error("Unexpected error in handleEdit:", err);
-    alert("An unexpected error occurred. Please try again later.");
-  }
-};
-
-const handleSubmit = async () => {
-  try {
-   console.log("object")
-  } catch (err) {
-    console.error("Unexpected error in handleEdit:", err);
-    alert("An unexpected error occurred. Please try again later.");
-  }
-};
+  };
 
 
   const handleExport = () => {
@@ -144,12 +144,12 @@ const handleSubmit = async () => {
   };
 
   const filteredLocations = locations
-    .filter(location => 
-      (location.name.toLowerCase().includes(searchTerm.toLowerCase()) ))
+    .filter(location =>
+      (location.name.toLowerCase().includes(searchTerm.toLowerCase())))
     .sort((a, b) => {
       const modifier = sortOrder === "asc" ? 1 : -1;
       if (sortBy === "name") return modifier * a.name.localeCompare(b.name);
-  
+
       return 0;
     });
 
@@ -212,7 +212,7 @@ const handleSubmit = async () => {
           <Table>
             <LocationTableHeader />
             <TableBody>
-              {filteredLocations.map((location,index) => (
+              {filteredLocations.map((location, index) => (
                 <LocationTableRow
                   key={index}
                   location={location}
@@ -227,16 +227,21 @@ const handleSubmit = async () => {
       </div>
 
       <div>
-{
+        {
 
- onView && selectedLocation &&  <LocationsModalView location={selectedLocation} onClose={()=>{setOnView(false) ; setSelectedLocation(null)}} />
-}
-{
+          onView && selectedLocation && <LocationsModalView location={selectedLocation} onClose={() => { setOnView(false); setSelectedLocation(null) }} />
+        }
+        {
 
- onEdit && selectedLocation &&  <EditLocationPopup location={selectedLocation} onClose={()=>{setOnEdit(false) ; ; setSelectedLocation(null)}} onSave={()=>fetchLocations()} />
-}
+          onEdit && selectedLocation &&
+           <EditLocationPopup 
+           userData={selectedLocation}
+            open={onEdit} 
+            onOpenChange={() => { setOnEdit(false); setSelectedLocation(null) }}
+             onSave={() => fetchLocations()} />
+        }
       </div>
-      
+
       <LocationTablePagination
         currentPage={currentPage}
         totalPages={totalPages}

@@ -27,12 +27,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { selectUserProfile } from "@/store/selectors/userSelectors";
 import { useSelector } from "react-redux";
+import { Eye, EyeOff } from "lucide-react";
 
 const pharmacySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   license: z.string().min(5, "License number is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+
   address: z.object({
     attention: z.string().optional(),
     countryRegion: z.string().optional(),
@@ -72,6 +75,7 @@ export function AddPharmacyModal({
 }: AddPharmacyModalProps) {
   const { toast } = useToast();
   const userProfile = useSelector(selectUserProfile);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<PharmacyFormData>({
     resolver: zodResolver(pharmacySchema),
@@ -105,68 +109,112 @@ export function AddPharmacyModal({
     },
   });
 
-const onSubmit = async() => {
-  const values = form.getValues()
- 
-  if (Object.keys(form.formState.errors).length > 0) {
-    toast({
-      title: "Error",
-      description: "Please fix the form errors before submitting.",
-      variant: "destructive",
+  const onSubmit = async () => {
+    const values = form.getValues()
+
+    console.log(values)
+
+    if (Object.keys(form.formState.errors).length > 0) {
+      toast({
+        title: "Error",
+        description: "Please fix the form errors before submitting.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+
+
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: values.email,
+      password: values.password,
+      options: {
+        data: {
+          first_name: values.name.split(" ")[0] || "",
+          last_name: values.name.split(" ")[1] || "",
+          phone: values.phone,
+        },
+      },
     });
-    return;
-  }
 
-   if (values) {
+    if (authError) {
+      console.error("Auth error during signup:", authError);
+      throw authError;
+    }
+
+    if (!authData.user) {
+      console.error("No user data returned from auth signup");
+      throw new Error("No user data returned from auth signup");
+    }
+
+  
+
+    if (values) {
       const locationData = {
-        profile_id: userProfile.id,
-        name: values.name || "",
-        type : "branch",
-        address: values.address,
-        contact_email: values.email || "",
-        contact_phone: values.phone || "",
+        id: authData.user.id,
+        display_name: values.name,
+        first_name: values.name.split(" ")[0] || "",
+        last_name: values.name.split(" ")[1] || "",
+        group_type: "branch",
+        billing_address: values.addressAddress as any,
+        email: values.email || "",
+        mobile_phone: values.phone || "",
+        group_id: userProfile?.id,
+        status: "pending",
+        type: "pharmacy", // Set type as pharmacy by default
+        role: "user", // Default role
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
+
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .upsert([locationData]);
+
+      if (profileError) {
+        console.error("Profile creation error:", profileError);
+        // If profile creation fails, we should clean up the auth user
+        
+       
+        throw profileError;
       }
-   
 
-     const { error: insertError } = await supabase.from("locations").insert(locationData);
+      console.log("Profile created successfully");
+      toast({
+        title: "Account Created",
+        description:
+          "Your account has been created successfully. Please check your email to verify your account.",
+      });
 
-     if (insertError) {
-       console.error("Error inserting new locations:", insertError);
-       toast({
-         title: "Error",
-         description: `Failed to add new locations: ${insertError.message}`,
-         variant: "destructive",
-       });
-       throw new Error(`Insert error: ${insertError.message}`);
-     }
-   }
+    }
 
 
 
-  toast({
-    title: "Pharmacy Added",
-    description: `${values.name} has been added to your group successfully`,
-  });
+    toast({
+      title: "Pharmacy Added",
+      description: `${values.name} has been added to your group successfully`,
+    });
 
-  // form.reset();
-  // onPharmacyAdded();
-  // onOpenChange(false);
-};
+    form.reset();
+    onPharmacyAdded();
+    onOpenChange(false);
+  };
 
   console.log("hello")
   useEffect(() => {
     console.log(form.getValues());
   }, [form.watch()]); // ✅ Yeh jab bhi form values change hongi tab trigger hoga
-  
+
 
   useEffect(() => {
     const addressAddress = form.watch("addressAddress"); // ✅ Efficient way to track changes
-    
 
-      form.setValue("address", addressAddress); // ✅ Replace `address` with `addressAddress`
-   
+
+    form.setValue("address", addressAddress); // ✅ Replace `address` with `addressAddress`
+
   }, [form.watch("addressAddress")]); // ✅ Trigger only when `addressAddress` changes
-  
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
@@ -180,7 +228,7 @@ const onSubmit = async() => {
 
         <ScrollArea className="max-h-[calc(90vh-8rem)] px-6">
           <Form {...form}>
-            <form  className="space-y-4">
+            <form className="space-y-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -243,11 +291,39 @@ const onSubmit = async() => {
                       </FormControl>
                       <FormMessage />
                     </FormItem>
+
+
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            {...field}
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Enter password"
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
                 />
               </div>
 
-              <AddressFields form={form}  type="address"/>
+              <AddressFields form={form} type="address" />
             </form>
           </Form>
         </ScrollArea>

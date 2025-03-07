@@ -11,6 +11,7 @@ const addressSchema = z.object({
 });
 
 const customerInfoSchema = z.object({
+cusid :z.string().optional(),
   name: z.string().min(0, "Name is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(0, "Phone number must be at least 10 digits"),

@@ -85,8 +85,10 @@ export function DashboardLayout({
       {
         label: "Orders & Products",
         items: [
+          { icon: Package, label: "Products", path: "/group/products" },
           { icon: ShoppingCart, label: "Order Products", path: "/group/order" },
           { icon: ListChecks, label: "Orders", path: "/group/orders" },
+
         ],
       },
       {

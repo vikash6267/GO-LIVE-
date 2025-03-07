@@ -106,48 +106,48 @@ export const updateUserProfile = async (
     }
 
 
-        // ❌ STEP 1: Delete old locations
+        // // ❌ STEP 1: Delete old locations
 
-        console.log("hello this is location updatation code")
-        const { error: deleteError } = await supabase
-          .from("locations")
-          .delete()
-          .eq("profile_id", userId);
+        // console.log("hello this is location updatation code")
+        // const { error: deleteError } = await supabase
+        //   .from("locations")
+        //   .delete()
+        //   .eq("profile_id", userId);
   
-        if (deleteError) {
-          console.error("Error deleting locations:", deleteError);
-          toast({
-            title: "Error",
-            description: `Failed to delete old locations: ${deleteError.message}`,
-            variant: "destructive",
-          });
-          throw new Error(`Delete error: ${deleteError.message}`);
-        }
+        // if (deleteError) {
+        //   console.error("Error deleting locations:", deleteError);
+        //   toast({
+        //     title: "Error",
+        //     description: `Failed to delete old locations: ${deleteError.message}`,
+        //     variant: "destructive",
+        //   });
+        //   throw new Error(`Delete error: ${deleteError.message}`);
+        // }
   
-        // ✅ STEP 2: Insert new locations
-        if (values.locations && values.locations.length > 0) {
-          const newLocations = values.locations.map((location) => ({
-            profile_id: userId,
-            name: location.name || "",
-            type: location.type || "branch",
-            status: location.status || "pending",
-            address: location.address,
-            contact_email: location.contactEmail || "",
-            contact_phone: location.contactPhone || "",
-          }));
+        // // ✅ STEP 2: Insert new locations
+        // if (values.locations && values.locations.length > 0) {
+        //   const newLocations = values.locations.map((location) => ({
+        //     profile_id: userId,
+        //     name: location.name || "",
+        //     type: location.type || "branch",
+        //     status: location.status || "pending",
+        //     address: location.address,
+        //     contact_email: location.contactEmail || "",
+        //     contact_phone: location.contactPhone || "",
+        //   }));
   
-          const { error: insertError } = await supabase.from("locations").insert(newLocations);
+        //   const { error: insertError } = await supabase.from("locations").insert(newLocations);
   
-          if (insertError) {
-            console.error("Error inserting new locations:", insertError);
-            toast({
-              title: "Error",
-              description: `Failed to add new locations: ${insertError.message}`,
-              variant: "destructive",
-            });
-            throw new Error(`Insert error: ${insertError.message}`);
-          }
-        }
+        //   if (insertError) {
+        //     console.error("Error inserting new locations:", insertError);
+        //     toast({
+        //       title: "Error",
+        //       description: `Failed to add new locations: ${insertError.message}`,
+        //       variant: "destructive",
+        //     });
+        //     throw new Error(`Insert error: ${insertError.message}`);
+        //   }
+        // }
 
         
 

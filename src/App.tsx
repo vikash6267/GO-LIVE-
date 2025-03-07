@@ -31,6 +31,7 @@ import { Staff } from "./pages/group/Staff";
 import { useEffect } from "react";
 import { useToast } from "./hooks/use-toast";
 import { useAuthCheck } from "./useAuthCheck";
+import GroupProducts from "./pages/group/GroupProduct";
 
 
 // Protected route wrapper component
@@ -170,6 +171,11 @@ function App() {
       <Route path="/group/orders" element={
         <ProtectedRoute allowedRoles={['group']}>
           <GroupOrders />
+        </ProtectedRoute>
+      } />
+        <Route path="/group/products" element={
+        <ProtectedRoute allowedRoles={['group']}>
+          <GroupProducts />
         </ProtectedRoute>
       } />
       <Route path="/group/analytics" element={

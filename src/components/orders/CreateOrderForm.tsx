@@ -45,9 +45,9 @@ export function CreateOrderForm({
   const [isValidating, setIsValidating] = useState(false);
   const userProfile = useSelector(selectUserProfile);
   const { cartItems, clearCart } = useCart();
-
-
-  console.log(userProfile)
+  
+  console.log(initialData)
+  const[pId,setPId] = useState(initialData.customerInfo.cusid || userProfile.id )
   const totalShippingCost =
   sessionStorage.getItem("shipping") == "true"
     ? 0
@@ -60,29 +60,29 @@ export function CreateOrderForm({
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
       id: generateOrderId(),
-      customer: userProfile?.id || "",
+      customer: initialData?.customerInfo?.cusid  || userProfile?.id || "",
       date: new Date().toISOString(),
       total: "0",
       status: "new",
       payment_status: "unpaid",
       customerInfo: {
         name:
-        initialData?.customerInfo.name ||
-          `${initialData?.customerInfo.name || ""} ${userProfile?.last_name || ""}`,
+        initialData?.customerInfo?.name ||
+          `${initialData?.customerInfo?.name || ""} ${userProfile?.last_name || ""}`,
         email: initialData?.customerInfo?.email || "",
         phone: userProfile?.mobile_phone || "",
         type: "Pharmacy",
         address: {
-          street: userProfile?.company_name || "",
-          city: userProfile?.city || "",
-          state: userProfile?.state || "",
-          zip_code: userProfile?.zip_code || "",
+          street:initialData?.customerInfo?.address?.street || userProfile?.company_name || "",
+          city: initialData?.customerInfo?.address?.city ||userProfile?.city || "",
+          state: initialData?.customerInfo?.address?.state ||userProfile?.state || "",
+          zip_code: initialData?.customerInfo?.address?.zip_code || userProfile?.zip_code || "",
         },
       },
 
       shippingAddress: {
         fullName:
-        initialData?.customerInfo.name ||
+        initialData?.customerInfo?.name ||
           `${userProfile?.first_name || ""} ${userProfile?.last_name || ""}`,
         email: initialData?.customerInfo?.email || "",
         phone: userProfile?.mobile_phone || "",
@@ -197,7 +197,7 @@ export function CreateOrderForm({
       // Prepare order data
       const orderData = {
         order_number:  generateOrderId(),
-        profile_id: userProfile.id,
+        profile_id: pId || userProfile.id,
         status: data.status,
         total_amount: calculatedTotal,
         shipping_cost: data.shipping?.cost || 0,
@@ -212,6 +212,7 @@ export function CreateOrderForm({
           data.shipping?.estimatedDelivery ||
           defaultEstimatedDelivery.toISOString(),
       };
+
 
       // Save order to Supabase
       const { data: orderResponse, error: orderError } = await supabase

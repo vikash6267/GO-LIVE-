@@ -64,10 +64,10 @@ export function LocationsInput({ form }: LocationsInputProps) {
         <LocationAnalytics locations={locations} />
       )}
 
-      <LocationDataManager
+      {/* <LocationDataManager
         locations={locations}
         onImport={handleImportLocations}
-      />
+      /> */}
 
       <LocationsList locations={locations} form={form} />
     </div>

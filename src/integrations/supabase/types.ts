@@ -19,6 +19,7 @@ export type Database = {
           id: string;
           phone: string | null;
           profile_id: string | null;
+          group_id?: string | null;
           state: string;
           street1: string;
           street2: string | null;
@@ -35,6 +36,8 @@ export type Database = {
           id?: string;
           phone?: string | null;
           profile_id?: string | null;
+          group_id?: string | null;
+
           state: string;
           street1: string;
           street2?: string | null;
@@ -51,6 +54,8 @@ export type Database = {
           id?: string;
           phone?: string | null;
           profile_id?: string | null;
+          group_id?: string | null;
+
           state?: string;
           street1?: string;
           street2?: string | null;
@@ -121,6 +126,8 @@ export type Database = {
           payment_method: string | null;
           payment_terms: Database["public"]["Enums"]["payment_terms"] | null;
           profile_id: string | null;
+          group_id?: string | null;
+
           tax_id: string | null;
           updated_at: string | null;
         };
@@ -128,6 +135,8 @@ export type Database = {
           created_at?: string | null;
           credit_limit?: number | null;
           id?: string;
+          group_id?: string | null;
+
           notes?: string | null;
           payment_method?: string | null;
           payment_terms?: Database["public"]["Enums"]["payment_terms"] | null;
@@ -139,6 +148,8 @@ export type Database = {
           created_at?: string | null;
           credit_limit?: number | null;
           id?: string;
+          group_id?: string | null;
+
           notes?: string | null;
           payment_method?: string | null;
           payment_terms?: Database["public"]["Enums"]["payment_terms"] | null;
@@ -681,6 +692,8 @@ export type Database = {
           first_name: string;
           group_station: string | null;
           id: string;
+          group_id?: string | null
+
           locations?: any;
           language_preference: string | null;
           last_active: string | null;

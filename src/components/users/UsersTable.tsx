@@ -55,6 +55,7 @@ const UsersTable = ({ users, selectedUsers, onSelectionChange }: UsersTableProps
     }
   };
 
+  
   return (
     <>
       <ScrollArea className="h-[600px]">

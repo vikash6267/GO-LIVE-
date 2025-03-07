@@ -47,7 +47,11 @@ export function CreateOrderForm({
   const { cartItems, clearCart } = useCart();
   
   console.log(initialData)
-  const[pId,setPId] = useState(initialData.customerInfo.cusid || userProfile.id )
+  const[pId,setPId] = useState(initialData?.customerInfo?.cusid || userProfile?.id ||"")
+ 
+  useEffect(()=>{
+    setPId(initialData?.customerInfo?.cusid || userProfile?.id )
+  },[initialData,userProfile])
   const totalShippingCost =
   sessionStorage.getItem("shipping") == "true"
     ? 0
@@ -212,6 +216,8 @@ export function CreateOrderForm({
           data.shipping?.estimatedDelivery ||
           defaultEstimatedDelivery.toISOString(),
       };
+
+console.log(orderData)
 
 
       // Save order to Supabase

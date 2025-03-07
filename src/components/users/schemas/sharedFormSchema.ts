@@ -13,10 +13,10 @@ export const addressSchema = z.object({
 });
 
 const locationSchema = z.object({
-  name: z.string().min(2, "Location name is required"),
-  type: z.enum(["headquarters", "branch", "warehouse", "retail"]),
-  status: z.enum(["active", "inactive", "pending"]),
-  address: addressSchema,
+  name: z.string().optional(),
+  type: z.enum(["headquarters", "branch", "warehouse", "retail"]).optional(),
+  status: z.enum(["active", "inactive", "pending"]).optional(),
+  address: addressSchema.optional(),
   manager: z.string().optional(),
   contactEmail: z.string().email().optional(),
   contactPhone: z.string().optional(),
@@ -58,7 +58,7 @@ export const baseUserSchema = z.object({
   paymentMethod: z.string().optional(),
   groupType: z.string().optional(),
   parentGroup: z.string().optional(),
-  locations: z.array(locationSchema).default([]),
+  locations: z.array(locationSchema).default([]).optional(),
 });
 
 export type BaseUserFormData = z.infer<typeof baseUserSchema>;

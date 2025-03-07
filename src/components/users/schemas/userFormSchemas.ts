@@ -13,13 +13,13 @@ const addressSchema = z.object({
 });
 
 const locationSchema = z.object({
-  name: z.string().min(2, "Location name is required"),
-  type: z.enum(["headquarters", "branch", "warehouse", "retail"]),
-  status: z.enum(["active", "inactive", "pending"]),
-  address: addressSchema,
+  name: z.string().min(2, "Location name must have at least 2 characters"),
+  type: z.enum(["headquarters", "branch", "warehouse", "retail"]).optional(),
+  status: z.enum(["active", "inactive", "pending"]).default("active"),
+  address: addressSchema.optional(),
   manager: z.string().optional(),
-  contactEmail: z.string().email().optional(),
-  contactPhone: z.string().optional(),
+  contactEmail: z.string().email("Invalid email format").optional(),
+  contactPhone: z.string().regex(/^\+?[0-9\s\-()]+$/, "Invalid phone number").optional(),
 });
 
 const rolePermissions = {

@@ -99,23 +99,7 @@ export const useEditUserForm = ({
             state: "",
             zip_code: "",
           },
-          locations: data.locations || [
-            {
-              name: "",
-              type: "",
-              status: "",
-              address: {
-                city: "",
-                phone: "",
-                state: "",
-                street1: "",
-                street2: "",
-                zip_code: "",
-                faxNumber: "",
-                countryRegion: "",
-              },
-            },
-          ],
+         
           
           sameAsShipping: data.same_as_shipping || false,
           freeShipping: data.freeShipping || false,

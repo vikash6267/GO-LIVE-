@@ -45,7 +45,8 @@ const[location,setLocations] = useState(0)
 
    const fetchUserProfile = async () => {
  
-  
+    if (user.type.toLowerCase() !== "group" || !user?.id) return
+
     try {
       const { data: session } = await supabase.auth.getSession();
       if (!session?.session) {
@@ -55,7 +56,7 @@ const[location,setLocations] = useState(0)
       const { count, error } = await supabase
       .from("profiles")
       .select("*", { count: "exact" }) // "exact" ko correct format me likha hai
-      .eq("group_id", user.id);
+      .eq("group_id", user?.id);
   
       if (error) {
         console.error("Database Error - Failed to fetch profile:", error);

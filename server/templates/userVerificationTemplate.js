@@ -23,7 +23,7 @@ const userVerificationTemplate = (groupname, name, email) => {
             <p><strong>Name:</strong> ${name}</p>
             <p><strong>Email:</strong> ${email}</p>
             ${groupname ? `<p><strong>Group:</strong> This user registered through the group '${groupname}'.</p>` : ''}
-            <a href="https://www.9rx.com/login" class="login-button">Login</a>
+            <a href="https://www.9rx.com/login" class="login-button">Visit To Website</a>
             <div class="footer">If you have any concerns, please contact support.</div>
         </div>
     </body>

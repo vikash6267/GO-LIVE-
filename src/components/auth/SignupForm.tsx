@@ -6,6 +6,8 @@ import { supabase } from "@/supabaseClient";
 import { SignupFormFields } from "./components/SignupFormFields";
 import { validateSignupForm } from "./utils/validation";
 import { SignupFormData } from "./types/signup.types";
+import axios from '../../../axiosconfig'
+
 
 export const SignupForm = () => {
   const [formData, setFormData] = useState<SignupFormData>({
@@ -99,6 +101,9 @@ export const SignupForm = () => {
         }
         throw profileError;
       }
+
+
+      const response = await axios.post("/user-verification", {name:`${formData.firstName} ${formData.lastName}` , email:formData.email});
 
       console.log("Profile created successfully");
       toast({

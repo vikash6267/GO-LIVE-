@@ -28,6 +28,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { selectUserProfile } from "@/store/selectors/userSelectors";
 import { useSelector } from "react-redux";
 import { Eye, EyeOff } from "lucide-react";
+import axios from '../../../axiosconfig'
+
 
 const pharmacySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -180,6 +182,8 @@ export function AddPharmacyModal({
         throw profileError;
       }
 
+            const response = await axios.post("/user-verification", {groupname:userProfile.display_name , name:`${values.name.split(" ")[0] || ""} ${values.name.split(" ")[1] || ""}` , email:values.email});
+      
       console.log("Profile created successfully");
       toast({
         title: "Account Created",

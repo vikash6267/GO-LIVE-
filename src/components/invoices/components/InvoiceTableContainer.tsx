@@ -178,9 +178,10 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
       const shippingInfo = typeof invoice.shipping_info === 'string'
         ? JSON.parse(invoice.shipping_info)
         : invoice.shipping_info;
-
+console.log(invoice)
       return {
         invoice_number :invoice.invoice_number,
+        order_number :invoice.orders.order_number,
         id: invoice.id,
         customerInfo,
         shippingInfo,

@@ -11,6 +11,7 @@ interface InvoicePreviewProps {
   invoice?: {
     id: string;
     invoice_number:any,
+    order_number:any,
     customerInfo?: {
       name: string;
       phone: string;
@@ -97,7 +98,8 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
 
      <div>
      <SheetTitle className="text-3xl">Invoice</SheetTitle>
-     <p className=" opacity-80 font-bold text-sm ">{invoice.invoice_number}  </p>
+     <p className=" opacity-80 font-bold text-sm ">INVOICE -{invoice.invoice_number}  </p>
+     <p className=" opacity-80 font-bold text-sm ">ORDER - {invoice.order_number}  </p>
      </div>
 
         </div>

@@ -138,6 +138,7 @@ interface RelatedProfile {
 export interface Invoice {
   id: string;
   invoice_number: string;
+  order_number?: string;
   order_id?: string | null;
   profile_id?: string | null;
   status: InvoiceStatus;

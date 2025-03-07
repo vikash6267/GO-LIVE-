@@ -46,35 +46,38 @@ const[location,setLocations] = useState(0)
    const fetchUserProfile = async () => {
  
     if (user.type.toLowerCase() !== "group" || !user?.id) return
+if(user.type.toLowerCase() === "group" && user?.id){
 
-    try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session?.session) {
-        console.error("Authentication Error: No active session found");
-        throw new Error("No active session found");
-      }
-      const { count, error } = await supabase
-      .from("profiles")
-      .select("*", { count: "exact" }) // "exact" ko correct format me likha hai
-      .eq("group_id", user?.id);
-  
-      if (error) {
-        console.error("Database Error - Failed to fetch profile:", error);
-        throw new Error(`Database error: ${error.message}`);
-      }
-  
-      if (!count) {
-       
-        throw new Error("User profile not found");
-      }
-  
-      setLocations(count)
-
-      
-    } catch (error: any) {
-      console.error("Error in fetchUserProfile:", error);
-      throw new Error(error.message || "Failed to fetch user profile");
+  try {
+    const { data: session } = await supabase.auth.getSession();
+    if (!session?.session) {
+      console.error("Authentication Error: No active session found");
+      throw new Error("No active session found");
     }
+    const { count, error } = await supabase
+    .from("profiles")
+    .select("*", { count: "exact" }) // "exact" ko correct format me likha hai
+    .eq("group_id", user?.id);
+
+    if (error) {
+      console.error("Database Error - Failed to fetch profile:", error);
+      throw new Error(`Database error: ${error.message}`);
+    }
+
+    if (!count) {
+     
+      throw new Error("User profile not found");
+    }
+
+    setLocations(count)
+
+    
+  } catch (error: any) {
+    console.error("Error in fetchUserProfile:", error);
+    throw new Error(error.message || "Failed to fetch user profile");
+  }
+}
+  
   };
 
   useEffect(()=>{

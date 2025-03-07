@@ -55,7 +55,7 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
       </DialogHeader>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
         <div>
-          <div className="aspect-square rounded-xl bg-gradient-to-br from-gray-300 to-gray-500/50  hover:from-gray-200 hover:to-gray-200 flex items-center justify-center p-8 transition-all duration-300 group ">
+          <div className="aspect-square rounded-xl bg-gradient-to-br from-gray-200 to-gray-200/50  hover:from-gray-200 hover:to-gray-200 flex items-center justify-center p-8 transition-all duration-300 group ">
             <img
               src={imageUrl}
               alt={product.name}

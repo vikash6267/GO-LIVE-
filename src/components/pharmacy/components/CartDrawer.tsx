@@ -116,15 +116,15 @@ export const CartDrawer = () => {
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-lg">
+      <SheetContent className="w-full sm:max-w-lg overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Shopping Cart</SheetTitle>
         </SheetHeader>
 
-        <div className="flex flex-col h-full">
-          <ScrollArea className="flex-1 -mx-6 px-6">
+        <div className="flex flex-col h-[90vh] ">
+          <ScrollArea className="flex-1 -mx-6 px-6 ">
             {cartItems.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-[50vh] text-center">
+              <div className="flex flex-col o items-center justify-center h-[50vh] text-center">
                 <ShoppingCart className="h-12 w-12 text-gray-400 mb-4" />
                 <p className="text-lg font-medium text-gray-900">
                   Your cart is empty

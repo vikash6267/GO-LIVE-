@@ -107,7 +107,7 @@ export const OrdersContainer = ({
             <SheetTrigger asChild>
               <Button>
                 <PlusCircle className="mr-2 h-4 w-4" />
-                Create Order
+                Create Order 
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[90vw] sm:max-w-[600px] overflow-y-auto">

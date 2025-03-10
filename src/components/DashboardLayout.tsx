@@ -113,9 +113,9 @@ export function DashboardLayout({
       <div className="min-h-screen flex w-full bg-gray-50/50">
         <Sidebar
           className={`border-r border-v bg-white z-50 ${
-            isMobile ? "w-full max-w-[280px] " : " bg-white"
+            isMobile ? "w-full max-w-[280px] bg-white z-50" : " bg-white"
           }`}
-        >
+        > 
           <SidebarContent>
             <div className="flex flex-col h-full">
               <SidebarHeader />

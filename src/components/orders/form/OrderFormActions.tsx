@@ -11,11 +11,19 @@ interface OrderFormActionsProps {
   isValidating?: boolean; // Added this prop
   isEditing?: boolean; // Added this prop
   setModalIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
-
-
+  setIsCus?: React.Dispatch<React.SetStateAction<boolean>>;
+  isCus?: boolean;
 }
 
-export function OrderFormActions({ orderData, isSubmitting, isValidating,isEditing,setModalIsOpen }: OrderFormActionsProps) {
+export function OrderFormActions({
+  orderData,
+  isSubmitting,
+  isValidating,
+  isEditing,
+  setModalIsOpen,
+  setIsCus, // ✅ Added missing prop
+  isCus, // ✅ Added missing prop
+}: OrderFormActionsProps) {
   const { toast } = useToast();
 
   const onSubmit = async () => {
@@ -45,7 +53,6 @@ export function OrderFormActions({ orderData, isSubmitting, isValidating,isEditi
       });
 
       setTimeout(() => {
-   
         window.location.href = "/admin/orders"; // Option 2: Redirect with refresh
       }, 500);
       return { success: true };
@@ -55,39 +62,38 @@ export function OrderFormActions({ orderData, isSubmitting, isValidating,isEditi
     }
   };
 
-  
   return (
     <div className="flex flex-col md:flex-row justify-end gap-4">
-      <OrderPreview orderData={orderData} />
-      {
+      <OrderPreview orderData={orderData} setIsCus={setIsCus} isCus={isCus} />
+      {!isEditing && (
+        <>
+          <Button
+            type="submit"
+            size="lg"
+            disabled={isSubmitting || isValidating}
+          >
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            {isSubmitting ? "Creating Order..." : "Create Order"}
+          </Button>
 
-       !isEditing &&  <>
-       <Button 
-        type="submit" 
-        size="lg" 
-        disabled={isSubmitting || isValidating}
-      >
-        <ShoppingCart className="mr-2 h-4 w-4" />
-        {isSubmitting ? "Creating Order..." : "Create Order"}
-      </Button>
-      
-      <p 
-      onClick={()=>setModalIsOpen(true)}
-      className="flex items-center gap-2 text-center justify-center px-4 py-2 text-white bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 transition duration-300 active:scale-95 select-none">
-      <ShoppingCart className="h-5 w-5" />  Pay And Order
-      </p>
-      </>}
+          <p
+            onClick={() => setModalIsOpen(true)}
+            className="flex items-center gap-2 text-center justify-center px-4 py-2 text-white bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 transition duration-300 active:scale-95 select-none"
+          >
+            <ShoppingCart className="h-5 w-5" /> Pay And Order
+          </p>
+        </>
+      )}
 
-      {
-        isEditing &&   <p
-        onClick={onSubmit}
-        className="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 transition duration-300 active:scale-95 select-none"
-      >
-        <ShoppingCart className="h-5 w-5" />
-        {isSubmitting ? "Updating Order..." : "Update Order"}
-      </p>
-
-      }
+      {isEditing && (
+        <p
+          onClick={onSubmit}
+          className="flex items-center gap-2 px-4 py-2 text-white bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 transition duration-300 active:scale-95 select-none"
+        >
+          <ShoppingCart className="h-5 w-5" />
+          {isSubmitting ? "Updating Order..." : "Update Order"}
+        </p>
+      )}
     </div>
   );
 }

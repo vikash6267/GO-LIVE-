@@ -18,21 +18,27 @@ import { useCart } from "@/hooks/use-cart";
 import { useEffect } from "react";
 
 interface OrderPreviewProps {
-  orderData: Partial<OrderFormValues>;
+  orderData: any; // Adjust type if needed
+  setIsCus?: React.Dispatch<React.SetStateAction<boolean>>; // ✅ Accept as prop
+  isCus?: boolean;
 }
 
-export function OrderPreview({ orderData }: OrderPreviewProps) {
+export function OrderPreview({
+  orderData,
+  setIsCus,
+  isCus,
+}: OrderPreviewProps) {
   // Ensure we have default values for all potentially undefined properties
   const { cartItems, clearCart } = useCart();
 
   const totalShippingCost =
-  sessionStorage.getItem("shipping") == "true"
-    ? 0
-    : cartItems.reduce((total, item) => total + (item.shipping_cost || 0), 0);
+    sessionStorage.getItem("shipping") == "true"
+      ? 0
+      : cartItems.reduce((total, item) => total + (item.shipping_cost || 0), 0);
 
-useEffect(()=>{
-  console.log(orderData)
-},[])
+  useEffect(() => {
+    console.log(orderData);
+  }, []);
 
   const safeOrderData = {
     customerInfo: orderData.customerInfo || {
@@ -43,7 +49,7 @@ useEffect(()=>{
       address: { street: "", city: "", state: "", zip_code: "" },
     },
 
-    shippingAddress : orderData.shippingAddress || {
+    shippingAddress: orderData.shippingAddress || {
       fullName: "",
       email: "",
       phone: "",
@@ -64,7 +70,6 @@ useEffect(()=>{
     specialInstructions: orderData.specialInstructions || "",
   };
 
-  
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -82,7 +87,10 @@ useEffect(()=>{
         </SheetHeader>
 
         <div className="mt-6 space-y-6">
-          <OrderCustomerInfo customerInfo={safeOrderData.customerInfo} shippingAddress={safeOrderData.shippingAddress} />
+          <OrderCustomerInfo
+            customerInfo={safeOrderData.customerInfo}
+            shippingAddress={safeOrderData.shippingAddress}
+          />
           <OrderItemsList items={safeOrderData.items} />
 
           <div className="space-y-2">
@@ -116,7 +124,8 @@ useEffect(()=>{
           <OrderTotals
             items={safeOrderData.items}
             paymentMethod={safeOrderData.payment.method}
-            // shipping={totalShippingCost}
+            setIsCus={setIsCus}
+            isCus={isCus}
           />
         </div>
       </SheetContent>

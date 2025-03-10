@@ -12,7 +12,10 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { calculateOrderTotal, generateOrderId } from "./orders/utils/orderUtils";
+import {
+  calculateOrderTotal,
+  generateOrderId,
+} from "./orders/utils/orderUtils";
 import { useCart } from "@/hooks/use-cart";
 import { validateOrderItems } from "./orders/form/OrderFormValidation";
 import { useSelector } from "react-redux";
@@ -27,8 +30,9 @@ const CreateOrderPaymentForm = ({
   setModalIsOpen,
   form,
   formDataa,
-  pId
-
+  pId,
+  setIsCus,
+  isCus,
 }) => {
   const [paymentType, setPaymentType] = useState("credit_card");
   const { toast } = useToast();
@@ -54,13 +58,10 @@ const CreateOrderPaymentForm = ({
     country: "",
   });
 
-
   const totalShippingCost =
     sessionStorage.getItem("shipping") == "true"
       ? 0
       : Math.max(...cartItems.map((item) => item.shipping_cost || 0));
-
-
 
   useEffect(() => {
     console.log(formDataa);
@@ -75,10 +76,7 @@ const CreateOrderPaymentForm = ({
         zip: formDataa.customerInfo.address?.zip_code || "",
         email: formDataa.customerInfo.email || "",
         phone: formDataa.customerInfo.phone || "",
-        amount: calculateOrderTotal(
-          formDataa.items,
-          totalShippingCost || 0
-        )
+        amount: calculateOrderTotal(formDataa.items, totalShippingCost || 0),
       }));
     }
   }, []);
@@ -89,56 +87,53 @@ const CreateOrderPaymentForm = ({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
     const paymentData =
       paymentType === "credit_card"
         ? {
-          paymentType,
-          amount: formData.amount,
-          cardNumber: formData.cardNumber,
-          expirationDate: formData.expirationDate,
-          cvv: formData.cvv,
-          cardholderName: formData.cardholderName,
-          address: formData.address,
-          city: formData.city,
-          state: formData.state,
-          zip: formData.zip,
-          country: formData.country,
-        }
+            paymentType,
+            amount: formData.amount + (isCus ? 0.5 : 0),
+            cardNumber: formData.cardNumber,
+            expirationDate: formData.expirationDate,
+            cvv: formData.cvv,
+            cardholderName: formData.cardholderName,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            zip: formData.zip,
+            country: formData.country,
+          }
         : {
-          paymentType,
-          amount: formData.amount,
-          accountType: formData.accountType,
-          routingNumber: formData.routingNumber,
-          accountNumber: formData.accountNumber,
-          nameOnAccount: formData.nameOnAccount,
-          address: formData.address,
-          city: formData.city,
-          state: formData.state,
-          zip: formData.zip,
-          country: formData.country,
-        };
+            paymentType,
+            amount: formData.amount,
+            accountType: formData.accountType,
+            routingNumber: formData.routingNumber,
+            accountNumber: formData.accountNumber,
+            nameOnAccount: formData.nameOnAccount,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            zip: formData.zip,
+            country: formData.country,
+          };
 
     try {
       const response = await axios.post("/pay", paymentData);
       if (response.status === 200) {
         try {
-          const data = formDataa
-          
+          const data = formDataa;
+
           console.log("Starting order submission:", data);
-    
-    
-    
+
           // Validate order items
           validateOrderItems(data.items);
-    
+
           // Calculate order total
           const calculatedTotal = calculateOrderTotal(
             data.items,
-            totalShippingCost || 0
+            isCus ? totalShippingCost + 0.5 || 0 : totalShippingCost || 0
           );
-    
-    
+
           if (userProfile?.id == null) {
             toast({
               title: "User profile not found",
@@ -148,7 +143,7 @@ const CreateOrderPaymentForm = ({
             });
             return;
           }
-    
+
           // Check stock availability
           for (const item of data.items) {
             const { data: product, error: stockError } = await supabase
@@ -156,40 +151,43 @@ const CreateOrderPaymentForm = ({
               .select("current_stock")
               .eq("id", item.productId)
               .single();
-    
+
             if (stockError || !product) {
               throw new Error(
                 `Could not check stock for product ID: ${item.productId}`
               );
             }
-    
+
             if (product.current_stock < item.quantity) {
               toast({
                 title: "Insufficient Stock",
                 description: `Product ID: ${item.productId} has only ${product.current_stock} units available.`,
                 variant: "destructive",
               });
-              console.error("Insufficient stock for product ID:", item.productId);
+              console.error(
+                "Insufficient stock for product ID:",
+                item.productId
+              );
               return;
             }
           }
-    
+
           // Calculate default estimated delivery date (10 days from today)
           const defaultEstimatedDelivery = new Date();
-          defaultEstimatedDelivery.setDate(defaultEstimatedDelivery.getDate() + 10);
-    
-    
-    
+          defaultEstimatedDelivery.setDate(
+            defaultEstimatedDelivery.getDate() + 10
+          );
+
           // Prepare order data
           const orderData = {
             order_number: generateOrderId(),
             profile_id: pId || userProfile.id,
             status: data.status,
-            total_amount: calculatedTotal,
+            total_amount: calculatedTotal + (isCus ? 0.5 : 0),
             shipping_cost: data.shipping?.cost || 0,
             tax_amount: 0,
             items: data.items,
-          payment_status: "paid", // Use correct column name
+            payment_status: "paid", // Use correct column name
 
             notes: data.specialInstructions,
             shipping_method: data.shipping?.method,
@@ -200,83 +198,75 @@ const CreateOrderPaymentForm = ({
               data.shipping?.estimatedDelivery ||
               defaultEstimatedDelivery.toISOString(),
           };
-    
-          console.log(orderData)
-    
-    
+
+          console.log(orderData);
+
           // Save order to Supabase
           const { data: orderResponse, error: orderError } = await supabase
             .from("orders")
             .insert([orderData])
             .select();
-    
+
           if (orderError) {
             console.error("Order creation error:", orderError);
             throw new Error(orderError.message);
           }
-    
-          console.log(orderResponse)
+
+          console.log(orderResponse);
           const newOrder = orderResponse[0];
           console.log("Order saved:", newOrder);
-    
-    
-          const { data: invoiceNumber } = await supabase.rpc('generate_invoice_number');
-    
-    
-    
-    
+
+          const { data: invoiceNumber } = await supabase.rpc(
+            "generate_invoice_number"
+          );
+
           const estimatedDeliveryDate = new Date(newOrder.estimated_delivery);
-    
+
           // Calculate the due_date by adding 30 days to the estimated delivery
           const dueDate = new Date(estimatedDeliveryDate);
           dueDate.setDate(dueDate.getDate() + 30); // Add 30 days
-    
+
           // Format the due_date as a string in ISO 8601 format with time zone (UTC in this case)
           const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00.000Z"
-    
+
           const invoiceData = {
             invoice_number: invoiceNumber,
             order_id: newOrder.id,
             due_date: formattedDueDate,
             profile_id: newOrder.profile_id,
             status: "pending" as InvoiceStatus,
-            amount: parseFloat(calculatedTotal) || 0,
+            amount: parseFloat(calculatedTotal + (isCus ? 0.5 : 0)) || 0,
             tax_amount: orderData.tax_amount || 0,
-            total_amount: parseFloat(calculatedTotal),
-          payment_status: "paid", // Use correct column name
+            total_amount: parseFloat(calculatedTotal + (isCus ? 0.5 : 0)),
+            payment_status: "paid", // Use correct column name
 
-        
             payment_method: newOrder.paymentMethod as PaymentMethod,
             payment_notes: newOrder.notes || null,
             items: newOrder.items || [],
             customer_info: newOrder.customerInfo || {
               name: newOrder.customerInfo?.name,
-              email: newOrder.customerInfo?.email || '',
-              phone: newOrder.customerInfo?.phone || ''
+              email: newOrder.customerInfo?.email || "",
+              phone: newOrder.customerInfo?.phone || "",
             },
             shipping_info: orderData.shippingAddress || {},
-            subtotal: calculatedTotal || parseFloat(calculatedTotal)
+            subtotal: calculatedTotal || parseFloat(calculatedTotal),
           };
-    
-          console.log('Creating invoice with data:', invoiceData);
-    
-    
-    
+
+          console.log("Creating invoice with data:", invoiceData);
+
           const { invoicedata2, error } = await supabase
             .from("invoices")
             .insert(invoiceData)
             .select()
             .single();
-    
+
           if (error) {
-            console.error('Error creating invoice:', error);
+            console.error("Error creating invoice:", error);
             throw error;
           }
-    
-          console.log('Invoice created successfully:', invoicedata2);
-    
-    
-    
+
+          console.log("Invoice created successfully:", invoicedata2);
+
           try {
             await axios.post("/order-place", newOrder);
             console.log("Order status sent successfully to backend.");
@@ -292,17 +282,17 @@ const CreateOrderPaymentForm = ({
             total_price: item.quantity * item.price,
             notes: item.notes,
           }));
-    
+
           const { error: itemsError } = await supabase
             .from("order_items")
             .insert(orderItemsData);
-    
+
           if (itemsError) {
             throw new Error(itemsError.message);
           }
-    
+
           // console.log("Order items saved:", orderItemsData);
-    
+
           // Update product stock
           for (const item of data.items) {
             // console.log("Updating stock for quantity ID:", item.quantity);
@@ -317,17 +307,17 @@ const CreateOrderPaymentForm = ({
               );
             }
           }
-    
+
           console.log("Stock updated successfully");
-    
+
           // Reset form and local state
           // localStorage.removeItem("cart");
-    
+
           toast({
             title: "Order Created Successfully",
             description: `Order ID: ${newOrder.id} has been created.`,
           });
-    
+
           form.reset();
           // setOrderItems([{ id: 1 }]);
           navigate("/pharmacy/orders");
@@ -343,7 +333,6 @@ const CreateOrderPaymentForm = ({
             variant: "destructive",
           });
         }
-
       }
     } catch (error) {
       console.log(error);
@@ -352,7 +341,7 @@ const CreateOrderPaymentForm = ({
         description: error.data.message,
       });
     }
-    setLoading(false)
+    setLoading(false);
   };
 
   return (
@@ -392,7 +381,7 @@ const CreateOrderPaymentForm = ({
               name="amount"
               placeholder="Amount"
               onChange={handleChange}
-              value={formData.amount}
+              value={formData.amount + (isCus ? 0.5 : 0)}
               required
               className="border p-2 w-full rounded pl-10 cursor-not-allowed"
             />
@@ -604,42 +593,41 @@ const CreateOrderPaymentForm = ({
             </>
           )}
 
-<div className="flex gap-2 justify-between px-2">
-  <button
-    type="submit"
-    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition w-full flex items-center justify-center"
-    disabled={loading} // Disable button when loading
-  >
-    {loading ? (
-      <>
-        <svg
-          className="animate-spin h-5 w-5 mr-2 text-white"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v8H4z"
-          ></path>
-        </svg>
-        Processing...
-      </>
-    ) : (
-      "Confirm Payment"
-    )}
-  </button>
-</div>
-
+          <div className="flex gap-2 justify-between px-2">
+            <button
+              type="submit"
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition w-full flex items-center justify-center"
+              disabled={loading} // Disable button when loading
+            >
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 mr-2 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8H4z"
+                    ></path>
+                  </svg>
+                  Processing...
+                </>
+              ) : (
+                "Confirm Payment"
+              )}
+            </button>
+          </div>
         </form>
       </Modal>
     </div>

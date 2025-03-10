@@ -8,15 +8,17 @@ import { supabase } from "@/supabaseClient";
 interface OrderItemsSectionProps {
   orderItems: { id: number }[];
   form: UseFormReturn<OrderFormValues>;
+  setIsCus?: React.Dispatch<React.SetStateAction<boolean>>;
+  isCus?: boolean;
 }
 
-export function OrderItemsSection({ orderItems, form }) {
+export function OrderItemsSection({ orderItems, form, setIsCus, isCus }) {
   const [products, setProducts] = useState([]);
   const { toast } = useToast();
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const { data, error } = await supabase.from('products').select('*');
+      const { data, error } = await supabase.from("products").select("*");
       if (error) {
         toast({
           title: "Error",
@@ -38,9 +40,17 @@ export function OrderItemsSection({ orderItems, form }) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Order Items</h2>
+
+        <button
+          type="button" // Prevents accidental form submission
+          onClick={() => setIsCus?.((prev) => !prev)}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+        >
+          {isCus ? "Disable Customization" : "Enable Customization"}
+        </button>
       </div>
 
-      {allValues?.items.map((item, index) => (
+      {allValues?.items?.map((item, index) => (
         <OrderItemRow
           key={item.id}
           index={index}

@@ -8,7 +8,13 @@ import { useOrderManagement } from "./hooks/useOrderManagement";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { CreateOrderForm } from "./CreateOrderForm";
 import { useState, useEffect } from "react";
 import { supabase } from "@/supabaseClient";
@@ -22,16 +28,16 @@ interface OrdersContainerProps {
   onDeleteOrder?: (orderId: string) => Promise<void>;
 }
 
-export const OrdersContainer = ({ 
+export const OrdersContainer = ({
   userRole = "pharmacy",
   onProcessOrder,
   onShipOrder,
   onConfirmOrder,
-  onDeleteOrder
+  onDeleteOrder,
 }: OrdersContainerProps) => {
   const { toast } = useToast();
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
-  
+
   const {
     orders,
     selectedOrder,
@@ -44,10 +50,10 @@ export const OrdersContainer = ({
     handleOrderClick,
     handleProcessOrder: processOrder,
     handleShipOrder: shipOrder,
-    handleConfirmOrder: confirmOrder
+    handleConfirmOrder: confirmOrder,
   } = useOrderManagement();
 
-  console.log(orders)
+  console.log(orders);
   const {
     statusFilter,
     searchQuery,
@@ -55,13 +61,15 @@ export const OrdersContainer = ({
     setStatusFilter,
     setSearchQuery,
     setDateRange,
-    filteredOrders
+    filteredOrders,
   } = useOrderFilters(orders);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
         if (!session) {
           toast({
             title: "Error",
@@ -71,12 +79,11 @@ export const OrdersContainer = ({
           return;
         }
 
-        
         const { data: orders, error } = await supabase
-          .from('orders')
-          .select('*')
-          .eq('profile_id', session.user.id)
-          .order('created_at', { ascending: false });
+          .from("orders")
+          .select("*")
+          .eq("profile_id", session.user.id)
+          .order("created_at", { ascending: false });
 
         if (error) throw error;
 
@@ -100,23 +107,26 @@ export const OrdersContainer = ({
         <OrderFilters
           onSearch={setSearchQuery}
           onDateChange={setDateRange}
-          onExport={() => console.log('Export functionality to be implemented')}
+          onExport={() => console.log("Export functionality to be implemented")}
         />
         {userRole === "admin" && (
           <Sheet open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>
             <SheetTrigger asChild>
               <Button>
                 <PlusCircle className="mr-2 h-4 w-4" />
-                Create Order 
+                Create Order
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[90vw] sm:max-w-[600px] overflow-y-auto">
+            <SheetContent
+              side="right"
+              className="w-[90vw] sm:max-w-[600px] overflow-y-auto"
+            >
               <SheetHeader>
                 <SheetTitle>Create New Order</SheetTitle>
               </SheetHeader>
               <div className="mt-4">
-                <CreateOrderForm 
-                  onFormChange={(data) => console.log('Form changed:', data)}
+                <CreateOrderForm
+                  onFormChange={(data) => console.log("Form changed:", data)}
                   isEditing={false}
                 />
               </div>
@@ -126,8 +136,8 @@ export const OrdersContainer = ({
       </div>
 
       <StatusFilter value={statusFilter} onValueChange={setStatusFilter} />
-      
-      <OrdersList 
+
+      <OrdersList
         orders={filteredOrders}
         onOrderClick={handleOrderClick}
         selectedOrder={selectedOrder}
@@ -136,9 +146,9 @@ export const OrdersContainer = ({
         userRole={userRole}
         selectedOrders={selectedOrders}
         onOrderSelect={(orderId) => {
-          setSelectedOrders(prev => 
-            prev.includes(orderId) 
-              ? prev.filter(id => id !== orderId)
+          setSelectedOrders((prev) =>
+            prev.includes(orderId)
+              ? prev.filter((id) => id !== orderId)
               : [...prev, orderId]
           );
         }}

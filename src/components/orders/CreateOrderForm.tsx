@@ -19,18 +19,16 @@ import { supabase } from "@/supabaseClient";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserProfile } from "../../store/selectors/userSelectors";
 import { useCart } from "@/hooks/use-cart";
-import axios from "../../../axiosconfig"
+import axios from "../../../axiosconfig";
 import { InvoiceStatus, PaymentMethod } from "../invoices/types/invoice.types";
 import CreateOrderPaymentForm from "../CreateOrderPayment";
-
 
 export interface CreateOrderFormProps {
   initialData?: Partial<OrderFormValues>;
   onFormChange?: (data: Partial<OrderFormValues>) => void;
-  isEditing?: boolean
-  use?: string,
-  locationId?: any
-
+  isEditing?: boolean;
+  use?: string;
+  locationId?: any;
 }
 
 export function CreateOrderForm({
@@ -38,8 +36,7 @@ export function CreateOrderForm({
   onFormChange,
   isEditing,
   use,
-  locationId
-
+  locationId,
 }: CreateOrderFormProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -49,20 +46,21 @@ export function CreateOrderForm({
   const userProfile = useSelector(selectUserProfile);
   const { cartItems, clearCart } = useCart();
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [isCus, setIsCus] = useState<boolean>(false);
 
-  console.log(initialData)
-  const [pId, setPId] = useState(initialData?.customerInfo?.cusid || userProfile?.id || "")
+  console.log(initialData);
+  const [pId, setPId] = useState(
+    initialData?.customerInfo?.cusid || userProfile?.id || ""
+  );
 
   useEffect(() => {
-    setPId(initialData?.customerInfo?.cusid || userProfile?.id)
-  }, [initialData, userProfile])
+    setPId(initialData?.customerInfo?.cusid || userProfile?.id);
+  }, [initialData, userProfile]);
 
   const totalShippingCost =
     sessionStorage.getItem("shipping") == "true"
       ? 0
       : Math.max(...cartItems.map((item) => item.shipping_cost || 0));
-
-
 
   // Initialize form with user profile data
   const form = useForm<OrderFormValues>({
@@ -77,15 +75,27 @@ export function CreateOrderForm({
       customerInfo: {
         name:
           initialData?.customerInfo?.name ||
-          `${initialData?.customerInfo?.name || ""} ${userProfile?.last_name || ""}`,
+          `${initialData?.customerInfo?.name || ""} ${
+            userProfile?.last_name || ""
+          }`,
         email: initialData?.customerInfo?.email || "",
         phone: userProfile?.mobile_phone || "",
         type: "Pharmacy",
         address: {
-          street: initialData?.customerInfo?.address?.street || userProfile?.company_name || "",
-          city: initialData?.customerInfo?.address?.city || userProfile?.city || "",
-          state: initialData?.customerInfo?.address?.state || userProfile?.state || "",
-          zip_code: initialData?.customerInfo?.address?.zip_code || userProfile?.zip_code || "",
+          street:
+            initialData?.customerInfo?.address?.street ||
+            userProfile?.company_name ||
+            "",
+          city:
+            initialData?.customerInfo?.address?.city || userProfile?.city || "",
+          state:
+            initialData?.customerInfo?.address?.state ||
+            userProfile?.state ||
+            "",
+          zip_code:
+            initialData?.customerInfo?.address?.zip_code ||
+            userProfile?.zip_code ||
+            "",
         },
       },
 
@@ -103,7 +113,6 @@ export function CreateOrderForm({
         },
       },
 
-
       order_number: "",
       items: cartItems,
       shipping: {
@@ -120,7 +129,6 @@ export function CreateOrderForm({
       ...initialData,
     },
   });
-
 
   // Load pending order items from localStorage if they exist
   useEffect(() => {
@@ -144,15 +152,11 @@ export function CreateOrderForm({
     return () => subscription.unsubscribe();
   }, [form, validateForm]);
 
-
-
   const onSubmit = async (data: OrderFormValues) => {
     console.log("first");
     try {
       setIsSubmitting(true);
       console.log("Starting order submission:", data);
-
-
 
       // Validate order items
       validateOrderItems(data.items);
@@ -162,7 +166,6 @@ export function CreateOrderForm({
         data.items,
         totalShippingCost || 0
       );
-
 
       if (userProfile?.id == null) {
         toast({
@@ -203,14 +206,12 @@ export function CreateOrderForm({
       const defaultEstimatedDelivery = new Date();
       defaultEstimatedDelivery.setDate(defaultEstimatedDelivery.getDate() + 10);
 
-
-
       // Prepare order data
       const orderData = {
         order_number: generateOrderId(),
         profile_id: pId || userProfile.id,
         status: data.status,
-        total_amount: calculatedTotal,
+        total_amount: calculatedTotal + (isCus ? 0.5 : 0),
         shipping_cost: data.shipping?.cost || 0,
         tax_amount: 0,
         items: data.items,
@@ -224,8 +225,7 @@ export function CreateOrderForm({
           defaultEstimatedDelivery.toISOString(),
       };
 
-      console.log(orderData)
-
+      console.log(orderData);
 
       // Save order to Supabase
       const { data: orderResponse, error: orderError } = await supabase
@@ -238,15 +238,13 @@ export function CreateOrderForm({
         throw new Error(orderError.message);
       }
 
-      console.log(orderResponse)
+      console.log(orderResponse);
       const newOrder = orderResponse[0];
       console.log("Order saved:", newOrder);
 
-
-      const { data: invoiceNumber } = await supabase.rpc('generate_invoice_number');
-
-
-
+      const { data: invoiceNumber } = await supabase.rpc(
+        "generate_invoice_number"
+      );
 
       const estimatedDeliveryDate = new Date(newOrder.estimated_delivery);
 
@@ -272,16 +270,16 @@ export function CreateOrderForm({
         items: newOrder.items || [],
         customer_info: newOrder.customerInfo || {
           name: newOrder.customerInfo?.name,
-          email: newOrder.customerInfo?.email || '',
-          phone: newOrder.customerInfo?.phone || ''
+          email: newOrder.customerInfo?.email || "",
+          phone: newOrder.customerInfo?.phone || "",
         },
         shipping_info: orderData.shippingAddress || {},
-        subtotal: calculatedTotal || parseFloat(calculatedTotal)
+        subtotal:
+          calculatedTotal + (isCus ? 0.5 : 0) ||
+          parseFloat(calculatedTotal + (isCus ? 0.5 : 0)),
       };
 
-      console.log('Creating invoice with data:', invoiceData);
-
-
+      console.log("Creating invoice with data:", invoiceData);
 
       const { invoicedata2, error } = await supabase
         .from("invoices")
@@ -290,13 +288,11 @@ export function CreateOrderForm({
         .single();
 
       if (error) {
-        console.error('Error creating invoice:', error);
+        console.error("Error creating invoice:", error);
         throw error;
       }
 
-      console.log('Invoice created successfully:', invoicedata2);
-
-
+      console.log("Invoice created successfully:", invoicedata2);
 
       try {
         await axios.post("/order-place", newOrder);
@@ -368,23 +364,27 @@ export function CreateOrderForm({
     }
   };
 
-
-
-
-
   useEffect(() => {
-    const VVV = form.getValues()
-    console.log(VVV)
-  }, [])
+    const VVV = form.getValues();
+    console.log(VVV);
+  }, []);
 
   return (
     <>
-
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <CustomerSelectionField form={form} initialData={initialData} locationId={locationId} />
+          <CustomerSelectionField
+            form={form}
+            initialData={initialData}
+            locationId={locationId}
+          />
 
-          <OrderItemsSection orderItems={cartItems} form={form} />
+          <OrderItemsSection
+            orderItems={cartItems}
+            form={form}
+            setIsCus={setIsCus}
+            isCus={isCus}
+          />
 
           <ShippingSection form={form} />
 
@@ -396,6 +396,8 @@ export function CreateOrderForm({
             isValidating={isValidating}
             isEditing={isEditing}
             setModalIsOpen={setModalIsOpen}
+            setIsCus={setIsCus}
+            isCus={isCus}
           />
         </form>
       </Form>
@@ -406,6 +408,8 @@ export function CreateOrderForm({
           formDataa={form.getValues()}
           form={form}
           pId={pId}
+          setIsCus={setIsCus}
+          isCus={isCus}
         />
       )}
     </>

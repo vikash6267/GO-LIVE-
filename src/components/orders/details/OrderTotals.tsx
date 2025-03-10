@@ -4,9 +4,16 @@ import { OrderFormValues } from "../schemas/orderSchema";
 interface OrderTotalsProps {
   items: OrderFormValues["items"];
   paymentMethod: OrderFormValues["payment"]["method"];
+  setIsCus?: React.Dispatch<React.SetStateAction<boolean>>; // ✅ Accept as prop
+  isCus?: boolean;
 }
 
-export function OrderTotals({ items, paymentMethod }: OrderTotalsProps) {
+export function OrderTotals({
+  items,
+  paymentMethod,
+  setIsCus,
+  isCus,
+}: OrderTotalsProps) {
   const { cartItems, clearCart } = useCart();
 
   const shipping =
@@ -20,7 +27,7 @@ export function OrderTotals({ items, paymentMethod }: OrderTotalsProps) {
   );
   const processingFee = paymentMethod === "card" ? subtotal * 0.02 : 0;
   const shippingCost = shipping || 0;
-  const total = subtotal + shippingCost;
+  const total = subtotal + shippingCost + (isCus ? 0.5 : 0);
 
   return (
     <div className="space-y-2 border-t pt-4">

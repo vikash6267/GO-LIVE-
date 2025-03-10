@@ -4,6 +4,7 @@ import UsersTable, { User } from "@/components/users/UsersTable";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
+import { Loader2 } from "lucide-react"; // Import the loading icon
 
 interface UsersContainerProps {
   users: User[];
@@ -28,46 +29,56 @@ export function UsersContainer({
   onStatusChange,
   onSelectionChange,
 }: UsersContainerProps) {
-  const {toast} = useToast()
-  const[groupid,setGroup] = useState(null)
+  const { toast } = useToast();
+  const [groupid, setGroup] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const addGroup = async()=>{
-try {
-  
-  if(!groupid){
-    toast({
-      title: "Group Selection ",
-      description: "Please Select Group to continue.",
-      variant: "destructive",
-    });
-  }
-  const { data, error } = await supabase
-  .from("profiles")
-  .update({ group_id: groupid }) // Update group_id properly
-  .in("id", selectedUsers); // Use .in() to update multiple IDs
+  const addGroup = async () => {
+    if (!groupid) {
+      toast({
+        title: "Group Selection",
+        description: "Please Select Group to continue.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-// Check if an error occurred
-if (error) {
-  console.error("Error updating profiles:", error.message);
-  alert("Failed to update profiles. Please try again.");
-  return;
-}
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .update({ group_id: groupid })
+        .in("id", selectedUsers);
 
-  
-        // Handle case where no data is found
-        if (!data) {
-       
-        
-          return;
-        }
-  
-        // Set selected location state
-        console.log("Fetched Location Data:", data);
-   
-} catch (error) {
-  
-}
-  }
+      if (error) {
+        console.error("Error updating profiles:", error.message);
+        toast({
+          title: "Error",
+          description: "Failed to update profiles. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+
+
+      toast({
+        title: "Success",
+        description: "Users added to group successfully",
+      });
+
+      onSelectionChange([])
+      console.log("Fetched Location Data:", data);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <Card>
@@ -84,43 +95,50 @@ if (error) {
             onTypeChange={onTypeChange}
             onStatusChange={onStatusChange}
           />
-{selectedUsers.length > 0 && (
-  <div className="flex flex-col md:flex-row items-center justify-center gap-4 p-4 bg-white shadow-lg rounded-lg">
-<select
-  name="profile"
-  id="profile"
-  className="w-full md:w-72 p-3 border border-gray-300 rounded-lg shadow-sm 
-             focus:ring-2 focus:ring-blue-500 focus:outline-none"
-  onChange={(e) => setGroup(e.target.value)}
->
-  <option value="" disabled selected>
-    Select a user
-  </option>
-  
-  {/* Filter users by role before mapping */}
-  {users
-    .filter((user) => user.type.toLowerCase() === "group") // Only include users with role "group"
-    .map((user) => (
-      <option key={user.id} value={user.id}>
-        {user.name}
-      </option>
-    ))}
-</select>
+          {selectedUsers.length > 0 && (
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 p-4 bg-white shadow-lg rounded-lg">
+              <select
+                name="profile"
+                id="profile"
+                className="w-full md:w-72 p-3 border border-gray-300 rounded-lg shadow-sm 
+                         focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                onChange={(e) => setGroup(e.target.value)}
+                disabled={isLoading}
+              >
+                <option value="" disabled selected>
+                  Select a user
+                </option>
+                {users
+                  .filter((user) => user.type.toLowerCase() === "group")
+                  .map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
+                    </option>
+                  ))}
+              </select>
 
+              <button
+                onClick={addGroup}
+                disabled={isLoading}
+                className="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md 
+                         hover:bg-blue-700 transition duration-300 ease-in-out 
+                         active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-400
+                         disabled:opacity-50 disabled:cursor-not-allowed
+                         flex items-center justify-center gap-2 min-w-[150px]"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  "+ Add to Group"
+                )}
+              </button>
+            </div>
+          )}
 
-    <button
-      onClick={addGroup}
-      className="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg shadow-md 
-                 hover:bg-blue-700 transition duration-300 ease-in-out 
-                 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-400"
-    >
-      + Add to Group
-    </button>
-  </div>
-)}
-
-
-          <div className="rounded-md border ">
+          <div className="rounded-md border">
             <UsersTable
               users={users}
               selectedUsers={selectedUsers}

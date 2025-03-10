@@ -58,6 +58,23 @@ export const CATEGORY_CONFIGS = {
   },
 } as const;
 
+export const customizationOptionSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, "Name is required"),
+  type: z.enum(["text", "color", "dropdown"]),
+  required: z.boolean().default(false),
+  price: z.number().min(0, "Price must be greater than or equal to 0").default(0),
+  options: z.array(z.string()).optional(),
+  maxLength: z.number().optional(),
+});
+
+export const customizationSchema = z.object({
+  allowed: z.boolean().default(false),
+  price: z.number().min(0, "Price must be greater than or equal to 0").default(0),
+  options: z.array(customizationOptionSchema).default([]),
+});
+
+
 export const productFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
@@ -133,3 +150,5 @@ export const productFormSchema = z.object({
 });
 
 export type ProductFormValues = z.infer<typeof productFormSchema>;
+export type Customization = z.infer<typeof customizationSchema>;
+export type CustomizationOption = z.infer<typeof customizationOptionSchema>;

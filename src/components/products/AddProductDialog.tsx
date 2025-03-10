@@ -16,6 +16,7 @@ import { SizeOptionsField } from "./form-fields/SizeOptionsField";
 import { InventorySection } from "./form-sections/InventorySection";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
+import { CustomizationSection } from "./form-fields/Customizations";
 
 interface AddProductDialogProps {
   open: boolean;
@@ -110,6 +111,7 @@ export function AddProductDialog({
               }}
             />
             <SizeOptionsField form={form} />
+            <CustomizationSection form={form} />
             <InventorySection form={form} />
             <DialogFooter>
               <Button

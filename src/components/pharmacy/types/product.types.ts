@@ -43,6 +43,8 @@ export interface ProductDetails {
   image_url: string;
   endsIn: string;
   productId: string;
+  customizations: Record<string, any> | null; // ✅ Fixed JSON issue
+
   category: string;
   stock?: number;
   minOrder?: number;

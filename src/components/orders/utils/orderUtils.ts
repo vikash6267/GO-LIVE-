@@ -12,11 +12,16 @@ export const generateOrderId = () => {
 export const calculateOrderTotal = (items: any[], shippingCost: number = 0) => {
   const itemsTotal = items.reduce((total, item) => {
     const itemPrice = parseFloat(item.price) || 0;
-    const quantity = parseInt(item.quantity) || 0;
-    return total + (itemPrice );
+    const quantity = parseInt(item.quantity) || 1;
+    const customizationPrice = parseFloat(item?.customizations?.totalPrice)  * quantity || 0;
+    return total + (itemPrice + customizationPrice);
   }, 0);
   return itemsTotal + shippingCost;
 };
+
+
+
+
 
 export const formatOrderNumber = (id: string) => {
   return `ORD-${id.slice(0, 8)}`;

@@ -1,3 +1,4 @@
+import { Json } from '@/integrations/supabase/types';
 import { z } from "zod";
 
 const addressSchema = z.object({
@@ -34,6 +35,8 @@ const orderItemSchema = z.object({
   price: z.number().min(0, "Price must be a positive number"),
   sizes: z.array(sizeSchema).optional(), // Add sizes as an array of size objects
   notes: z.string().optional(),
+  customizations: z.record(z.any()).optional(), // ✅ Accepts JSON-like objects
+
 });
 
 const shippingSchema = z.object({

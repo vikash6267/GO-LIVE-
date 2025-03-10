@@ -42,7 +42,7 @@ export function OrderItemsSection({ orderItems, form, setIsCus, isCus }) {
         <h2 className="text-xl font-semibold">Order Items</h2>
 
         <label
-          className={`flex items-center cursor-pointer p-3 rounded-lg transition 
+          className={` items-center hidden cursor-pointer p-3 rounded-lg transition 
               ${isCus ? "bg-green-200" : "bg-gray-200"}`}
         >
           <div className="relative">

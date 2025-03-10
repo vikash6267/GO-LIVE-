@@ -45,6 +45,11 @@ const ProductShowcase = () => {
           offer: "",
           endsIn: "",
           sku: item.sku,
+          customization:{
+            allowed:item.customization.allowed,
+            options:item.customization.options,
+            basePrice:item.customization.price,
+          },
           key_features: item.key_features,
           productId: item.id.toString(),
           specifications: {

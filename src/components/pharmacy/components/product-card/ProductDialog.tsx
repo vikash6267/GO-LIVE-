@@ -134,10 +134,10 @@ export const ProductDialog = ({
                 <span className="font-semibold block mb-1">SKU:</span>
                 {/* <p className="text-gray-600">{product?.sku}</p> */}
                 {selectedSizesSKU.map((size, index) => (
-  <span key={index}>
-    {size.split(" ")[0]} <br />
-  </span>
-))}
+                  <span key={index}>
+                    {size.split(" ")[0]} <br />
+                  </span>
+                ))}
               </div>
               <div className="bg-gray-50 p-3 rounded-lg">
                 <span className="font-semibold block mb-1">Category:</span>
@@ -163,25 +163,7 @@ export const ProductDialog = ({
               />
             </div>
 
-            {/* Key Features */}
-            {/* {product.specifications?.safetyInfo && (
-              <div className="space-y-2">
-                <h4 className="text-base font-medium">Key Features:</h4>
-                <ul className="grid grid-cols-2 gap-2">
-                  {product.specifications.safetyInfo
-                    .split(".")
-                    .filter(Boolean)
-                    .map((feature, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <Check className="h-4 w-4 text-emerald-500 mt-1 shrink-0" />
-                        <span className="text-gray-600 text-sm">
-                          {feature.trim()}
-                        </span>
-                      </li>
-                    ))}
-                </ul>
-              </div>
-            )} */}
+
 
             {product.customization?.allowed && (
               <>

@@ -13,6 +13,9 @@ export function OrderItemsList({ items }: OrderItemsListProps) {
         {items?.map((item, index) => (
           <div key={index} className="border p-4 rounded shadow">
             <p className="font-medium">🛒 Product: {item.name}</p>
+            <p>
+                      <strong>Customizations:</strong> {item.customizations.totalPrice > 0 ? "Yes" : "No"}
+                    </p>
             {/* <p className="font-medium"> Order ID: {item.id}</p> */}
 
             {/* Agar item ke andar sizes available hai toh */}
@@ -29,6 +32,7 @@ export function OrderItemsList({ items }: OrderItemsListProps) {
                     <p>
                       <strong>Quantity:</strong> {size.quantity}
                     </p>
+                 
                     <p>
                       <strong>Price per Unit:</strong> ${size.price.toFixed(2)}
                     </p>

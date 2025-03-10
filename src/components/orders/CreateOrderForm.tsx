@@ -48,7 +48,7 @@ export function CreateOrderForm({
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isCus, setIsCus] = useState<boolean>(false);
 
-  console.log(initialData);
+  console.log(cartItems);
   const [pId, setPId] = useState(
     initialData?.customerInfo?.cusid || userProfile?.id || ""
   );
@@ -72,18 +72,17 @@ export function CreateOrderForm({
       total: "0",
       status: "new",
       payment_status: "unpaid",
-      customization :isCus,
+      customization: isCus,
 
       customerInfo: {
         name:
           initialData?.customerInfo?.name ||
-          `${initialData?.customerInfo?.name || ""} ${
-            userProfile?.last_name || ""
+          `${initialData?.customerInfo?.name || ""} ${userProfile?.last_name || ""
           }`,
         email: initialData?.customerInfo?.email || "",
         phone: userProfile?.mobile_phone || "",
         type: "Pharmacy",
-          address: {
+        address: {
           street:
             initialData?.customerInfo?.address?.street ||
             userProfile?.company_name ||
@@ -163,11 +162,14 @@ export function CreateOrderForm({
       // Validate order items
       validateOrderItems(data.items);
 
+     
       // Calculate order total
       const calculatedTotal = calculateOrderTotal(
-        data.items,
+        cartItems,
         totalShippingCost || 0
       );
+
+
 
       if (userProfile?.id == null) {
         toast({
@@ -210,7 +212,7 @@ export function CreateOrderForm({
 
       console.log(isCus)
 
-    
+
       // Prepare order data
       const orderData = {
         order_number: generateOrderId(),
@@ -219,7 +221,7 @@ export function CreateOrderForm({
         total_amount: calculatedTotal + (isCus ? 0.5 : 0),
         shipping_cost: data.shipping?.cost || 0,
         tax_amount: 0,
-        customization:isCus,
+        customization: isCus,
         items: data.items,
         notes: data.specialInstructions,
         shipping_method: data.shipping?.method,
@@ -390,7 +392,7 @@ export function CreateOrderForm({
             form={form}
             setIsCus={setIsCus}
             isCus={isCus}
-         
+
           />
 
           <ShippingSection form={form} />

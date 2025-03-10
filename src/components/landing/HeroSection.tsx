@@ -78,10 +78,12 @@ const HeroSection = () => {
                   key={i}
                   src={logo}
                   alt={`Trusted Pharmacy ${i + 1}`}
-                  className="lg:w-14 lg:h-14 w-10 h-10  0 rounded-full border-2 border-white object-cover"
+                  className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-purple-700 border-2 border-white shadow-lg transform hover:scale-110 transition-all duration-300" 
                 />
               ))}
             </div>
+
+            
             <span className="ml-3 sm:ml-4 text-sm sm:text-base md:text-lg font-medium text-white">
               Trusted by 250+ Pharmacies
             </span>
@@ -101,30 +103,30 @@ const HeroSection = () => {
               reliability and excellence.
             </p>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mt-12">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6 mt-12">
               <FeatureCard
                 icon={<Building2 className="w-6 h-6 text-white" />}
                 title="Industry Leader"
                 description="One of the Fastest growing Rx Supply Company"
-                bgColor="bg-emerald-700/40"
+             
               />
               <FeatureCard
                 icon={<Box className="w- h-6 text-white" />}
                 title="Quality & Affordability Assured"
                 description="Best Quality Supply at Affordable Pricing"
-                bgColor="bg-emerald-700/40"
+            
               />
               <FeatureCard
                 icon={<Truck className="w-6 h-6 text-white" />}
                 title="Fast Delivery"
                 description="Same Day Dispatch if the order is placed before 3.00pm EST"
-                bgColor="bg-emerald-700/40"
+            
               />
               <FeatureCard
                 icon={<Settings className="w-6 h-6 text-white" />}
                 title="Customization"
                 description="Personalized Solutions for your Rx Paper Bags, Rx Labels and many more Products"
-                bgColor="bg-emerald-700/40"
+               
               />
             </div>
           </div>
@@ -134,25 +136,15 @@ const HeroSection = () => {
   );
 };
 
-const FeatureCard = ({
-  icon,
-  title,
-  description,
-  bgColor = "bg-blue-800/30",
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  bgColor?: string;
-}) => (
-  <div
-    className={`${bgColor} backdrop-blur-sm rounded-xl p-3 hover:bg-opacity-40 transition-all duration-300 group`}
-  >
-    <div className="p-3 rounded-lg bg-teal-600/30 inline-block mb-4">
+const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) => (
+  <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 flex items-start space-x-6 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl group">
+    <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/30 to-emerald-500/40 group-hover:from-emerald-500/40 group-hover:to-emerald-500/50 transition-all duration-300 shadow-lg">
       {icon}
     </div>
-    <h3 className="text-white text-lg font-semibold mb-2">{title}</h3>
-    <p className="text-gray-100 text-sm">{description}</p>
+    <div>
+      <h3 className="font-semibold text-white text-xl mb-2">{title}</h3>
+      <p className="text-white/80 text-base leading-relaxed">{description}</p>
+    </div>
   </div>
 );
 

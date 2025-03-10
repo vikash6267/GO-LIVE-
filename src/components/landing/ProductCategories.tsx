@@ -41,7 +41,7 @@ const ProductCategories = () => {
             price="Starting from $10/Roll"
           />
           <ProductCard
-            imageSrc="/Square-Bottom.png"
+            imageSrc="/public/lovable-uploads/rxpaper.png"
             title="RX PAPER BAGS"
             description="Premium prescription paper bags for pharmacies, available in various sizes and styles"
             price="Starting from $55/case"

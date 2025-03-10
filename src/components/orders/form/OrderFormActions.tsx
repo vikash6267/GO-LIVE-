@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface OrderFormActionsProps {
   orderData: OrderFormValues;
+  form:any;
   isSubmitting?: boolean;
   isValidating?: boolean; // Added this prop
   isEditing?: boolean; // Added this prop
@@ -20,6 +21,7 @@ export function OrderFormActions({
   isSubmitting,
   isValidating,
   isEditing,
+  form,
   setModalIsOpen,
   setIsCus, // ✅ Added missing prop
   isCus, // ✅ Added missing prop

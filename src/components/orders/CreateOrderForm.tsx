@@ -72,6 +72,8 @@ export function CreateOrderForm({
       total: "0",
       status: "new",
       payment_status: "unpaid",
+      customization :isCus,
+
       customerInfo: {
         name:
           initialData?.customerInfo?.name ||
@@ -81,7 +83,7 @@ export function CreateOrderForm({
         email: initialData?.customerInfo?.email || "",
         phone: userProfile?.mobile_phone || "",
         type: "Pharmacy",
-        address: {
+          address: {
           street:
             initialData?.customerInfo?.address?.street ||
             userProfile?.company_name ||
@@ -206,6 +208,9 @@ export function CreateOrderForm({
       const defaultEstimatedDelivery = new Date();
       defaultEstimatedDelivery.setDate(defaultEstimatedDelivery.getDate() + 10);
 
+      console.log(isCus)
+
+    
       // Prepare order data
       const orderData = {
         order_number: generateOrderId(),
@@ -214,6 +219,7 @@ export function CreateOrderForm({
         total_amount: calculatedTotal + (isCus ? 0.5 : 0),
         shipping_cost: data.shipping?.cost || 0,
         tax_amount: 0,
+        customization:isCus,
         items: data.items,
         notes: data.specialInstructions,
         shipping_method: data.shipping?.method,
@@ -384,6 +390,7 @@ export function CreateOrderForm({
             form={form}
             setIsCus={setIsCus}
             isCus={isCus}
+         
           />
 
           <ShippingSection form={form} />
@@ -398,6 +405,7 @@ export function CreateOrderForm({
             setModalIsOpen={setModalIsOpen}
             setIsCus={setIsCus}
             isCus={isCus}
+            form={form}
           />
         </form>
       </Form>

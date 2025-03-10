@@ -225,6 +225,7 @@ export function OrdersList({
           <TableHead className="font-semibold">Order Date</TableHead>
           <TableHead className="font-semibold">Total</TableHead>
           <TableHead className="font-semibold">Status</TableHead>
+          <TableHead className="font-semibold">Customization</TableHead>
           <TableHead className="font-semibold">Payment Status</TableHead>
           <TableHead className="font-semibold">Tracking</TableHead>
           {userRole === "admin" && (
@@ -263,6 +264,8 @@ export function OrdersList({
                   {order.status.toUpperCase() || "pending"}
                 </Badge>
               </TableCell>
+              <TableCell>{order.customization ? "Yes" : "No"}</TableCell>
+
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Badge

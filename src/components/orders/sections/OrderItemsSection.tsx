@@ -41,13 +41,35 @@ export function OrderItemsSection({ orderItems, form, setIsCus, isCus }) {
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Order Items</h2>
 
-        <button
-          type="button" // Prevents accidental form submission
-          onClick={() => setIsCus?.((prev) => !prev)}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+        <label
+          className={`flex items-center cursor-pointer p-3 rounded-lg transition 
+              ${isCus ? "bg-green-200" : "bg-gray-200"}`}
         >
-          {isCus ? "Disable Customization" : "Enable Customization"}
-        </button>
+          <div className="relative">
+            <input
+              type="checkbox"
+              checked={isCus}
+              onChange={() => {setIsCus?.((prev) => !prev) ; form.setFieldValue("customization", isCus);              }}
+              className="sr-only"
+            />
+            {/* Switch Background */}
+            <div className={`block w-14 h-8 rounded-full transition 
+                    ${isCus ? "bg-green-500" : "bg-gray-400"}`}></div>
+
+            {/* Moving Circle */}
+            <div
+              className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition 
+                  ${isCus ? "translate-x-6 bg-green-700" : "bg-gray-500"}`}
+            ></div>
+          </div>
+
+          <span className="ml-3 text-sm font-medium text-gray-700">
+            {isCus ? "Customization Enabled" : "Customization Disabled"}
+          </span>
+        </label>
+
+
+
       </div>
 
       {allValues?.items?.map((item, index) => (

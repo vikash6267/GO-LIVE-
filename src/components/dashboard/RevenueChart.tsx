@@ -30,49 +30,43 @@ const chartConfig = {
   },
 };
 
-
-
-
-
 export const RevenueChart = () => {
+  // const [data, setData] = useState([]);
 
-    // const [data, setData] = useState([]);
-  
-    // useEffect(() => {
-    //   const fetchOrders = async () => {
-    //     const { data: orders, error } = await supabase
-    //       .from("orders")
-    //       .select("total_amount, shipping_cost, tax_amount, created_at");
-  
-    //     if (error) {
-    //       console.error("Error fetching orders:", error);
-    //       return;
-    //     }
-  
-    //     // Process revenue by month
-    //     const revenueData = {};
-    //     orders.forEach(({ total_amount, shipping_cost, tax_amount, created_at }) => {
-    //       const month = new Date(created_at).toLocaleString("default", { month: "short" });
-    //       const revenue = (total_amount || 0) + (shipping_cost || 0) + (tax_amount || 0);
-          
-    //       revenueData[month] = (revenueData[month] || 0) + revenue;
-    //     });
-  
-    //     // Convert to array format for recharts
-    //     const formattedData = Object.keys(revenueData).map((month) => ({
-    //       month,
-    //       revenue: revenueData[month],
-    //     }));
-  
-    //     setData(formattedData);
-    //   };
-  
-    //   fetchOrders();
-    // }, []);
+  // useEffect(() => {
+  //   const fetchOrders = async () => {
+  //     const { data: orders, error } = await supabase
+  //       .from("orders")
+  //       .select("total_amount, shipping_cost, tax_amount, created_at");
 
+  //     if (error) {
+  //       console.error("Error fetching orders:", error);
+  //       return;
+  //     }
+
+  //     // Process revenue by month
+  //     const revenueData = {};
+  //     orders.forEach(({ total_amount, shipping_cost, tax_amount, created_at }) => {
+  //       const month = new Date(created_at).toLocaleString("default", { month: "short" });
+  //       const revenue = (total_amount || 0) + (shipping_cost || 0) + (tax_amount || 0);
+
+  //       revenueData[month] = (revenueData[month] || 0) + revenue;
+  //     });
+
+  //     // Convert to array format for recharts
+  //     const formattedData = Object.keys(revenueData).map((month) => ({
+  //       month,
+  //       revenue: revenueData[month],
+  //     }));
+
+  //     setData(formattedData);
+  //   };
+
+  //   fetchOrders();
+  // }, []);
 
   return (
-    <div className="h-[350px] w-full mt-4">
+    <div className="h-[380px] w-full mt-4">
       <ChartContainer config={chartConfig}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart

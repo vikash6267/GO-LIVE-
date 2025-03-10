@@ -1,6 +1,6 @@
 
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { AddUserModal } from "@/components/users/AddUserModal";
 import { UserStatsCards } from "@/components/users/stats/UserStatsCards";
@@ -36,6 +36,10 @@ const Users = () => {
   const pendingUsers = users.filter((user) => user.status === "pending").length;
   const totalUsers = users.length;
 
+
+  useEffect(()=>{
+    console.log(selectedUsers)
+  },[selectedUsers])
   const handleAddUser = () => {
     setIsAddUserOpen(true);
   };

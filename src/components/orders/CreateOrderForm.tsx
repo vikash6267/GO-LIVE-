@@ -21,12 +21,15 @@ import { selectUserProfile } from "../../store/selectors/userSelectors";
 import { useCart } from "@/hooks/use-cart";
 import axios from "../../../axiosconfig"
 import { InvoiceStatus, PaymentMethod } from "../invoices/types/invoice.types";
+import CreateOrderPaymentForm from "../CreateOrderPayment";
+
+
 export interface CreateOrderFormProps {
   initialData?: Partial<OrderFormValues>;
   onFormChange?: (data: Partial<OrderFormValues>) => void;
-  isEditing?:  boolean
-  use?:  string,
-  locationId?:any
+  isEditing?: boolean
+  use?: string,
+  locationId?: any
 
 }
 
@@ -45,48 +48,50 @@ export function CreateOrderForm({
   const [isValidating, setIsValidating] = useState(false);
   const userProfile = useSelector(selectUserProfile);
   const { cartItems, clearCart } = useCart();
-  
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+
   console.log(initialData)
-  const[pId,setPId] = useState(initialData?.customerInfo?.cusid || userProfile?.id ||"")
- 
-  useEffect(()=>{
-    setPId(initialData?.customerInfo?.cusid || userProfile?.id )
-  },[initialData,userProfile])
+  const [pId, setPId] = useState(initialData?.customerInfo?.cusid || userProfile?.id || "")
+
+  useEffect(() => {
+    setPId(initialData?.customerInfo?.cusid || userProfile?.id)
+  }, [initialData, userProfile])
+
   const totalShippingCost =
-  sessionStorage.getItem("shipping") == "true"
-    ? 0
-    : Math.max(...cartItems.map((item) => item.shipping_cost || 0));
+    sessionStorage.getItem("shipping") == "true"
+      ? 0
+      : Math.max(...cartItems.map((item) => item.shipping_cost || 0));
 
 
- 
+
   // Initialize form with user profile data
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
       id: generateOrderId(),
-      customer: initialData?.customerInfo?.cusid  || userProfile?.id || "",
+      customer: initialData?.customerInfo?.cusid || userProfile?.id || "",
       date: new Date().toISOString(),
       total: "0",
       status: "new",
       payment_status: "unpaid",
       customerInfo: {
         name:
-        initialData?.customerInfo?.name ||
+          initialData?.customerInfo?.name ||
           `${initialData?.customerInfo?.name || ""} ${userProfile?.last_name || ""}`,
         email: initialData?.customerInfo?.email || "",
         phone: userProfile?.mobile_phone || "",
         type: "Pharmacy",
         address: {
-          street:initialData?.customerInfo?.address?.street || userProfile?.company_name || "",
-          city: initialData?.customerInfo?.address?.city ||userProfile?.city || "",
-          state: initialData?.customerInfo?.address?.state ||userProfile?.state || "",
+          street: initialData?.customerInfo?.address?.street || userProfile?.company_name || "",
+          city: initialData?.customerInfo?.address?.city || userProfile?.city || "",
+          state: initialData?.customerInfo?.address?.state || userProfile?.state || "",
           zip_code: initialData?.customerInfo?.address?.zip_code || userProfile?.zip_code || "",
         },
       },
 
       shippingAddress: {
         fullName:
-        initialData?.customerInfo?.name ||
+          initialData?.customerInfo?.name ||
           `${userProfile?.first_name || ""} ${userProfile?.last_name || ""}`,
         email: initialData?.customerInfo?.email || "",
         phone: userProfile?.mobile_phone || "",
@@ -140,7 +145,7 @@ export function CreateOrderForm({
   }, [form, validateForm]);
 
 
-  
+
   const onSubmit = async (data: OrderFormValues) => {
     console.log("first");
     try {
@@ -148,7 +153,7 @@ export function CreateOrderForm({
       console.log("Starting order submission:", data);
 
 
-      
+
       // Validate order items
       validateOrderItems(data.items);
 
@@ -158,7 +163,7 @@ export function CreateOrderForm({
         totalShippingCost || 0
       );
 
-    
+
       if (userProfile?.id == null) {
         toast({
           title: "User profile not found",
@@ -199,10 +204,10 @@ export function CreateOrderForm({
       defaultEstimatedDelivery.setDate(defaultEstimatedDelivery.getDate() + 10);
 
 
-      
+
       // Prepare order data
       const orderData = {
-        order_number:  generateOrderId(),
+        order_number: generateOrderId(),
         profile_id: pId || userProfile.id,
         status: data.status,
         total_amount: calculatedTotal,
@@ -219,7 +224,7 @@ export function CreateOrderForm({
           defaultEstimatedDelivery.toISOString(),
       };
 
-console.log(orderData)
+      console.log(orderData)
 
 
       // Save order to Supabase
@@ -245,12 +250,12 @@ console.log(orderData)
 
       const estimatedDeliveryDate = new Date(newOrder.estimated_delivery);
 
-// Calculate the due_date by adding 30 days to the estimated delivery
-const dueDate = new Date(estimatedDeliveryDate);
-dueDate.setDate(dueDate.getDate() + 30); // Add 30 days
+      // Calculate the due_date by adding 30 days to the estimated delivery
+      const dueDate = new Date(estimatedDeliveryDate);
+      dueDate.setDate(dueDate.getDate() + 30); // Add 30 days
 
-// Format the due_date as a string in ISO 8601 format with time zone (UTC in this case)
-const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00.000Z"
+      // Format the due_date as a string in ISO 8601 format with time zone (UTC in this case)
+      const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00.000Z"
 
       const invoiceData = {
         invoice_number: invoiceNumber,
@@ -261,11 +266,11 @@ const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00
         amount: parseFloat(calculatedTotal) || 0,
         tax_amount: orderData.tax_amount || 0,
         total_amount: parseFloat(calculatedTotal),
-          payment_status: newOrder.payment_status,
+        payment_status: newOrder.payment_status,
         payment_method: newOrder.paymentMethod as PaymentMethod,
         payment_notes: newOrder.notes || null,
         items: newOrder.items || [],
-        customer_info: newOrder.customerInfo ||  {
+        customer_info: newOrder.customerInfo || {
           name: newOrder.customerInfo?.name,
           email: newOrder.customerInfo?.email || '',
           phone: newOrder.customerInfo?.phone || ''
@@ -277,7 +282,7 @@ const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00
       console.log('Creating invoice with data:', invoiceData);
 
 
-      
+
       const { invoicedata2, error } = await supabase
         .from("invoices")
         .insert(invoiceData)
@@ -292,7 +297,7 @@ const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00
       console.log('Invoice created successfully:', invoicedata2);
 
 
-      
+
       try {
         await axios.post("/order-place", newOrder);
         console.log("Order status sent successfully to backend.");
@@ -365,24 +370,44 @@ const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00
 
 
 
+
+
+  useEffect(() => {
+    const VVV = form.getValues()
+    console.log(VVV)
+  }, [])
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <CustomerSelectionField form={form} initialData={initialData} locationId={locationId} />
+    <>
 
-        <OrderItemsSection orderItems={cartItems} form={form} />
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <CustomerSelectionField form={form} initialData={initialData} locationId={locationId} />
 
-        <ShippingSection form={form} />
+          <OrderItemsSection orderItems={cartItems} form={form} />
 
-        <PaymentSection form={form} />
+          <ShippingSection form={form} />
 
-        <OrderFormActions
-          orderData={form.getValues()}
-          isSubmitting={isSubmitting}
-          isValidating={isValidating}
-          isEditing={isEditing}
+          <PaymentSection form={form} />
+
+          <OrderFormActions
+            orderData={form.getValues()}
+            isSubmitting={isSubmitting}
+            isValidating={isValidating}
+            isEditing={isEditing}
+            setModalIsOpen={setModalIsOpen}
+          />
+        </form>
+      </Form>
+      {modalIsOpen && (
+        <CreateOrderPaymentForm
+          modalIsOpen={modalIsOpen}
+          setModalIsOpen={setModalIsOpen}
+          formDataa={form.getValues()}
+          form={form}
+          pId={pId}
         />
-      </form>
-    </Form>
+      )}
+    </>
   );
 }

@@ -10,10 +10,12 @@ interface OrderFormActionsProps {
   isSubmitting?: boolean;
   isValidating?: boolean; // Added this prop
   isEditing?: boolean; // Added this prop
+  setModalIsOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+
 
 }
 
-export function OrderFormActions({ orderData, isSubmitting, isValidating,isEditing }: OrderFormActionsProps) {
+export function OrderFormActions({ orderData, isSubmitting, isValidating,isEditing,setModalIsOpen }: OrderFormActionsProps) {
   const { toast } = useToast();
 
   const onSubmit = async () => {
@@ -59,14 +61,22 @@ export function OrderFormActions({ orderData, isSubmitting, isValidating,isEditi
       <OrderPreview orderData={orderData} />
       {
 
-       !isEditing &&  <Button 
+       !isEditing &&  <>
+       <Button 
         type="submit" 
         size="lg" 
         disabled={isSubmitting || isValidating}
       >
         <ShoppingCart className="mr-2 h-4 w-4" />
         {isSubmitting ? "Creating Order..." : "Create Order"}
-      </Button>}
+      </Button>
+      
+      <p 
+      onClick={()=>setModalIsOpen(true)}
+      className="flex items-center gap-2 text-center justify-center px-4 py-2 text-white bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 transition duration-300 active:scale-95 select-none">
+      <ShoppingCart className="h-5 w-5" />  Pay And Order
+      </p>
+      </>}
 
       {
         isEditing &&   <p

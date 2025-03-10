@@ -676,6 +676,7 @@ export type Database = {
       profiles: {
         Row: {
           account_status: string | null;
+   
           alternative_email: string | null;
           billing_address: Json | null;
           company_name: string | null;
@@ -750,6 +751,7 @@ export type Database = {
           portal_language?: string | null;
           preferred_contact_method?: string | null;
           locations?: any;
+          group_id?: string | null
 
           role?: string | null;
           same_as_shipping?: boolean | null;
@@ -781,6 +783,8 @@ export type Database = {
           first_name?: string;
           group_station?: string | null;
           id?: string;
+          group_id?: string | null
+
           language_preference?: string | null;
           last_active?: string | null;
           last_login?: string | null;

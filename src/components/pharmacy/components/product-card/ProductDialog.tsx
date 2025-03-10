@@ -90,10 +90,12 @@ export const ProductDialog = ({
   
   useEffect(() => {
     if (selectedSizes.length > 0) {
-      const res = findSizeObjects(product.sizes, selectedSizes);
+      const lastSelectedSize = selectedSizes[selectedSizes.length - 1]; // Last added size
+      const res = findSizeObjects(product.sizes, lastSelectedSize);
       console.log(res); // Filtered array of matched size objects
       setFilteredSizes(res); // Isko state me store kar sakte ho
     }
+    console.log(selectedSizes);
   }, [selectedSizes, product.sizes]);
   
   return (
@@ -133,7 +135,7 @@ export const ProductDialog = ({
             </Swiper>}
 
             <div>
-      {    <Swiper
+      { selectedSizes.length > 0 &&   <Swiper
               spaceBetween={10}
               slidesPerView={1}
               loop={true}
@@ -142,7 +144,7 @@ export const ProductDialog = ({
                 disableOnInteraction: false,
               }}
             >
-              {filteredSizes.map((url, index) => (
+              {filteredSizes.reverse().map((url, index) => (
                 <SwiperSlide key={index}>
                   <div className="aspect-square rounded-xl bg-gradient-to-br bg-gray-300 to-gray-100 flex items-center justify-center p-8 transition-all duration-300 group hover:bg-gray-100 hover:to-emerald-1000">
                     <img

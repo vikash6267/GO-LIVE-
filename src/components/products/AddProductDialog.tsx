@@ -35,7 +35,7 @@ export function AddProductDialog({
   onProductAdded,
   initialData,
 }: AddProductDialogProps) {
-  
+  console.log(initialData)
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
@@ -62,8 +62,11 @@ export function AddProductDialog({
   });
 
   useEffect(() => {
-    console.log(initialData);
-  }, [open]);
+    if (initialData) {
+      form.reset(initialData);
+    }
+  }, [initialData]);
+  
 
   const handleSubmit = async (values: ProductFormValues) => {
     try {

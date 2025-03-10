@@ -41,7 +41,7 @@ app.use(
 
 const API_LOGIN_ID = process.env.AUTHORIZE_NET_API_LOGIN_ID;
 const TRANSACTION_KEY = process.env.AUTHORIZE_NET_TRANSACTION_KEY;
-const ENVIRONMENT = SDKConstants.endpoint.production; // Use SDKConstants.endpoint.production for live
+const ENVIRONMENT = SDKConstants.endpoint.production;
 
 if (!API_LOGIN_ID || !TRANSACTION_KEY) {
   console.error("Missing Authorize.Net API credentials");
@@ -58,10 +58,10 @@ function createMerchantAuthenticationType() {
 
 app.post("/pay", async (req, res) => {
   try {
-    try {
+    
       // Destructure request body
       const {
-        paymentType,
+       
         amount: rawAmount,
         cardNumber,
         expirationDate,
@@ -77,14 +77,15 @@ app.post("/pay", async (req, res) => {
       // Convert necessary fields
       const amount = rawAmount ? parseFloat(rawAmount) : 0; // Convert amount to number safely
       const zip = rawZip ? parseInt(rawZip, 10) : 0; // Convert zip to number safely
+      const formattedExpirationDate = expirationDate.toString().padStart(4, '0');
 
       // Ensure cardNumber, expirationDate, and cvv remain strings
       const parsedData = {
-        paymentType,
+  
         amount,
-        cardNumber: String(cardNumber),
-        expirationDate: String(expirationDate),
-        cvv: String(cvv),
+        cardNumber: cardNumber.toString(),
+        expirationDate: expirationDate.toString(),
+        cvv: cvv.toString(),
         cardholderName,
         address,
         city,
@@ -93,13 +94,10 @@ app.post("/pay", async (req, res) => {
         country
       };
 
-      console.log(parsedData);
+      console.log("parsse", parsedData);
 
-      return res.status(200).json({ message: "Parsed successfully", data: parsedData });
-    } catch (error) {
-      console.error("Error parsing data:", error);
-      return res.status(500).json({ error: "Internal Server Error", details: error.message });
-    }
+     
+   
 
 
     console.log(req.body)
@@ -111,9 +109,9 @@ app.post("/pay", async (req, res) => {
     if (cardNumber && (!expirationDate || !cvv || !cardholderName)) {
       return res.status(400).json({ error: "Incomplete credit card details" });
     }
-    if (accountNumber && (!accountType || !routingNumber || !nameOnAccount)) {
-      return res.status(400).json({ error: "Incomplete bank account details" });
-    }
+    // if (accountNumber && (!accountType || !routingNumber || !nameOnAccount)) {
+    //   return res.status(400).json({ error: "Incomplete bank account details" });
+    // }
 
     // Create merchant authentication
     const merchantAuthenticationType = createMerchantAuthenticationType();
@@ -195,9 +193,10 @@ app.post("/pay", async (req, res) => {
     // Set environment
     ctrl.setEnvironment(ENVIRONMENT);
 
-    ctrl.execute(function () {
+ await   ctrl.execute(function () {
       try {
         const apiResponse = ctrl.getResponse();
+        console.log(apiResponse)
         const response = new ApiContracts.CreateTransactionResponse(
           apiResponse
         );
@@ -214,6 +213,13 @@ app.post("/pay", async (req, res) => {
           ApiContracts.MessageTypeEnum.OK
         ) {
           const transactionResponse = response.getTransactionResponse();
+
+
+          if (transactionResponse && transactionResponse) {
+            console.error("Payment API Error:", JSON.stringify(transactionResponse));
+        }
+
+        
 
           if (
             transactionResponse &&

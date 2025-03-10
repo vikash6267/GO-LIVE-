@@ -10,8 +10,8 @@ import { useToast } from "@/components/ui/use-toast";
 interface InvoicePreviewProps {
   invoice?: {
     id: string;
-    invoice_number:any,
-    order_number:any,
+    invoice_number: any,
+    order_number: any,
     customerInfo?: {
       name: string;
       phone: string;
@@ -59,20 +59,20 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
 
   const handleDownloadPDF = async () => {
     if (!invoiceRef.current) return;
-  
+
     await new Promise((resolve) => setTimeout(resolve, 500)); // Wait before capturing
-  
+
     const canvas = await html2canvas(invoiceRef.current, { scale: 1.5 });
     const imgData = canvas.toDataURL("image/png");
-  
+
     const pdf = new jsPDF("p", "mm", "a4");
     const imgWidth = 210;
     const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  
+
     pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
     pdf.save(`Invoice_${invoice.id}.pdf`);
   };
-  
+
 
   console.log(invoice)
   return (
@@ -80,27 +80,32 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
       <div ref={invoiceRef} className="border p-6 space-y-8 bg-white">
         {/* Company Name & Logo */}
         <div className="flex justify-between items-center border-b pb-4">
-        <div>
-        <div className=" flex gap-3">
-            <img
-              src={
-                settings.logo ||
-                "/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png"
-              }
-              alt="Company Logo"
-              className=" h-12 sm:h-16 relative z-10 contrast-200"
-            />
+          <div>
+            <div className=" flex gap-3">
+              <img
+                src={
+                  settings.logo ||
+                  "/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png"
+                }
+                alt="Company Logo"
+                className=" h-12 sm:h-16 relative z-10 contrast-200"
+              />
 
-            
+
+            </div>
+            <div className="mt-3 ml-5">Tax ID : 99-0540972 <br />936 Broad River Ln,<br />
+              Charlotte, <br /> NC 28211
+              <br />
+              snehal@9rx.com <br />
+              www.9rx.com
+            </div>
           </div>
-          <div className="mt-3 ml-5">936 Broad River Ln,<br /> Charlotte, <br /> NC 28211</div>
-        </div>
 
-     <div>
-     <SheetTitle className="text-3xl">Invoice</SheetTitle>
-     <p className=" opacity-80 font-bold text-sm ">INVOICE -{invoice.invoice_number}  </p>
-     <p className=" opacity-80 font-bold text-sm ">ORDER - {invoice.order_number}  </p>
-     </div>
+          <div>
+            <SheetTitle className="text-3xl">Invoice</SheetTitle>
+            <p className=" opacity-80 font-bold text-sm ">INVOICE -{invoice.invoice_number}  </p>
+            <p className=" opacity-80 font-bold text-sm ">ORDER - {invoice.order_number}  </p>
+          </div>
 
         </div>
 

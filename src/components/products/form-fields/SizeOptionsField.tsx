@@ -25,7 +25,8 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     price_per_case:'',
     quantity_per_case: "100",
     rolls_per_case: "",
-    shipping_cost: "0"
+    shipping_cost: "0",
+    image:""
   });
 
   const handleAddSize = () => {
@@ -44,6 +45,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     const sizeToAdd = {
       size_value: newSize.size_value,
       sku: newSize.sku || "",
+      image:newSize.image || "",
       size_unit: newSize.size_unit || categoryConfig.defaultUnit,
       price: parseFloat(newSize.price) || 0,
       stock: parseInt(newSize.stock) || 0,
@@ -78,7 +80,8 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
       stock: "",
       quantity_per_case: "",
       rolls_per_case: "",
-      shipping_cost: "0"
+      shipping_cost: "0",
+      image:""
     });
 
     toast({
@@ -120,7 +123,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     
     // Ensure value is correctly converted
     const parsedValue =
-      typeof value === "string" && field !== "size_value" && field !== "size_unit" && field !== "sku"
+      typeof value === "string" && field !== "size_value" && field !== "size_unit" && field !== "sku" && field !== "image"
         ? parseFloat(value) || 0
         : value;
   
@@ -145,6 +148,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
         onSizeChange={setNewSize}
         onAddSize={handleAddSize}
         category={category}
+        setNewSize={setNewSize}
       />
 
       <FormField
@@ -164,6 +168,8 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
               onRemoveSize={handleRemoveSize}
               onUpdateSize={handleUpdateSize}
               category={category}
+        setNewSize={setNewSize}
+
             />
             <FormMessage />
           </FormItem>

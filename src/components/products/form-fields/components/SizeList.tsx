@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import { CATEGORY_CONFIGS } from "../../schemas/productSchema";
+import { SizeImageUploader } from "../SizeImageUploader";
 
 interface Size {
   size_value: string;
@@ -20,6 +21,7 @@ interface Size {
 interface SizeListProps {
   sizes: Size[];
   onRemoveSize: (index: number) => void;
+  setNewSize: (boolean) => void;
   onUpdateSize: (index: number, field: string, value: string | number) => void;
   category: string;
 }
@@ -29,6 +31,7 @@ export const SizeList = ({
   onRemoveSize,
   onUpdateSize,
   category,
+  setNewSize
 }: SizeListProps) => {
   const categoryConfig =
     CATEGORY_CONFIGS[category as keyof typeof CATEGORY_CONFIGS] ||
@@ -148,6 +151,24 @@ export const SizeList = ({
                 min="0"
               />
             </div>
+          
+
+               <SizeImageUploader
+                          form={size}
+                          indexValue={index}
+                          onUpdateSize={onUpdateSize}
+                          validateImage={(file) => {
+                            const maxSize = 5 * 1024 * 1024;
+                            if (file.size > maxSize) {
+                              return "Image size should be less than 5MB";
+                            }
+                            const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+                            if (!allowedTypes.includes(file.type)) {
+                              return "Only JPG, PNG and GIF images are allowed";
+                            }
+                            return null;
+                          }}
+                        />
           </div>
           <Button
             type="button"

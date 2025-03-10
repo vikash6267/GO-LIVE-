@@ -15,6 +15,7 @@ export interface NewSizeState {
   price_per_case: string;
   stock: string;
   quantity_per_case: string;
+  image: string;
   rolls_per_case: string;
   shipping_cost: string;
 }

@@ -150,7 +150,7 @@ export const updateProductService = async (
       stock: Number(size.stock) || 0,
       price_per_case: Number(size.price_per_case) || 0,
       sku: size.sku || "",
-
+      image:size.image|| "" ,
       quantity_per_case: Number(size.quantity_per_case) || 1, // ✅ Ensure conversion
       rolls_per_case: Number(size.rolls_per_case) || 1,
       shipping_cost: size.shipping_cost, // ✅ Ensure conversion

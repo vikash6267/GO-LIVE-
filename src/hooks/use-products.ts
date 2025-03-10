@@ -71,14 +71,16 @@ export const useProducts = () => {
   };
 
   const handleUpdateProduct = async (data: ProductFormValues) => {
+    console.log(data)
+   
     if (!editingProduct) return;
 
     try {
       await updateProductService(editingProduct.id, data);
       toast({ title: "Success", description: "Product updated successfully." });
-      setIsEditDialogOpen(false);
-      setEditingProduct(null);
-      fetchProducts();
+      // setIsEditDialogOpen(false);
+      // setEditingProduct(null);
+      // fetchProducts();
     } catch (error) {
       console.error("Error updating product:", error);
       toast({ 

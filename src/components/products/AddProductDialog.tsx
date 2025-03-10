@@ -35,6 +35,7 @@ export function AddProductDialog({
   onProductAdded,
   initialData,
 }: AddProductDialogProps) {
+  
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {

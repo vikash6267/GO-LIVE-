@@ -11,6 +11,7 @@ interface AddSizeFormProps {
   newSize: NewSizeState;
   onSizeChange: (newSize: NewSizeState) => void;
   onAddSize: () => void;
+  setNewSize: (boolean) => void;
   category: string;
 }
 

@@ -103,7 +103,7 @@ const PaymentForm = ({
       const response = await axios.post("/pay", paymentData);
       if (response.status === 200) {
         const { error: updateError } = await supabase
-          .from("orders")
+          .from("orders") 
           .update({
             payment_status: "paid", // Use correct column name
             updated_at: new Date().toISOString(),
@@ -135,15 +135,20 @@ const PaymentForm = ({
           description: response.data.message,
         });
 
+      }else{
+        console.log(response)
+    setLoading(false)
+
       }
     } catch (error) {
+    setLoading(false)
+
       console.log(error);
       toast({
         title: "Payment failed",
         description: error.data.message,
       });
     }
-    setLoading(false)
   };
 
   return (

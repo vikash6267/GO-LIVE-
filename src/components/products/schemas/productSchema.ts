@@ -1,3 +1,4 @@
+import { image } from "html2canvas/dist/types/css/types/image";
 import * as z from "zod";
 
 // Define category-specific configurations
@@ -88,6 +89,7 @@ export const productFormSchema = z.object({
         size_value: z.string().min(1, "Size value is required"),
         size_unit: z.string(),
         sku: z.string(),
+        image: z.string(),
         price: z.coerce.number().min(0, "Price must be positive"),
 
         price_per_case: z.coerce

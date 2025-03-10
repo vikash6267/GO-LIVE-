@@ -95,6 +95,7 @@ export const useOrderManagement = () => {
           total: (order.total_amount || 0).toString(),
           status: order.status || "pending",
           payment_status: order.payment_status || "unpaid",
+          customization: order.customization || false,
           customerInfo: order.customerInfo ||  {
             name:
               profileData.first_name && profileData.last_name

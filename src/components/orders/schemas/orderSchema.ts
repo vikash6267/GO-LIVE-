@@ -71,7 +71,7 @@ export const orderFormSchema = z.object({
   status: z.string(),
   payment_status: z.string(), // ✅ Add this line
   order_number : z.string(), 
-
+  customization : z.boolean(),
   customerInfo: customerInfoSchema,
   items: z.array(orderItemSchema),
   shipping: shippingSchema,

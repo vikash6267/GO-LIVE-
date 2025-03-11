@@ -93,7 +93,7 @@ const ProductShowcase = () => {
           const applicableGroup = groupData.find(
             (group) =>
               group.group_ids.includes(ID) &&
-              group.product_id === item.id
+              group.product_id_array.includes(item.id)
           );
           console.log(applicableGroup)
 

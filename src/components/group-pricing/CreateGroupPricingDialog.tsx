@@ -28,7 +28,8 @@ interface GroupPricingData {
   discount_type: "percentage" | "fixed";
   min_quantity: number;
   max_quantity: number;
-  product_id: string[];
+ 
+  product_id_array: string[];
   group_ids: string[];
   status: string;
   updated_at: string;
@@ -101,11 +102,7 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
       minQuantity: initialData?.min_quantity || 1,
       maxQuantity: initialData?.max_quantity || 100,
 
-      product: Array.isArray(initialData?.product_id)
-        ? initialData.product_id
-        : initialData?.product_id
-          ? [initialData.product_id]
-          : [],
+      product:initialData?.product_id_array ,
 
 
       group: Array.isArray(initialData?.group_ids) ? initialData?.group_ids : [""],
@@ -131,7 +128,7 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
 
       console.log("Fetching data for group pricing...");
       const [productsResponse, groupsResponse, pharmaciesResponse] = await Promise.all([
-        supabase.from("products").select("id, name, base_price"),
+        supabase.from("products").select("id, name, base_price, product_sizes(*)"),
         supabase.from("profiles").select("id, first_name, last_name").eq("type", "group"),
         supabase.from("profiles").select("id, first_name, last_name").eq("type", "pharmacy")
       ]);
@@ -177,7 +174,7 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
     }
   };
 
-  const handleSubmit = async (values: FormValues) => {
+  const handleSubmit3 = async (values: FormValues) => {
     console.log("Starting handleSubmit with values:", values);
     setLoading(true);
 
@@ -206,11 +203,11 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
         const groupPricingData: GroupPricingData = {
           name: values.name,
           discount: discountValue,
+          product_id_array: values.product,
           discount_type: values.discountType,
           min_quantity: values.minQuantity,
           max_quantity: values.maxQuantity,
-          product_id: product.id,
-          group_ids: values.group,
+            group_ids: values.group,
           status: "active",
           updated_at: new Date().toISOString(),
         };
@@ -281,7 +278,89 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
   };
 
 
+  const handleSubmit = async (values: FormValues) => {
+    console.log("Starting handleSubmit with values:", values);
+    setLoading(true);
 
+    try {
+      const selectedProduct = products.find(
+        (product) => product.id === values.product
+      );
+
+      console.log("Selected product:", selectedProduct);
+
+      if (!selectedProduct) {
+        throw new Error("Selected product not found.");
+      }
+
+      const { base_price } = selectedProduct;
+      if (values.discountType === "fixed" && values.discountValue > base_price) {
+        throw new Error("Flat discount cannot exceed the product price.");
+      }
+
+      if (values.discountType === "percentage" && values.discountValue > 100) {
+        throw new Error("Percentage discount cannot exceed 100%.");
+      }
+
+      const discountValue =
+        values.discountType === "percentage"
+          ? values.discountValue
+          : (values.discountValue / base_price) * 100;
+
+      const groupPricingData: GroupPricingData = {
+        name: values.name,
+        discount: values.discountValue,
+        product_id_array: values.product,
+        discount_type: values.discountType,
+        min_quantity: values.minQuantity,
+        max_quantity: values.maxQuantity,
+     
+        group_ids: values.group,
+        status: "active",
+        updated_at: new Date().toISOString(),
+      };
+
+      console.log("Saving group pricing data:", groupPricingData);
+
+      if (!initialData) {
+        groupPricingData.created_at = new Date().toISOString();
+        const { error } = await supabase
+          .from("group_pricing")
+          .insert(groupPricingData);
+
+        console.log("Insert response error:", error);
+        if (error) throw new Error(`Failed to create group pricing: ${error.message}`);
+      } else {
+        const { error } = await supabase
+          .from("group_pricing")
+          .update(groupPricingData)
+          .eq("id", initialData.id);
+
+        console.log("Update response error:", error);
+        if (error) throw new Error(`Failed to update group pricing: ${error.message}`);
+      }
+
+      toast({
+        title: "Success",
+        description: initialData 
+          ? "Group pricing updated successfully" 
+          : "Group pricing created successfully",
+      });
+      
+      onSubmit(groupPricingData);
+      form.reset();
+      setIsOpen(false);
+    } catch (error: any) {
+      console.error("Error in handleSubmit:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to save group pricing. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   useEffect(() => {

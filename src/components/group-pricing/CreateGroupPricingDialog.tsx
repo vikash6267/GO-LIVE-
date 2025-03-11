@@ -20,6 +20,7 @@ import { GroupPharmacyFields } from "./form/GroupPharmacyFields";
 import { supabase } from "@/supabaseClient";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { min } from "date-fns";
 
 interface GroupPricingData {
   id?: string;
@@ -66,16 +67,24 @@ const createFormSchema = (products: any[]) =>
         if (data.discountType === "fixed" && data.product.length > 0) {
           return data.product.every((productId) => {
             const selectedProduct = products.find((p) => p.id === productId);
-            return selectedProduct ? data.discountValue <= selectedProduct.base_price : false;
+            if (!selectedProduct || !selectedProduct.product_sizes.length) {
+              return false;
+            }
+    
+            // सबसे कम price निकालें
+            const minPrice = Math.min(...selectedProduct.product_sizes.map(size => size.price));
+    
+            return data.discountValue <= minPrice;
           });
         }
         return true;
       },
       {
-        message: "Flat discount cannot exceed the product price.",
+        message: "Flat discount cannot exceed the minimum product size price.",
         path: ["discountValue"],
       }
     );
+    
 
 
 export type FormValues = z.infer<ReturnType<typeof createFormSchema>>;
@@ -283,29 +292,7 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
     setLoading(true);
 
     try {
-      const selectedProduct = products.find(
-        (product) => product.id === values.product
-      );
-
-      console.log("Selected product:", selectedProduct);
-
-      if (!selectedProduct) {
-        throw new Error("Selected product not found.");
-      }
-
-      const { base_price } = selectedProduct;
-      if (values.discountType === "fixed" && values.discountValue > base_price) {
-        throw new Error("Flat discount cannot exceed the product price.");
-      }
-
-      if (values.discountType === "percentage" && values.discountValue > 100) {
-        throw new Error("Percentage discount cannot exceed 100%.");
-      }
-
-      const discountValue =
-        values.discountType === "percentage"
-          ? values.discountValue
-          : (values.discountValue / base_price) * 100;
+     
 
       const groupPricingData: GroupPricingData = {
         name: values.name,

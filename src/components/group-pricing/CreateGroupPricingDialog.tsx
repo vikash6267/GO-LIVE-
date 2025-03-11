@@ -46,8 +46,7 @@ const createFormSchema = (products: any[]) =>
     // ✅ Change product from `z.string()` to `z.array(z.string())`
     product: z.array(z.string()).min(1, "At least one product must be selected"),
 
-    group: z.string().optional(),
-    pharmacy: z.string().optional(),
+    group: z.array(z.string()).min(1, "At least one group  must be selected"),
   })
     .refine(
       (data) => {
@@ -108,8 +107,9 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
           ? [initialData.product_id]
           : [],
 
-      group: initialData?.group_ids?.[0] || "",
-      pharmacy: initialData?.group_ids?.[1] || "",
+
+      group: Array.isArray(initialData?.group_ids) ? initialData?.group_ids : [""],
+
     },
 
   });
@@ -210,7 +210,7 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
           min_quantity: values.minQuantity,
           max_quantity: values.maxQuantity,
           product_id: product.id,
-          group_ids: [values.group, values.pharmacy].filter(Boolean),
+          group_ids: values.group,
           status: "active",
           updated_at: new Date().toISOString(),
         };

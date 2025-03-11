@@ -5,6 +5,7 @@ export interface GroupPricing {
   minQuantity: number;
   maxQuantity: number;
   pharmacyGroups: string[];
+  group: string[];
   status: "active" | "inactive";
   createdAt: Date;
 }

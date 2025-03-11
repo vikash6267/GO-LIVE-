@@ -1,66 +1,58 @@
+import Select from "react-select";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "../CreateGroupPricingDialog";
 
 interface GroupPharmacyFieldsProps {
   form: UseFormReturn<FormValues>;
-  groups: Array<{ id: string; name: string; }>;
-  pharmacies: Array<{ id: string; name: string; }>;
+  groups: Array<{ id: string; name: string }>;
+  pharmacies: Array<{ id: string; name: string }>;
 }
 
 export function GroupPharmacyFields({ form, groups, pharmacies }: GroupPharmacyFieldsProps) {
   return (
     <>
+      {/* Multi-select for Groups */}
       <FormField
         control={form.control}
         name="group"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Group (Optional)</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a group" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {groups.map((group) => (
-                  <SelectItem key={group.id} value={group.id}>
-                    {group.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FormLabel>Group (Required)</FormLabel>
+            <FormControl>
+              <Select
+                isMulti
+                options={groups.map((group) => ({ value: group.id, label: group.name }))}
+                value={groups.filter((group) => field.value?.includes(group.id)).map((group) => ({ value: group.id, label: group.name }))}
+                onChange={(selectedOptions) => field.onChange(selectedOptions.map((option) => option.value))}
+                placeholder="Select groups"
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
       />
 
-      <FormField
+      {/* Multi-select for Pharmacies */}
+      {/* <FormField
         control={form.control}
         name="pharmacy"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Pharmacy (Optional)</FormLabel>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a pharmacy" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {pharmacies.map((pharmacy) => (
-                  <SelectItem key={pharmacy.id} value={pharmacy.id}>
-                    {pharmacy.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FormControl>
+              <Select
+                isMulti
+                options={pharmacies.map((pharmacy) => ({ value: pharmacy.id, label: pharmacy.name }))}
+                value={pharmacies.filter((pharmacy) => field.value?.includes(pharmacy.id)).map((pharmacy) => ({ value: pharmacy.id, label: pharmacy.name }))}
+                onChange={(selectedOptions) => field.onChange(selectedOptions.map((option) => option.value))}
+                placeholder="Select pharmacies"
+              />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
-      />
+      /> */}
     </>
   );
 }

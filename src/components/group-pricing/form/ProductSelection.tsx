@@ -1,6 +1,6 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Controller } from "react-hook-form";
-import Select from "react-select"; // react-select ka use kiya hai
+import Select from "react-select";
 import { UseFormReturn } from "react-hook-form";
 import { FormValues } from "../CreateGroupPricingDialog";
 

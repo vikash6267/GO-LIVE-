@@ -56,7 +56,7 @@ export const ProductCustomization = ({
       
       {customizationEnabled && basePrice && (
         <Badge variant="secondary">
-          +${basePrice.toFixed(2)} per item
+         Our team will follow up for more details.
         </Badge>
       )}
     </div>

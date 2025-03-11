@@ -36,7 +36,7 @@ export function CustomizationSection({ form }: CustomizationSectionProps) {
           }
         />
       </div>
-      {customizationAllowed && (
+      {/* {customizationAllowed && (
         <>
           <div className="mt-3">
             <label className="text-sm font-medium">Customization Price</label>
@@ -62,7 +62,7 @@ export function CustomizationSection({ form }: CustomizationSectionProps) {
             </Button>
           </div>
         </>
-      )}
+      )} */}
     </div>
   );
 }

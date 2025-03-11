@@ -99,10 +99,10 @@ export const useEditUserForm = ({
             state: "",
             zip_code: "",
           },
-         
-          
+
           sameAsShipping: data.same_as_shipping || false,
           freeShipping: data.freeShipping || false,
+          order_pay: data.order_pay || false,
           taxPreference: data.tax_preference || "Taxable",
           currency: data.currency || "USD",
           paymentTerms: data.payment_terms || "DueOnReceipt",

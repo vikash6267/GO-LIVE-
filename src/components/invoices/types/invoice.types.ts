@@ -159,6 +159,7 @@ export interface Invoice {
   orders?: RelatedOrder;
   profiles?: RelatedProfile;
   freeShipping?: boolean;
+  order_pay?: boolean;
 }
 
 // Type for Supabase real-time payload

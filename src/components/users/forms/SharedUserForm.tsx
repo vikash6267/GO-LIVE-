@@ -20,7 +20,6 @@ export function SharedUserForm({
   submitLabel,
   isSubmitting = false,
 }: SharedUserFormProps) {
-  
   const handleSubmit = async (values: BaseUserFormData) => {
     console.log(
       "SharedUserForm: Starting form submission with values:",
@@ -85,6 +84,7 @@ export function SharedUserForm({
         shippingAddress: values.shippingAddress || {},
         sameAsShipping: values.sameAsShipping || false,
         freeShipping: values.freeShipping || false,
+        order_pay: values.order_pay || false,
         taxPreference: values.taxPreference || "Taxable",
         currency: values.currency || "USD",
         paymentTerms: values.paymentTerms || "DueOnReceipt",
@@ -112,7 +112,6 @@ export function SharedUserForm({
   };
 
   const userType = form.watch("type");
-
 
   return (
     <Form {...form}>

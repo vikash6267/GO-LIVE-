@@ -72,16 +72,18 @@ export function AddUserModal({
       },
       sameAsShipping: false,
       freeShipping: false,
+      order_pay: false,
       taxPreference: "Taxable",
       currency: "USD",
       paymentTerms: "DueOnReceipt",
       enablePortal: false,
       portalLanguage: "English",
-      locations: [  // ✅ Fix: Change from object `{}` to an array `[]`
+      locations: [
+        // ✅ Fix: Change from object `{}` to an array `[]`
         {
           name: "",
-          type: "headquarters",  // Provide a valid default type
-          status: "active",  // Provide a valid default status
+          type: "headquarters", // Provide a valid default type
+          status: "active", // Provide a valid default status
           address: {
             attention: "",
             countryRegion: "",
@@ -96,7 +98,7 @@ export function AddUserModal({
           manager: "",
           contactEmail: "",
           contactPhone: "",
-        }
+        },
       ],
     },
   });
@@ -186,6 +188,7 @@ export function AddUserModal({
           : values.shippingAddress,
         same_as_shipping: values.sameAsShipping,
         freeShipping: values.freeShipping,
+        order_pay: values.order_pay,
         tax_preference: values.taxPreference,
         currency: values.currency,
         payment_terms: values.paymentTerms,

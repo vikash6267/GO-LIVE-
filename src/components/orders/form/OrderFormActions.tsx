@@ -4,6 +4,7 @@ import { OrderFormValues } from "../schemas/orderSchema";
 import { OrderPreview } from "../OrderPreview";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 
 interface OrderFormActionsProps {
   orderData: OrderFormValues;
@@ -27,6 +28,7 @@ export function OrderFormActions({
   isCus, // ✅ Added missing prop
 }: OrderFormActionsProps) {
   const { toast } = useToast();
+  const userType = sessionStorage.getItem("order_pay");
 
   const onSubmit = async () => {
     console.log(orderData);
@@ -64,6 +66,11 @@ export function OrderFormActions({
     }
   };
 
+  useEffect(() => {
+    const storedOrderPay = sessionStorage.getItem("order_pay");
+    console.log(storedOrderPay + " Check section");
+  }, []);
+
   return (
     <div className="flex flex-col md:flex-row justify-end gap-2">
       <OrderPreview orderData={orderData} setIsCus={setIsCus} isCus={isCus} />
@@ -77,13 +84,14 @@ export function OrderFormActions({
             <ShoppingCart className="mr-2 h-4 w-4" />
             {isSubmitting ? "Creating Order..." : "Create Order"}
           </Button>
-
-          <p
-            onClick={() => setModalIsOpen(true)}
-            className="flex items-center gap-3  text-center justify-center px-4 py-2 text-white bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 transition duration-300 active:scale-95 select-none"
-          >
-            <ShoppingCart className="h-5 w-5" /> Pay And Order
-          </p>
+          {(userType === "false" || userType === null) && (
+            <p
+              onClick={() => setModalIsOpen(true)}
+              className="flex items-center gap-3 text-center justify-center px-4 py-2 text-white bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 transition duration-300 active:scale-95 select-none"
+            >
+              <ShoppingCart className="h-5 w-5" /> Pay And Order
+            </p>
+          )}
         </>
       )}
 

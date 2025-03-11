@@ -82,6 +82,27 @@ export function AddressInformationSection({
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="order_pay"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel htmlFor="order_pay-switch" className="text-base">
+                  Order Pay
+                </FormLabel>
+              </div>
+              <FormControl>
+                <Switch
+                  id="order_pay-switch"
+                  checked={field.value ?? false} // Ensure it's always a boolean
+                  onCheckedChange={field.onChange}
+                  aria-label="Enable free shipping"
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
 
         <AddressFields form={form} type="shipping" />
       </CardContent>

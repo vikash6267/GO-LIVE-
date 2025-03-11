@@ -33,7 +33,7 @@ const Index = () => {
       <TrustSection />
 
       {/* Fixed Contact Button */}
-      <div className="fixed right-0 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-4">
+      <div className="fixed right-0 top-[30%] transform -translate-y-1/2 z-50 flex flex-col gap-4">
         <Button 
           asChild
           className="w-48 bg-white text-emerald-600 hover:bg-emerald-50 shadow-lg rounded-l-lg rounded-r-none transition-all duration-300  md:flex"
@@ -104,17 +104,6 @@ const Index = () => {
   );
 };
 
-const FooterColumn = ({ title, items }: { title: string; items: string[] }) => (
-  <div>
-    <h4 className="text-white font-bold mb-4 md:mb-6">{title}</h4>
-    <ul className="space-y-2 md:space-y-3">
-      {items.map((item, index) => (
-        <li key={index} className="text-gray-400 hover:text-white transition-colors duration-300 cursor-pointer text-sm md:text-base">
-          {item}
-        </li>
-      ))}
-    </ul>
-  </div>
-);
+
 
 export default Index;

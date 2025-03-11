@@ -106,7 +106,7 @@ const HeroSection = () => {
             <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6 mt-12">
               <FeatureCard
                 icon={<Building2 className="w-6 h-6 text-white" />}
-                title="Industry Leader"
+                title="Top quality pharmacy supplies"
                 description="One of the Fastest growing Rx Supply Company"
              
               />

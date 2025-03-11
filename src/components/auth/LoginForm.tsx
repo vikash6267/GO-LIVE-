@@ -126,6 +126,7 @@ export const LoginForm = () => {
         sessionStorage.setItem("isLoggedIn", "true");
         sessionStorage.setItem("userType", profileData.type);
         sessionStorage.setItem("shipping", profileData.freeShipping);
+        sessionStorage.setItem("order_pay", profileData.order_pay);
         sessionStorage.setItem("userEmail", email);
         sessionStorage.setItem("lastActivity", Date.now().toString());
 

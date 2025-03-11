@@ -41,6 +41,7 @@ export const baseUserSchema = z.object({
   shippingAddress: addressSchema,
   sameAsShipping: z.boolean().default(false),
   freeShipping: z.boolean().default(false),
+  order_pay: z.boolean().default(false),
   taxPreference: z.string().default("Taxable"),
   currency: z.string().default("USD"),
   paymentTerms: z.string().default("DueOnReceipt"),

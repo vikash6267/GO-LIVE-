@@ -55,6 +55,7 @@ const expectedFields = [
   'shipping_address',
   'same_as_shipping',
   'freeShipping',
+  'order-pay',
 
   // Financial Information
   'tax_preference',
@@ -131,6 +132,9 @@ const testConnection = async () => {
           } else if (field === 'same_as_shipping' || field === 'enable_portal') {
             sqlType = 'boolean DEFAULT false';
           } else if (field === 'freeShipping' || field === 'enable_portal') {
+            sqlType = 'boolean DEFAULT false';
+          } else if (field === 'documents') {
+          } else if (field === 'order_pay' || field === 'enable_portal') {
             sqlType = 'boolean DEFAULT false';
           } else if (field === 'documents') {
             sqlType = 'jsonb[]';

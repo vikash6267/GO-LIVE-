@@ -676,7 +676,7 @@ export type Database = {
       profiles: {
         Row: {
           account_status: string | null;
-   
+
           alternative_email: string | null;
           billing_address: Json | null;
           company_name: string | null;
@@ -693,7 +693,7 @@ export type Database = {
           first_name: string;
           group_station: string | null;
           id: string;
-          group_id?: string | null
+          group_id?: string | null;
 
           locations?: any;
           language_preference: string | null;
@@ -711,6 +711,7 @@ export type Database = {
           role: string | null;
           same_as_shipping: boolean | null;
           freeShipping: boolean | null;
+          order_pay: boolean | null;
           shipping_address: Json | null;
           status: Database["public"]["Enums"]["user_status"];
           tax_id: string | null;
@@ -751,11 +752,12 @@ export type Database = {
           portal_language?: string | null;
           preferred_contact_method?: string | null;
           locations?: any;
-          group_id?: string | null
+          group_id?: string | null;
 
           role?: string | null;
           same_as_shipping?: boolean | null;
           freeShipping?: boolean | null;
+          order_pay?: boolean | null;
           shipping_address?: Json | null;
           status?: Database["public"]["Enums"]["user_status"];
           tax_id?: string | null;
@@ -783,7 +785,7 @@ export type Database = {
           first_name?: string;
           group_station?: string | null;
           id?: string;
-          group_id?: string | null
+          group_id?: string | null;
 
           language_preference?: string | null;
           last_active?: string | null;
@@ -802,7 +804,7 @@ export type Database = {
           role?: string | null;
           same_as_shipping?: boolean | null;
           shipping_address?: Json | null;
-          freeShipping?: boolean | null;
+          order_pay?: boolean | null;
           status?: Database["public"]["Enums"]["user_status"];
           tax_id?: string | null;
           tax_preference?: string | null;

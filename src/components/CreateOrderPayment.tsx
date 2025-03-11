@@ -367,7 +367,7 @@ const CreateOrderPaymentForm = ({
           className="border p-2 w-full mb-3 rounded"
         >
           <option value="credit_card">Credit Card</option>
-          <option value="ach">ACH (Bank Transfer)</option>
+          {/* <option value="ach">ACH (Bank Transfer)</option> */}
         </select>
 
         <form onSubmit={handleSubmit} className="space-y-3">

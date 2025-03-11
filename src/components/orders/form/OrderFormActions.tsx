@@ -76,22 +76,24 @@ export function OrderFormActions({
       <OrderPreview orderData={orderData} setIsCus={setIsCus} isCus={isCus} />
       {!isEditing && (
         <>
-     {   (userType === "true" || userType === null) &&   (<Button
+     {   (userType === "true" || userType === null) ?  (<Button
             type="submit"
             size="lg"
             disabled={isSubmitting || isValidating}
           >
             <ShoppingCart className="mr-2 h-4 w-4" />
             {isSubmitting ? "Creating Order..." : "Create Order"}
-          </Button>)}
-          {(
+          </Button>) :
+        
             <p
               onClick={() => setModalIsOpen(true)}
               className="flex items-center gap-3 text-center justify-center px-4 py-2 text-white bg-blue-600 rounded-lg cursor-pointer hover:bg-blue-700 transition duration-300 active:scale-95 select-none"
             >
               <ShoppingCart className="h-5 w-5" /> Pay And Order
             </p>
-          )}
+         
+        }
+          
         </>
       )}
 

@@ -36,7 +36,7 @@ const Index = () => {
       <div className="fixed right-0 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-4">
         <Button 
           asChild
-          className="w-48 bg-white text-emerald-600 hover:bg-emerald-50 shadow-lg rounded-l-lg rounded-r-none transition-all duration-300 hidden md:flex"
+          className="w-48 bg-white text-emerald-600 hover:bg-emerald-50 shadow-lg rounded-l-lg rounded-r-none transition-all duration-300  md:flex"
         >
           <a href="tel:+18009696295" className="flex items-center justify-center gap-2">
             <Phone className="w-5 h-5 text-emerald-600 animate-pulse" />
@@ -44,20 +44,12 @@ const Index = () => {
           </a>
         </Button>
 
-        {/* Mobile Contact Button */}
-        <Button 
-          asChild
-          className="fixed bottom-4 right-4 md:hidden shadow-lg rounded-full w-12 h-12 p-0"
-        >
-          <a href="tel:+17043096277">
-            <Phone className="w-6 h-6" />
-          </a>
-        </Button>
+ 
 
         {/* Inquiry Form Toggle Button */}
         <Button
           onClick={() => setShowForm(!showForm)}
-          className="w-48 bg-emerald-600 text-white rounded-l-lg rounded-r-none hover:bg-emerald-700 transition-all duration-300 hidden md:block"
+          className="w-48 bg-emerald-600 text-white rounded-l-lg rounded-r-none hover:bg-emerald-700 transition-all duration-300  md:block"
         >
           Quick Inquiry
         </Button>

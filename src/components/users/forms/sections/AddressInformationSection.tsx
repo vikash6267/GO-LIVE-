@@ -89,7 +89,7 @@ export function AddressInformationSection({
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel htmlFor="order_pay-switch" className="text-base">
-                  Order Pay
+                Cash On Delivery Order 
                 </FormLabel>
               </div>
               <FormControl>

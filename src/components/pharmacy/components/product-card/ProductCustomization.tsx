@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
+import { Palette, Sparkles, Upload } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 
 interface ProductCustomizationProps {
@@ -44,20 +44,43 @@ export const ProductCustomization = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Customization Options</h3>
-        <div className="flex items-center space-x-2">
+      
+      
+      </div>
+      
+      { (
+       <div className="bg-gradient-to-r from-green-50 to-green-50 p-4 rounded-lg transform transition-all duration-300 hover:scale-[1.02] hover:shadow-md">
+       <div className="flex items-center gap-2 mb-3">
+         <Palette className="w-5 h-5 text-green-500" />
+         <h3 className="font-semibold text-green-700">
+           Customization Available
+         </h3>
+       </div>
+       <div className="flex items-center justify-between bg-white/80 p-3 rounded-md backdrop-blur-sm">
+         <div className="flex items-center gap-2">
+           <Sparkles className="w-4 h-4 text-amber-500" />
+           <span className="text-gray-700">Custom Design</span>
+         </div>
+         <div className="flex items-center space-x-2">
           <span>Enable Customization</span>
           <Switch 
             checked={customizationEnabled} 
             onCheckedChange={handleToggleChange} 
           />
         </div>
-      </div>
-      
-      {customizationEnabled && basePrice && (
-        <Badge variant="secondary">
-         Our team will follow up for more details.
-        </Badge>
+       </div>
+
+       { customizationEnabled &&
+           <Badge
+           variant="secondary"
+           className="bg-green-100 text-green-700"
+         >
+Our team will follow up for more details.
+         </Badge>
+       }
+     </div>
+
+     
       )}
     </div>
   );

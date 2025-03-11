@@ -90,7 +90,7 @@ export const SizeList = ({
               />
             </div>
             <div>
-              <span className="text-sm font-medium">$/CS</span>
+              <span className="text-sm font-medium">$/Unit</span>
               <Input
                 type="number"
                 value={size.price_per_case || 0}
@@ -103,7 +103,7 @@ export const SizeList = ({
               />
             </div>
             <div>
-              <span className="text-sm font-medium">$/Unit</span>
+              <span className="text-sm font-medium">$/CS</span>
               <Input
                 type="number"
                 value={size.price}

@@ -50,11 +50,11 @@ export function CreateOrderForm({
 
   console.log(initialData);
   const [pId, setPId] = useState(
-    initialData?.customer || userProfile?.id || ""
+    initialData?.customerInfo.cusid || userProfile?.id || ""
   );
 
   useEffect(() => {
-    setPId(initialData?.customer || userProfile?.id);
+    setPId(initialData?.customerInfo.cusid  || userProfile?.id);
   }, [initialData, userProfile]);
 
   const totalShippingCost =
@@ -67,7 +67,7 @@ export function CreateOrderForm({
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
       id: generateOrderId(),
-      customer: initialData?.customer || userProfile?.id || "",
+      customer: pId || userProfile?.id || "",
       date: new Date().toISOString(),
       total: "0",
       status: "new",

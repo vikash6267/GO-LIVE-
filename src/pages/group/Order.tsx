@@ -148,7 +148,7 @@ export default function GroupOrder() {
       const billingAddress = (data.billing_address || {}) as any;
   
       setOrderData((prevState) => ({
- ...prevState,
+ 
         customerInfo: {
           cusid:data.id || "test",
           type: "Pharmacy",
@@ -226,7 +226,7 @@ export default function GroupOrder() {
             </Select>
           </div>
 
-          {orderData.customerInfo && selectedPharmacy &&   (
+          {orderData.customerInfo  && selectedPharmacy &&   (
             <CreateOrderForm
               initialData={orderData}
               onFormChange={handleFormChange}

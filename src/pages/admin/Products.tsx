@@ -42,6 +42,13 @@ const Products = () => {
     }
   };
 
+  useEffect(()=>{
+
+    if(!isEditDialogOpen){
+      console.log("rest ")
+      setEditingProduct(null)
+    }
+  },[isEditDialogOpen])
   return (
     <DashboardLayout role="admin">
       <div className="space-y-6">
@@ -82,7 +89,7 @@ const Products = () => {
           <AddProductDialog
             open={isEditDialogOpen}
             onOpenChange={setIsEditDialogOpen}
-            onSubmit={async (data) =>{  await handleUpdateProduct(data)}}
+            onSubmit={async (data) =>{ console.log(data) ; await handleUpdateProduct(data)}}
             onProductAdded={() => {}}
             initialData={editingProduct}
           />

@@ -8,7 +8,7 @@ export interface ProductSize {
   price_per_case: number;
   stock: number;
   quantity_per_case: number; // ✅ Added this field
-
+  image?:any,
   created_at: string;
   updated_at: string;
 }

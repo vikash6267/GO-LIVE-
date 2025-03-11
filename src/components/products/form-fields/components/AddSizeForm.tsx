@@ -68,7 +68,7 @@ export const AddSizeForm = ({ newSize, onSizeChange, onAddSize, category }: AddS
         </div>
       )}
       <div>
-        <FormLabel>$/CS</FormLabel>
+        <FormLabel>$/Unit</FormLabel>
         <Input
           type="number"
           value={newSize.pricePerCase}
@@ -78,7 +78,7 @@ export const AddSizeForm = ({ newSize, onSizeChange, onAddSize, category }: AddS
         />
       </div>
       <div>
-        <FormLabel>$/Unit</FormLabel>
+        <FormLabel>$/CS</FormLabel>
         <Input
           type="number"
           value={newSize.price}

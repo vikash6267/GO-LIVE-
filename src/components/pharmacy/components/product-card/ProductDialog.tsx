@@ -87,7 +87,7 @@ export const ProductDialog = ({
       targetIds.includes(`${size.size_value}-${size.size_unit}`)
     );
   };
-  
+
   useEffect(() => {
     if (selectedSizes.length > 0) {
       const lastSelectedSize = selectedSizes[selectedSizes.length - 1]; // Last added size
@@ -97,7 +97,7 @@ export const ProductDialog = ({
     }
     console.log(selectedSizes);
   }, [selectedSizes, product.sizes]);
-  
+
   return (
     <DialogContent className="max-w-4xl max-h-[90vh]">
       <DialogHeader>
@@ -108,7 +108,7 @@ export const ProductDialog = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           {/* Left Column - Product Image Carousel */}
           <div>
-{selectedSizes.length == 0 &&            <Swiper
+            {selectedSizes.length == 0 && <Swiper
               spaceBetween={10}
               slidesPerView={1}
               loop={true}
@@ -135,31 +135,31 @@ export const ProductDialog = ({
             </Swiper>}
 
             <div>
-      { selectedSizes.length > 0 &&   <Swiper
-              spaceBetween={10}
-              slidesPerView={1}
-              loop={true}
-              autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-              }}
-            >
-              {filteredSizes.reverse().map((url, index) => (
-                <SwiperSlide key={index}>
-                  <div className="aspect-square rounded-xl bg-gradient-to-br bg-gray-300 to-gray-100 flex items-center justify-center p-8 transition-all duration-300 group hover:bg-gray-100 hover:to-emerald-1000">
-                    <img
-                      src={`https://cfyqeilfmodrbiamqgme.supabase.co/storage/v1/object/public/product-images/${url.image}`}
-                      alt={"Size Additional "}
-                      className="w-full h-full object-contain transform transition-transform duration-300 group-hover:scale-105"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = "/placeholder.svg";
-                      }}
-                    />
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>}
+              {selectedSizes.length > 0 && <Swiper
+                spaceBetween={10}
+                slidesPerView={1}
+                loop={true}
+                autoplay={{
+                  delay: 3000,
+                  disableOnInteraction: false,
+                }}
+              >
+                {filteredSizes.reverse().map((url, index) => (
+                  <SwiperSlide key={index}>
+                    <div className="aspect-square rounded-xl bg-gradient-to-br bg-gray-300 to-gray-100 flex items-center justify-center p-8 transition-all duration-300 group hover:bg-gray-100 hover:to-emerald-1000">
+                      <img
+                        src={`https://cfyqeilfmodrbiamqgme.supabase.co/storage/v1/object/public/product-images/${url.image}`}
+                        alt={"Size Additional "}
+                        className="w-full h-full object-contain transform transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = "/placeholder.svg";
+                        }}
+                      />
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>}
 
             </div>
 
@@ -218,7 +218,7 @@ export const ProductDialog = ({
                 <ProductCustomization
                   options={product.customization.options}
                   basePrice={product.customization.basePrice}
-                 
+
                 />
               </>
             )}

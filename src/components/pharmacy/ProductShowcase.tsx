@@ -142,6 +142,7 @@ const ProductShowcase = () => {
                   size_value: size.size_value,
                   size_unit: size.size_unit,
                   price: newPrice,
+                  originalPrice:size.price==newPrice ? 0 : size.price ,
                   sku: size.sku || "",
                   key_features: size.key_features || "",
                   quantity_per_case: size.quantity_per_case,

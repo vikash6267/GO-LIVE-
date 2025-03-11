@@ -99,3 +99,79 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@keyframes discountMove {
+  0% {
+    transform: scale(1.5);
+    opacity: 1;
+  }
+  50% {
+    text-decoration: line-through;
+    color: red;
+  }
+  100% {
+    transform: translateX(-20px) scale(0.9);
+    opacity: 0.6;
+  }
+}
+
+@keyframes finalPriceAppear {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.discount-price {
+  animation: discountMove 0.6s ease-in-out forwards;
+}
+
+.final-price {
+  animation: finalPriceAppear 0.5s ease-out 0.3s forwards;
+}
+
+.discount-line {
+  position: relative;
+}
+
+.discount-line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  background: red;
+  transform: scaleX(0);
+  animation: strikeThrough 0.3s ease-in-out 0.2s forwards;
+}
+
+@keyframes strikeThrough {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}

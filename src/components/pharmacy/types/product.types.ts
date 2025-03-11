@@ -18,6 +18,7 @@ export interface ProductSize {
   id: string;
   size_value: string;
   sku?: any;
+  originalPrice?: any;
   size_unit: string;
   price: number;
   quantity_per_case: number;

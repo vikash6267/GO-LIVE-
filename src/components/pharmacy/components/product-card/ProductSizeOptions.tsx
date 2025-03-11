@@ -101,9 +101,23 @@ export const ProductSizeOptions = ({
                     <span className="font-medium uppercase">
                       {size.size_value} {size.size_unit}
                     </span>
-                    <div className="text-emerald-600 font-semibold">
-                      ${formatPrice(totalPrice)}
-                    </div>
+
+
+                    <div className="flex items-center space-x-2">
+  {size.originalPrice > 0 && (
+    <p className="text-lg font-medium text-red-500 relative discount-price">
+      <span className="line-through discount-line">${formatPrice(size.originalPrice)}</span>
+    </p>
+  )}
+  <p className="text-xl font-bold text-green-600 final-price">
+    ${formatPrice(totalPrice)}
+  </p>
+</div>
+
+
+
+
+
                   </div>
                   <div className="text-sm text-muted-foreground">
                     {size.quantity_per_case} Units per case

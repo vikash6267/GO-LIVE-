@@ -48,13 +48,13 @@ export function CreateOrderForm({
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isCus, setIsCus] = useState<boolean>(false);
 
-  console.log(cartItems);
+  console.log(initialData);
   const [pId, setPId] = useState(
-    initialData?.customerInfo?.cusid || userProfile?.id || ""
+    initialData?.customer || userProfile?.id || ""
   );
 
   useEffect(() => {
-    setPId(initialData?.customerInfo?.cusid || userProfile?.id);
+    setPId(initialData?.customer || userProfile?.id);
   }, [initialData, userProfile]);
 
   const totalShippingCost =
@@ -67,7 +67,7 @@ export function CreateOrderForm({
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
       id: generateOrderId(),
-      customer: initialData?.customerInfo?.cusid || userProfile?.id || "",
+      customer: initialData?.customer || userProfile?.id || "",
       date: new Date().toISOString(),
       total: "0",
       status: "new",
@@ -210,7 +210,7 @@ export function CreateOrderForm({
       const defaultEstimatedDelivery = new Date();
       defaultEstimatedDelivery.setDate(defaultEstimatedDelivery.getDate() + 10);
 
-      console.log(isCus)
+      console.log(pId)
 
 
       // Prepare order data

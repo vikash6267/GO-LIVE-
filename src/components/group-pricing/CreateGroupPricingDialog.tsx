@@ -42,40 +42,40 @@ const createFormSchema = (products: any[]) =>
     discountValue: z.coerce.number().min(0, "Discount must be at least 0"),
     minQuantity: z.coerce.number().min(1, "Minimum quantity must be at least 1"),
     maxQuantity: z.coerce.number().min(1, "Maximum quantity must be at least 1"),
-    
+
     // ✅ Change product from `z.string()` to `z.array(z.string())`
     product: z.array(z.string()).min(1, "At least one product must be selected"),
-    
+
     group: z.string().optional(),
     pharmacy: z.string().optional(),
   })
-  .refine(
-    (data) => {
-      if (data.discountType === "percentage") {
-        return data.discountValue <= 100;
+    .refine(
+      (data) => {
+        if (data.discountType === "percentage") {
+          return data.discountValue <= 100;
+        }
+        return true;
+      },
+      {
+        message: "Percentage discount cannot exceed 100%.",
+        path: ["discountValue"],
       }
-      return true;
-    },
-    {
-      message: "Percentage discount cannot exceed 100%.",
-      path: ["discountValue"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.discountType === "fixed" && data.product.length > 0) {
-        return data.product.every((productId) => {
-          const selectedProduct = products.find((p) => p.id === productId);
-          return selectedProduct ? data.discountValue <= selectedProduct.base_price : false;
-        });
+    )
+    .refine(
+      (data) => {
+        if (data.discountType === "fixed" && data.product.length > 0) {
+          return data.product.every((productId) => {
+            const selectedProduct = products.find((p) => p.id === productId);
+            return selectedProduct ? data.discountValue <= selectedProduct.base_price : false;
+          });
+        }
+        return true;
+      },
+      {
+        message: "Flat discount cannot exceed the product price.",
+        path: ["discountValue"],
       }
-      return true;
-    },
-    {
-      message: "Flat discount cannot exceed the product price.",
-      path: ["discountValue"],
-    }
-  );
+    );
 
 
 export type FormValues = z.infer<ReturnType<typeof createFormSchema>>;
@@ -101,17 +101,17 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
       discountValue: initialData?.discount || 0,
       minQuantity: initialData?.min_quantity || 1,
       maxQuantity: initialData?.max_quantity || 100,
- 
-      product: Array.isArray(initialData?.product_id) 
-        ? initialData.product_id 
-        : initialData?.product_id 
-        ? [initialData.product_id] 
-        : [],
-    
+
+      product: Array.isArray(initialData?.product_id)
+        ? initialData.product_id
+        : initialData?.product_id
+          ? [initialData.product_id]
+          : [],
+
       group: initialData?.group_ids?.[0] || "",
       pharmacy: initialData?.group_ids?.[1] || "",
     },
-    
+
   });
 
   const fetchData = async () => {
@@ -159,7 +159,7 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
       setProducts(productsResponse.data || []);
       setGroups(formattedGroups);
       setPharmacies(formattedPharmacies);
-      
+
       console.log("Data fetched successfully:", {
         products: productsResponse.data?.length,
         groups: formattedGroups.length,
@@ -180,16 +180,16 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
   const handleSubmit = async (values: FormValues) => {
     console.log("Starting handleSubmit with values:", values);
     setLoading(true);
-  
+
     try {
       const selectedProducts = products.filter((product) =>
         values.product.includes(product.id)
       );
-  
+
       if (!selectedProducts.length) {
         throw new Error("Selected products not found.");
       }
-  
+
       for (const product of selectedProducts) {
         if (values.discountType === "fixed" && values.discountValue > product.base_price) {
           throw new Error(`Flat discount cannot exceed the price of ${product.name}.`);
@@ -197,12 +197,12 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
         if (values.discountType === "percentage" && values.discountValue > 100) {
           throw new Error("Percentage discount cannot exceed 100%.");
         }
-  
+
         const discountValue =
           values.discountType === "percentage"
             ? values.discountValue
             : (values.discountValue / product.base_price) * 100;
-  
+
         const groupPricingData: GroupPricingData = {
           name: values.name,
           discount: discountValue,
@@ -214,58 +214,58 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
           status: "active",
           updated_at: new Date().toISOString(),
         };
-  
+
         console.log("Checking if product exists in group_pricing:", product.id);
-  
+
         // ✅ Check if product_id already exists in the group_pricing table
         const { data: existingEntry, error: fetchError } = await supabase
           .from("group_pricing")
           .select("id")
           .eq("product_id", product.id)
           .single();
-  
+
         if (fetchError && fetchError.code !== "PGRST116") {
           console.error("Error checking existing entry:", fetchError);
           throw new Error("Error checking existing entry.");
         }
-  
+
         if (existingEntry) {
           console.log(`Updating existing entry for product ${product.id}`);
-  
+
           // ✅ If product_id exists, update it
           const { error: updateError } = await supabase
             .from("group_pricing")
             .update(groupPricingData)
             .eq("product_id", product.id);
-  
+
           if (updateError) {
             console.error("Error updating:", updateError);
             throw new Error(`Failed to update group pricing for ${product.name}: ${updateError.message}`);
           }
         } else {
           console.log(`Inserting new entry for product ${product.id}`);
-          
+
           // ✅ If product_id does not exist, insert a new row
           groupPricingData.created_at = new Date().toISOString();
           const { error: insertError } = await supabase
             .from("group_pricing")
             .insert(groupPricingData);
-  
+
           if (insertError) {
             console.error("Error inserting:", insertError);
             throw new Error(`Failed to create group pricing for ${product.name}: ${insertError.message}`);
           }
         }
-  
+
         // ✅ Call onSubmit for each product
         onSubmit(groupPricingData);
       }
-  
+
       toast({
         title: "Success",
         description: "Group pricing updated or created successfully for selected products.",
       });
-  
+
       form.reset();
       setIsOpen(false);
     } catch (error: any) {
@@ -279,10 +279,10 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
       setLoading(false);
     }
   };
-  
-  
-  
-  
+
+
+
+
 
   useEffect(() => {
     if (isOpen) {
@@ -291,63 +291,63 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
   }, [isOpen]);
 
   return (
-  <div>
+    <div>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button 
-          className="bg-gradient-to-r from-[#e6b980] to-[#eacda3] hover:opacity-90 text-gray-800"
-          size="sm"
-        >
-          <Plus className="h-4 w-4" /> Add Pricing
-        </Button>
-      </DialogTrigger>
-    <div className=" ">
-    <DialogContent className="bg-white max-h-50">
-        <DialogHeader>
-          <DialogTitle className="text-gray-800">
-            {initialData ? "Edit" : "Create"} Group Pricing
-          </DialogTitle>
-          <DialogDescription>
-            Configure pricing rules for specific groups and products
-          </DialogDescription>
-        </DialogHeader>
-        {loading && !form.formState.isSubmitting ? (
-          <div className="flex items-center justify-center py-8 ">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        ) : (
-         <div className="h-[70vh] overscroll-y overflow-y-scroll"> 
-          <Form {...form}>
-         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 ">
-           <BasicInfoFields form={form} />
-           <ProductSelection form={form} products={products} />
-           <DiscountFields form={form} />
-           <QuantityFields form={form} />
-           <GroupPharmacyFields
-             form={form}
-             groups={groups}
-             pharmacies={pharmacies}
-           />
-           <Button 
-             type="submit" 
-             className="w-full bg-gradient-to-r from-[#e6b980] to-[#eacda3] hover:opacity-90 text-gray-800"
-             disabled={loading}
-           >
-             {loading ? (
-               <div className="flex items-center gap-2">
-                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></div>
-                 <span>Submitting...</span>
-               </div>
-             ) : (
-               <span>{initialData ? "Update" : "Create"} Group Pricing</span>
-             )}
-           </Button>
-         </form>
-       </Form></div>
-        )}
-      </DialogContent>
+        <DialogTrigger asChild>
+          <Button
+            className="bg-gradient-to-r from-[#e6b980] to-[#eacda3] hover:opacity-90 text-gray-800"
+            size="sm"
+          >
+            <Plus className="h-4 w-4" /> Add Pricing
+          </Button>
+        </DialogTrigger>
+        <div className=" ">
+          <DialogContent className="bg-white max-h-50">
+            <DialogHeader>
+              <DialogTitle className="text-gray-800">
+                {initialData ? "Edit" : "Create"} Group Pricing
+              </DialogTitle>
+              <DialogDescription>
+                Configure pricing rules for specific groups and products
+              </DialogDescription>
+            </DialogHeader>
+            {loading && !form.formState.isSubmitting ? (
+              <div className="flex items-center justify-center py-8 ">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : (
+              <div className="h-[70vh] overscroll-y overflow-y-scroll">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 ">
+                    <BasicInfoFields form={form} />
+                    <ProductSelection form={form} products={products} />
+                    <DiscountFields form={form} />
+                    {/* <QuantityFields form={form} /> */}
+                    <GroupPharmacyFields
+                      form={form}
+                      groups={groups}
+                      pharmacies={pharmacies}
+                    />
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-[#e6b980] to-[#eacda3] hover:opacity-90 text-gray-800"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></div>
+                          <span>Submitting...</span>
+                        </div>
+                      ) : (
+                        <span>{initialData ? "Update" : "Create"} Group Pricing</span>
+                      )}
+                    </Button>
+                  </form>
+                </Form></div>
+            )}
+          </DialogContent>
+        </div>
+      </Dialog>
     </div>
-    </Dialog>
-  </div>
   );
 }

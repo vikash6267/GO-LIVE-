@@ -148,7 +148,7 @@ export default function GroupOrder() {
       const billingAddress = (data.billing_address || {}) as any;
   
       setOrderData((prevState) => ({
- 
+ ...prevState,
         customerInfo: {
           cusid:data.id || "test",
           type: "Pharmacy",
@@ -163,6 +163,7 @@ export default function GroupOrder() {
           },
         },
       }));
+      console.log(orderData)
     } catch (err) {
       console.error("Error in handlePharmacyChange:", err);
     }

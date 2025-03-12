@@ -23,7 +23,7 @@ exports.orderSatusCtrl = async (req, res) => {
 
     // Send email
     await mailSender(
-      "vikasmaheshwari6267@gmail.com",
+      order.customerInfo.email,
       "Order Status Update",
       emailContent
     );
@@ -61,7 +61,7 @@ exports.orderPlacedCtrl = async (req, res) => {
 
     // Send email
     await mailSender(
-      "vikasmaheshwari6267@gmail.com",
+      order.customerInfo.email,
       "Order Placed ",
       emailContent
     );
@@ -97,7 +97,7 @@ exports.userNotificationCtrl = async (req, res) => {
 
     // Send email
     await mailSender(
-      "vikasmaheshwari6267@gmail.com",
+      "sppatel@9rx.com",
       "Order Placed ",
       emailContent
     );
@@ -129,7 +129,7 @@ exports.contactCtrl = async (req, res) => {
     }
 
     const emailRes = await mailSender(
-         "vikasmaheshwari6267@gmail.com",
+         "sppatel@9rx.com",
       "Your Data send successfully",
       contactUsEmail(name, email, contact, message)
     )

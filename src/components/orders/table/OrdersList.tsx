@@ -253,7 +253,33 @@ export function OrdersList({
                 {order.customerInfo?.name || "N/A"}
               </TableCell>
 
-              <TableCell>{getOrderDate(order)}</TableCell>
+              <TableCell>
+  {(() => {
+    const dateObj = new Date(order.date); // Convert to Date object
+    const formattedDate = dateObj.toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    });
+
+    const formattedTime = dateObj.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    return (
+      <>
+        {formattedDate} <br />
+        {formattedTime}
+      </>
+    );
+  })()}
+</TableCell>
+
+
+
+
               <TableCell>{formatTotal(order.total)}</TableCell>
               <TableCell>
                 <Badge

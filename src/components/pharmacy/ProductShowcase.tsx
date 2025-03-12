@@ -11,7 +11,12 @@ import { selectUserProfile } from "@/store/selectors/userSelectors";
 import { useSelector } from "react-redux";
 import { Loader2 } from "lucide-react";
 
-const ProductShowcase = () => {
+export interface ProductShowcaseProps {
+ 
+  groupShow?: boolean;
+  
+}
+const ProductShowcase = ({groupShow}:ProductShowcaseProps) => {
   const { toast } = useToast();
   const [products, setProducts] = useState<ProductDetails[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -186,8 +191,9 @@ const ProductShowcase = () => {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <HeroSection />
-        {/* <CartDrawer /> */}
+      {        !groupShow &&        <HeroSection /> }
+
+     
       </div>
 
       <SearchFilters

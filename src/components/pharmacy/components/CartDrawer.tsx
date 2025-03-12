@@ -84,9 +84,20 @@ export const CartDrawer = () => {
       // Close the drawer
       setIsOpen(false);
 
+
+      const userType = sessionStorage.getItem('userType');
+
+      if(userType.toLocaleLowerCase() === 'group'){
+        navigate("/group/order");
+
+      }
+      if(userType.toLocaleLowerCase() === 'pharmacy'){
+        navigate("/pharmacy/order");
+
+      }
       // Navigate to order page
-      navigate("/pharmacy/order");
-      window.location.reload();
+      
+      // window.location.reload();
 
       toast({
         title: "Cart Transferred",

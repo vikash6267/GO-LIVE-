@@ -17,6 +17,7 @@ import { useSelector } from "react-redux";
 import { selectUserProfile } from "@/store/selectors/userSelectors";
 import { fetchCustomerLocation } from "./Dashboard";
 import { supabase } from "@/integrations/supabase/client";
+import ProductShowcase from "@/components/pharmacy/ProductShowcase";
 
 export default function GroupOrder() {
   const [orderData, setOrderData] = useState<Partial<OrderFormValues>>({});
@@ -28,56 +29,45 @@ export default function GroupOrder() {
 
 
 
- const fetchLocations = async () => {
+  const fetchLocations = async () => {
     if (!userProfile?.id) return; // Agar ID nahi hai to return kar do
-  
     try {
       const res = await fetchCustomerLocation(userProfile.id);
       if (!res) return;
-  
-      // Map ko async function banana padega
-      const formatLocations = async (data) => {
-        return Promise.all(data.map(async (location, index) => {
-          const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-          const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString();
-  
-          // ✅ Supabase se orders count fetch karo
-          const { count, error } = await supabase
-            .from("orders")
-            .select("*", { count: "exact", head: true })
-            .eq("profile_id", location.id)
-            .gte("created_at", startOfMonth)
-            .lte("created_at", endOfMonth);
-  
-          if (error) {
-            console.error("Error fetching count:", error);
-          }
-  
-          return {
-            id: location.id || index + 1,
-            name: location.display_name?.trim() ? location.display_name : `Location ${index + 1}`,
-            address: `${location.billing_address?.street1?.trim() ? location.billing_address.street1 : "N/A"}, 
-                      ${location.billing_address?.city?.trim() ? location.billing_address.city : "N/A"} 
-                      ${location.billing_address?.zip_code?.trim() ? location.billing_address.zip_code : "N/A"}`,
-            countryRegion: location.countryRegion || "N/A",
-            phone: location.phone || "N/A",
-            faxNumber: location.faxNumber || "N/A",
-            contact_email: location.email || "N/A",
-            contact_phone: location.mobile_phone || "N/A",
-            created_at: location.created_at ? new Date(location.created_at).toISOString() : "N/A",
-            updated_at: location.updated_at ? new Date(location.updated_at).toISOString() : "N/A",
-            profile_id: location.profile_id || "N/A",
-            type: location.type || "N/A",
-            status: location.status || "pending",
-            manager: location?.locations?.find(item => item.manager)?.manager || "N/A",
-            ordersThisMonth: count || 0 // Agar count undefined ho to 0 set karna
-          };
+
+      const formatLocations = (data) => {
+        return data.map((location, index) => ({
+          id: location.id || index + 1,
+          name: location.name?.trim() ? location.name : `Location ${index + 1}`, // Agar name undefined ya empty ho to default set karega
+          address: `${
+            location.address?.street1?.trim() ? location.address.street1 : "N/A"
+          }, ${
+            location.address?.city?.trim() ? location.address.city : "N/A"
+          } ${
+            location.address?.zip_code?.trim() ? location.address.zip_code : "N/A"
+          }`
+          
+          ,
+          countryRegion: location.countryRegion || "N/A",
+          phone: location.phone || "N/A",
+          faxNumber: location.faxNumber || "N/A",
+          contact_email: location.contact_email || "N/A",
+          contact_phone: location.contact_phone || "N/A",
+          created_at: location.created_at ? new Date(location.created_at).toISOString() : "N/A",
+          updated_at: location.updated_at ? new Date(location.updated_at).toISOString() : "N/A",
+          profile_id: location.profile_id || "N/A",
+          type: location.type || "N/A",
+          status: location.status || "pending",
+          manager: location.manager || "N/A",
+          ordersThisMonth: Math.floor(Math.random() * 100), // Dummy data
         }));
       };
-  
-      const formattedLocations = await formatLocations(res);
+      
+      
+
+      const formattedLocations = formatLocations(res);
       console.log("Formatted Locations:", formattedLocations);
-  
+
       setDbLocations(formattedLocations);
       console.log("User Profile:", userProfile);
     } catch (error) {
@@ -127,7 +117,7 @@ export default function GroupOrder() {
   
     try {
       const { data, error } = await supabase
-        .from("profiles")
+        .from("locations")
         .select("*")
         .eq("id", selectedPharmacyData.id)
         .maybeSingle();
@@ -144,22 +134,20 @@ export default function GroupOrder() {
   
       console.log("Successfully fetched profile:", data);
   
-      // Billing address को सुरक्षित तरीके से एक्सेस करें
-      const billingAddress = (data.billing_address || {}) as any;
-  
+
       setOrderData((prevState) => ({
  
         customerInfo: {
           cusid:data.id || "test",
           type: "Pharmacy",
-          name: data.first_name,
-          email: data.email || "",
-          phone: data.mobile_phone || "",
+          name: data.name,
+          email: data.contact_email || "",
+          phone: data.contact_phone || "",
           address: {
-            street: billingAddress.street || "",
-            city: billingAddress.city || "",
-            state: billingAddress.state || "",
-            zip_code: billingAddress.zip_code || "",
+            street: `${data.address.street1}, ${data.address.street2}` || "",
+            city: data.address.city || "",
+            state: data.address.state || "",
+            zip_code: data.address.zip_code || "",
           },
         },
       }));
@@ -179,6 +167,8 @@ export default function GroupOrder() {
   const handleFormChange = (data: Partial<OrderFormValues>) => {
     setOrderData(data);
   };
+
+  const [isOpen, setIsOpen] = useState(false);
 
   if (isLoading) {
     return (
@@ -207,6 +197,7 @@ export default function GroupOrder() {
         </div>
 
         <Card className="p-6">
+          <div className=" flex items-center">
           <div className="mb-6">
             <Label htmlFor="pharmacy-select">Select Pharmacy</Label>
             <Select
@@ -224,8 +215,45 @@ export default function GroupOrder() {
                 ))}
               </SelectContent>
             </Select>
+
+             {/* Button to Open Popup */}
+      
+
+          </div>
+          <div>
+          <button
+        onClick={() => setIsOpen(true)}
+        className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
+      >
+        Show Products
+      </button>
+          </div>
           </div>
 
+
+  <div className="flex justify-center items-center min-h-screen">
+     
+
+      {/* Popup Modal */}
+      {isOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 h-screen z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] md:w-[50%] relative h-[80vh] overflow-y-scroll">
+            {/* Close Button */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="absolute top-3 right-3 text-gray-600 hover:text-black text-lg"
+            >
+              ✖
+            </button>
+
+            {/* Modal Content */}
+            
+            <ProductShowcase groupShow={true} />
+          </div>
+        </div>
+      )}
+    </div>
+        
           {orderData.customerInfo  && selectedPharmacy &&   (
             <CreateOrderForm
               initialData={orderData}

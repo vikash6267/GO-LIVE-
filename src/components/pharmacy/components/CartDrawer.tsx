@@ -20,7 +20,12 @@ export const CartDrawer = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
-  const shipingCost = 15;
+
+  const shipingCost =
+  sessionStorage.getItem("shipping") == "true"
+    ? 0
+    : Math.max(...cartItems.map((item) => item.shipping_cost || 0));
+
   const total = cartItems.reduce((sum, item) => {
     // ✅ Har size ki price * quantity ka sum calculate karega
     const itemTotal = item.sizes.reduce(
@@ -95,14 +100,14 @@ export const CartDrawer = () => {
         navigate("/pharmacy/order");
 
       }
+      if (userType.toLowerCase() === "admin") {
+        navigate("/admin/orders", { state: { createOrder: true } });
+      }
+      
       // Navigate to order page
       
       // window.location.reload();
 
-      toast({
-        title: "Cart Transferred",
-        description: "Your cart items have been transferred to a new order",
-      });
     } catch (error) {
       console.error("Checkout error:", error);
       toast({
@@ -251,7 +256,7 @@ export const CartDrawer = () => {
                 <span>
                   {sessionStorage.getItem("shipping") == "true"
                     ? "Free"
-                    : shipingCost}
+                    :`$${shipingCost}`}
                 </span>
               </div>
               <div className="flex justify-between text-lg font-medium">

@@ -59,49 +59,43 @@ const ProductShowcase = ({ groupShow }: ProductShowcaseProps) => {
 
 
         let ID = userProfile?.id;
-        try {
-          if (userType.toLocaleLowerCase() === "pharmacy") {
+        // try {
+        //   if (userType.toLocaleLowerCase() === "pharmacy") {
 
 
-            const { data, error } = await supabase
-              .from("profiles")
-              .select(
-                "id,first_name, group_id "
-              )
-              .eq("id", userProfile?.id)
-              .single(); // Fetch only one record for simplicity
+        //     const { data, error } = await supabase
+        //       .from("profiles")
+        //       .select(
+        //         "id,first_name, group_id "
+        //       )
+        //       .eq("id", userProfile?.id)
+        //       .single(); // Fetch only one record for simplicity
 
-            if (error) {
-              console.error("Failed to fetch customer information:", error);
-              throw new Error(
-                "Failed to fetch customer information: " + error.message
-              );
-            }
+        //     if (error) {
+        //       console.error("Failed to fetch customer information:", error);
+        //       throw new Error(
+        //         "Failed to fetch customer information: " + error.message
+        //       );
+        //     }
 
-            if (!data || data.length === 0) {
-              throw new Error("No customer information found.");
-            }
-            console.log("Data", data);
-            ID = data?.group_id || userProfile?.id
-          }
-        } catch (error) {
-          console.log(error)
-        }
+        //     if (!data || data.length === 0) {
+        //       throw new Error("No customer information found.");
+        //     }
+        //     console.log("Data", data);
+        //     ID = data?.group_id || userProfile?.id
+        //   }
+        // } catch (error) {
+        //   console.log(error)
+        // }
 
 
         // Map and Apply Discount
+        
         const mappedProducts: ProductDetails[] = productsData.map((item) => {
           // Find applicable group pricing for this product
-          if (userType.toLocaleLowerCase() === "group") {
-
-          }
-          const applicableGroup = groupData.find(
-            (group) =>
-              group.group_ids.includes(ID) &&
-              group.product_id_array.includes(item.id)
-          );
-          console.log(applicableGroup)
-
+         
+       
+         
           return {
             id: item.id,
             name: item.name,
@@ -133,6 +127,11 @@ const ProductShowcase = ({ groupShow }: ProductShowcaseProps) => {
               item.product_sizes?.map((size) => {
                 let newPrice = size.price;
 
+                const applicableGroup = groupData.find(
+                  (group) =>
+                    group.group_ids.includes(ID) &&
+                    group.product_id_array.includes(size.id)
+                );
                 // Apply Discount if applicable
                 if (applicableGroup) {
                   if (applicableGroup.discount_type === "percentage") {

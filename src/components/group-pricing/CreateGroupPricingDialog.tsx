@@ -97,6 +97,7 @@ interface CreateGroupPricingDialogProps {
 export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupPricingDialogProps) {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
+  const [productsSizes, setProductsSizes] = useState<any[]>([]);
   const [groups, setGroups] = useState<any[]>([]);
   const [pharmacies, setPharmacies] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -162,10 +163,23 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
         name: `${pharmacy.first_name} ${pharmacy.last_name}`,
       })) || [];
 
-      setProducts(productsResponse.data || []);
+      const groupedProductSizes = productsResponse.data.map(product => ({
+        label: product.name, // प्रोडक्ट का नाम हेडिंग के रूप में
+        options: product.product_sizes.map(size => ({
+          value: size.id,
+          label: `${size.size_value} ${size.size_unit}`,
+          groupLabel: product.name // सर्च में ग्रुप नाम भी दिखाने के लिए
+        }))
+      }));
+      
+      console.log(groupedProductSizes);
+      setProductsSizes(groupedProductSizes);
+      
+
+      setProducts(productsResponse.data);
+      
       setGroups(formattedGroups);
       setPharmacies(formattedPharmacies);
-
       console.log("Data fetched successfully:", {
         products: productsResponse.data?.length,
         groups: formattedGroups.length,
@@ -386,7 +400,7 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 ">
                     <BasicInfoFields form={form} />
-                    <ProductSelection form={form} products={products} />
+                    <ProductSelection form={form} products={productsSizes} />
                     <DiscountFields form={form} />
                     {/* <QuantityFields form={form} /> */}
                     <GroupPharmacyFields

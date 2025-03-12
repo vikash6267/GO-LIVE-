@@ -8,6 +8,20 @@ import { Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/supabaseClient";
 
+
+
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
+
+
 interface TaxAndDocumentsSectionProps {
   form: UseFormReturn<BaseUserFormData>;
 }
@@ -31,7 +45,7 @@ export function TaxAndDocumentsSection({ form }: TaxAndDocumentsSectionProps) {
       if (data) {
         const documents = form.getValues('documents') || [];
         form.setValue('documents', [...documents, data.path]);
-        
+
         toast({
           title: "Document Uploaded",
           description: "The document has been uploaded successfully.",
@@ -53,6 +67,60 @@ export function TaxAndDocumentsSection({ form }: TaxAndDocumentsSectionProps) {
         <CardTitle>Tax & Documents</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+
+        <FormField
+          control={form.control}
+          name="paymentTerms"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Payment Terms</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select payment terms" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="DueOnReceipt">Due on Receipt</SelectItem>
+                  <SelectItem value="Net15">Net 15</SelectItem>
+                  <SelectItem value="Net30">Net 30</SelectItem>
+                  <SelectItem value="Net45">Net 45</SelectItem>
+                  <SelectItem value="Net60">Net 60</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+
+        <FormField
+          control={form.control}
+          name="taxPreference"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tax Preference</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select tax preference" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="Taxable">Taxable</SelectItem>
+                  <SelectItem value="Non-taxable">Non-taxable</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="taxId"

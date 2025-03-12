@@ -119,7 +119,7 @@ export const ProductDialog = ({
             >
               {imageUrls.map((url, index) => (
                 <SwiperSlide key={index}>
-                  <div className="aspect-square rounded-xl bg-gradient-to-br bg-gray-300 to-gray-100 flex items-center justify-center p-8 transition-all duration-300 group hover:bg-gray-100 hover:to-emerald-1000">
+                  <div className="aspect-square rounded-xl  bg-gray-100/30  flex items-center justify-center p-8 transition-all duration-300 group hover:bg-white ">
                     <img
                       src={url}
                       alt={product.name}
@@ -146,7 +146,8 @@ export const ProductDialog = ({
               >
                 {filteredSizes.reverse().map((url, index) => (
                   <SwiperSlide key={index}>
-                    <div className="aspect-square rounded-xl bg-gradient-to-br bg-gray-300 to-gray-100 flex items-center justify-center p-8 transition-all duration-300 group hover:bg-gray-100 hover:to-emerald-1000">
+                                     <div className="aspect-square rounded-xl  bg-gray-100/30  flex items-center justify-center p-8 transition-all duration-300 group hover:bg-white ">
+
                       <img
                         src={`https://cfyqeilfmodrbiamqgme.supabase.co/storage/v1/object/public/product-images/${url.image}`}
                         alt={"Size Additional "}

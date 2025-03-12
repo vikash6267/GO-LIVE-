@@ -1,3 +1,4 @@
+const { contactUsEmail } = require("../templates/contactFormRes");
 const orderConfirmationTemplate = require("../templates/orderCreate");
 const orderStatusTemplate = require("../templates/orderTemlate");
 const userVerificationTemplate = require("../templates/userVerificationTemplate");
@@ -116,4 +117,31 @@ exports.userNotificationCtrl = async (req, res) => {
 };
 
 
+exports.contactCtrl = async (req, res) => {
+  const { name, email, contact, message } = req.body;
+  try {
 
+    if (!name || !contact) {
+      return res.status(500).send({
+        message: "Plase provide all fields",
+        success: false
+      })
+    }
+
+    const emailRes = await mailSender(
+         "vikasmaheshwari6267@gmail.com",
+      "Your Data send successfully",
+      contactUsEmail(name, email, contact, message)
+    )
+    res.status(200).send({
+      message: "Email send successfully.Our team will contact you soon!",
+      emailRes,
+      success: true
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({
+      message: "Error in sending email",
+    })
+  }
+}

@@ -16,7 +16,7 @@ app.use(express.urlencoded({ limit: "500mb", extended: true }));
 const cookieParser = require("cookie-parser");
 
 const logger = require("morgan");
-const { orderSatusCtrl, orderPlacedCtrl, userNotificationCtrl } = require("./controllers/orderStatus");
+const { orderSatusCtrl, orderPlacedCtrl, userNotificationCtrl, contactCtrl } = require("./controllers/orderStatus");
 app.use(logger("dev"));
 
 app.use(cookieParser());
@@ -288,6 +288,7 @@ app.post("/pay", async (req, res) => {
 app.post("/order-status", orderSatusCtrl)
 app.post("/order-place", orderPlacedCtrl)
 app.post("/user-verification", userNotificationCtrl)
+app.post("/contact", contactCtrl)
 
 
 

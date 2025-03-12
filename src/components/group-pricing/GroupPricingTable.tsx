@@ -139,7 +139,7 @@ export function GroupPricingTable({}: GroupPricingTableProps) {
       </div>
     );
   }
-
+console.log(groupPricings)
   return (
     <div className="rounded-md p-4">
       <GroupPricingHeader loading={loading} onRefresh={fetchGroupPricings} />
@@ -160,7 +160,7 @@ export function GroupPricingTable({}: GroupPricingTableProps) {
           {groupPricings.map((pricing) => (
             <TableRow key={pricing.id} className="hover:bg-gray-50/50">
               <TableCell className="font-medium text-gray-800">{pricing.name}</TableCell>
-              <TableCell className="text-gray-700">{pricing.discount}%</TableCell>
+              <TableCell className="text-gray-700">{pricing.discount}{pricing.discount_type === "fixed" ? '$' : "%" }</TableCell>
               <TableCell className="text-gray-700">
                 {pricing.min_quantity} - {pricing.max_quantity}
               </TableCell>

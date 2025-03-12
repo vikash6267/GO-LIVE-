@@ -21,7 +21,6 @@ export const ProductCustomization = ({
   const [customizations, setCustomizations] = useState<Record<string, string>>({});
   const [customizationEnabled, setCustomizationEnabled] = useState(false);
 
-  if (!options?.length) return null;
 
   const handleCustomizationChange = (optionLabel: string, value: string) => {
     const newCustomizations = {

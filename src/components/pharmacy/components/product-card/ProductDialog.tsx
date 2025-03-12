@@ -97,7 +97,7 @@ export const ProductDialog = ({
     }
     console.log(selectedSizes);
   }, [selectedSizes, product.sizes]);
-
+console.log(product)
   return (
     <DialogContent className="max-w-4xl max-h-[90vh]">
       <DialogHeader>

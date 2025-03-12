@@ -138,7 +138,7 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
       console.log("Fetching data for group pricing...");
       const [productsResponse, groupsResponse, pharmaciesResponse] = await Promise.all([
         supabase.from("products").select("id, name, base_price, product_sizes(*)"),
-        supabase.from("profiles").select("id, first_name, last_name").eq("type", "group"),
+        supabase.from("profiles").select("id, first_name, last_name"),
         supabase.from("profiles").select("id, first_name, last_name").eq("type", "pharmacy")
       ]);
 

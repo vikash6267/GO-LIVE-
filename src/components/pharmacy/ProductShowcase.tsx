@@ -12,11 +12,11 @@ import { useSelector } from "react-redux";
 import { Loader2 } from "lucide-react";
 
 export interface ProductShowcaseProps {
- 
+
   groupShow?: boolean;
-  
+
 }
-const ProductShowcase = ({groupShow}:ProductShowcaseProps) => {
+const ProductShowcase = ({ groupShow }: ProductShowcaseProps) => {
   const { toast } = useToast();
   const [products, setProducts] = useState<ProductDetails[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -146,8 +146,9 @@ const ProductShowcase = ({groupShow}:ProductShowcaseProps) => {
                   id: size.id,
                   size_value: size.size_value,
                   size_unit: size.size_unit,
+                  rolls_per_case: size.rolls_per_case,
                   price: newPrice,
-                  originalPrice:size.price==newPrice ? 0 : size.price ,
+                  originalPrice: size.price == newPrice ? 0 : size.price,
                   sku: size.sku || "",
                   key_features: size.key_features || "",
                   quantity_per_case: size.quantity_per_case,
@@ -191,9 +192,9 @@ const ProductShowcase = ({groupShow}:ProductShowcaseProps) => {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-      {        !groupShow &&        <HeroSection /> }
+        {!groupShow && <HeroSection />}
 
-     
+
       </div>
 
       <SearchFilters
@@ -204,15 +205,15 @@ const ProductShowcase = ({groupShow}:ProductShowcaseProps) => {
         priceRange={priceRange}
         setPriceRange={setPriceRange}
       />
-{
-  products.length > 0 ? (
-    <ProductGrid products={filteredProducts} />
-  ) : (
-    <div className="flex justify-center items-center h-40">
-      <Loader2 className="animate-spin text-gray-500" size={32} />
-    </div>
-  )
-}
+      {
+        products.length > 0 ? (
+          <ProductGrid products={filteredProducts} />
+        ) : (
+          <div className="flex justify-center items-center h-40">
+            <Loader2 className="animate-spin text-gray-500" size={32} />
+          </div>
+        )
+      }
     </div>
   );
 };

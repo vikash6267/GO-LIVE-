@@ -123,7 +123,7 @@ export const ProductSizeOptions = ({
                     {size.quantity_per_case} {" "}
                     {
 
-                      product.name === "LIQUID OVAL ADAPTERS" ? "Bottel Per Case" : product.name === "OINTMENT JARS" ? "Jar's And Caps In One Case" : product.name === "RX VIALS" ? "Vials And Caps In One Case" : product.name === "RX LABELS" ? "Labels Per Roll , 18 Roll Per Case" : "Units per case"
+                      product.name === "LIQUID OVAL ADAPTERS" ? "Bottel Per Case" : product.name === "OINTMENT JARS" ? "Jar's And Caps In One Case" : product.name === "RX VIALS" ? "Vials And Caps In One Case" : product.name === "RX LABELS" ? `Labels Per Roll , ${size.rolls_per_case} Roll Per Case` : "Units per case"
                     }
 
                   </div>

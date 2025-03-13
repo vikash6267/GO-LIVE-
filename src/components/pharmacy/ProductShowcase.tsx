@@ -59,43 +59,8 @@ const ProductShowcase = ({ groupShow }: ProductShowcaseProps) => {
 
 
         let ID = userProfile?.id;
-        // try {
-        //   if (userType.toLocaleLowerCase() === "pharmacy") {
-
-
-        //     const { data, error } = await supabase
-        //       .from("profiles")
-        //       .select(
-        //         "id,first_name, group_id "
-        //       )
-        //       .eq("id", userProfile?.id)
-        //       .single(); // Fetch only one record for simplicity
-
-        //     if (error) {
-        //       console.error("Failed to fetch customer information:", error);
-        //       throw new Error(
-        //         "Failed to fetch customer information: " + error.message
-        //       );
-        //     }
-
-        //     if (!data || data.length === 0) {
-        //       throw new Error("No customer information found.");
-        //     }
-        //     console.log("Data", data);
-        //     ID = data?.group_id || userProfile?.id
-        //   }
-        // } catch (error) {
-        //   console.log(error)
-        // }
-
-
-        // Map and Apply Discount
-        
+ 
         const mappedProducts: ProductDetails[] = productsData.map((item) => {
-          // Find applicable group pricing for this product
-         
-       
-         
           return {
             id: item.id,
             name: item.name,
@@ -125,29 +90,33 @@ const ProductShowcase = ({ groupShow }: ProductShowcaseProps) => {
             quantityPerCase: item.quantity_per_case || 0,
             sizes:
               item.product_sizes?.map((size) => {
-                let newPrice = size.price;
-
+                let newPrice = size.price; // Default price
+        
+                // Find applicable group for the user
                 const applicableGroup = groupData.find(
                   (group) =>
                     group.group_ids.includes(ID) &&
-                    group.product_id_array.includes(size.id)
+                    group.product_arrayjson.some((product) => product.product_id === size.id)
                 );
-                // Apply Discount if applicable
+        
+                // If applicable group is found, use new_price
                 if (applicableGroup) {
-                  if (applicableGroup.discount_type === "percentage") {
-                    newPrice = newPrice - (newPrice * applicableGroup.discount) / 100;
-                  } else if (applicableGroup.discount_type === "fixed") {
-                    newPrice = Math.max(0, newPrice - applicableGroup.discount); // Prevent negative price
+                  const groupProduct = applicableGroup.product_arrayjson.find(
+                    (product) => product.product_id === size.id
+                  );
+        
+                  if (groupProduct) {
+                    newPrice = parseFloat(groupProduct.new_price) || size.price;
                   }
                 }
-
+        
                 return {
                   id: size.id,
                   size_value: size.size_value,
                   size_unit: size.size_unit,
                   rolls_per_case: size.rolls_per_case,
                   price: newPrice,
-                  originalPrice: size.price == newPrice ? 0 : size.price,
+                  originalPrice: size.price === newPrice ? 0 : size.price, // Track original price
                   sku: size.sku || "",
                   key_features: size.key_features || "",
                   quantity_per_case: size.quantity_per_case,
@@ -159,13 +128,14 @@ const ProductShowcase = ({ groupShow }: ProductShowcaseProps) => {
               }) || [],
             tierPricing: item.enable_tier_pricing
               ? {
-                tier1: { quantity: item.tier1_name || "", price: item.tier1_price || 0 },
-                tier2: { quantity: item.tier2_name || "", price: item.tier2_price || 0 },
-                tier3: { quantity: item.tier3_name || "", price: item.tier3_price || 0 },
-              }
+                  tier1: { quantity: item.tier1_name || "", price: item.tier1_price || 0 },
+                  tier2: { quantity: item.tier2_name || "", price: item.tier2_price || 0 },
+                  tier3: { quantity: item.tier3_name || "", price: item.tier3_price || 0 },
+                }
               : undefined,
           };
         });
+        
 
         console.log("Mapped Products with Discounts:", mappedProducts);
         setProducts(mappedProducts);

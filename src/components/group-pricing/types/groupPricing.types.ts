@@ -8,6 +8,7 @@ export interface GroupPricing {
   product_id: string[];
   group_ids: string[];
   status: string;
+
   created_at: string;
   updated_at: string;
   products?: {

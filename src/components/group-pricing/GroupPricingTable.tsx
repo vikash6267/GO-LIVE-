@@ -54,7 +54,7 @@ export function GroupPricingTable({}: GroupPricingTableProps) {
       console.log("Fetch response:", { data, error, count });
 
       if (error) throw new Error(`Failed to fetch group pricings: ${error.message}`);
-
+console.log(data)
       setGroupPricings(data || []);
       setTotalPages(Math.ceil((count || 0) / rowsPerPage));
       

@@ -1,49 +1,127 @@
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Controller } from "react-hook-form";
+import { Controller, UseFormReturn } from "react-hook-form";
 import Select from "react-select";
-import { UseFormReturn } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react"; // Trash Icon for Delete
 import { FormValues } from "../CreateGroupPricingDialog";
+
+
 
 interface ProductSelectionProps {
   form: UseFormReturn<FormValues>;
-  products: any;
+  products: any[];
 }
 
 export function ProductSelection({ form, products }: ProductSelectionProps) {
+  const [selectedProducts, setSelectedProducts] = useState<any[]>(form.watch("product_arrayjson") || []);
+
+  useEffect(() => {
+    form.setValue("product_arrayjson", selectedProducts, { shouldValidate: true });
+
+    console.log(form.getValues())
+  }, [selectedProducts, form]);
+
+  // ✅ Handle Product Selection (Multiple Products Save)
+  const handleProductChange = (selectedOptions: any) => {
+    if (!selectedOptions) return;
+
+    const newProducts = selectedOptions.map((option: any) => ({
+      product_id: option.value,
+      product_name: option.label,
+      groupLabel: option.groupLabel,
+      actual_price: option.actual_price || 0,
+      new_price: "",
+    }));
+
+    setSelectedProducts(newProducts);
+    form.setValue("product_arrayjson", newProducts, { shouldValidate: true }); // ✅ Save to form
+  };
+
+  // ✅ Handle Price Change
+  const handlePriceChange = (productId: string, newPrice: string) => {
+    const updatedProducts = selectedProducts.map((product) =>
+      product.product_id === productId ? { ...product, new_price: newPrice } : product
+    );
+    setSelectedProducts(updatedProducts);
+    form.setValue("product_arrayjson", updatedProducts, { shouldValidate: true }); // ✅ Save to form
+  };
+
+  // ✅ Handle Product Deletion
+  const handleDeleteProduct = (productId: string) => {
+    const updatedProducts = selectedProducts.filter((product) => product.product_id !== productId);
+    setSelectedProducts(updatedProducts);
+    form.setValue("product_arrayjson", updatedProducts, { shouldValidate: true }); // ✅ Save to form
+  };
+
+  // ✅ Flatten available products for Select dropdown
+  const availableProducts = products.flatMap((group) =>
+    group.options.map((option) => ({
+      ...option,
+      groupLabel: group.label,
+    }))
+  );
+
   return (
-
-
-    <FormItem>
-    <FormLabel>Product</FormLabel>
-    <Controller
-      control={form.control}
-      name="product"
-      render={({ field }) => (
-        <Select
-          {...field}
-          isMulti
-          options={products}
-          getOptionLabel={(e) => e.label}
-          getOptionValue={(e) => e.value}
-          onChange={(selected) =>
-            field.onChange(selected.map((item) => item.value))
-          }
-          value={products
-            .flatMap(group => group.options)
-            .filter(size => field.value?.includes(size.value))
-          }
-          filterOption={(option, input) => {
-            const labelMatch = option.label.toLowerCase().includes(input.toLowerCase());
-            const groupMatch = option.data.groupLabel?.toLowerCase().includes(input.toLowerCase());
-            return labelMatch || groupMatch; // नाम या ग्रुप नाम से सर्च काम करेगा
-          }}
+    <div>
+      {/* ✅ Product Selection Dropdown */}
+      <FormItem>
+        <FormLabel>Product</FormLabel>
+        <Controller
+          control={form.control}
+          name="product_arrayjson"
+          render={({ field }) => (
+            <Select
+              {...field}
+              isMulti
+              options={availableProducts}
+              getOptionLabel={(e) => `${e.label} (${e.label})`}
+              getOptionValue={(e) => e.value}
+              onChange={handleProductChange}
+              value={selectedProducts.map((p) => ({
+                value: p.product_id,
+                label: p.product_name,
+              }))}
+              filterOption={(option, input) => option.data.label?.toLowerCase().includes(input.toLowerCase())}
+              menuPlacement="auto"
+            />
+          )}
         />
+        <FormMessage />
+      </FormItem>
+
+      {/* ✅ Selected Products List */}
+      {selectedProducts.length > 0 && (
+        <div className="mt-4 border p-3 rounded">
+          <h3 className="font-semibold mb-2">Selected Products</h3>
+          {selectedProducts.map((product) => (
+            <div key={product.product_id} className="flex items-center justify-between mb-2 p-2 border-b">
+              <span className="text-sm">
+                <strong>Product:</strong> {product.product_name} ({product.groupLabel})
+              </span>
+              <span className="text-sm">
+                <strong>Actual Price:</strong> ${product.actual_price}
+              </span>
+              <Input
+                type="number"
+                placeholder="Enter New Price"
+                value={product.new_price}
+                onChange={(e) => handlePriceChange(product.product_id, e.target.value)}
+                className="w-24 ml-2"
+              />
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => handleDeleteProduct(product.product_id)}
+                className="ml-2"
+              >
+                <Trash size={16} />
+              </Button>
+            </div>
+          ))}
+        </div>
       )}
-    />
-    <FormMessage />
-  </FormItem>
-  
-
-
+    </div>
   );
 }

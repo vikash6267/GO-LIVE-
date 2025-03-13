@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 const accountActiveTemplate = require("../templates/accountActiveTemplate");
+=======
+const { contactUsEmail } = require("../templates/contactFormRes");
+const { customizationQueryEmail } = require("../templates/customizationQuaery");
+>>>>>>> 5be1d206dd13678d160aa4c76ed4b8461534b2c0
 const orderConfirmationTemplate = require("../templates/orderCreate");
 const orderStatusTemplate = require("../templates/orderTemlate");
 const userVerificationTemplate = require("../templates/userVerificationTemplate");
@@ -23,7 +28,7 @@ exports.orderSatusCtrl = async (req, res) => {
 
     // Send email
     await mailSender(
-      "vikasmaheshwari6267@gmail.com",
+      order.customerInfo.email,
       "Order Status Update",
       emailContent
     );
@@ -61,7 +66,7 @@ exports.orderPlacedCtrl = async (req, res) => {
 
     // Send email
     await mailSender(
-      "vikasmaheshwari6267@gmail.com",
+      order.customerInfo.email,
       "Order Placed ",
       emailContent
     );
@@ -97,8 +102,8 @@ exports.userNotificationCtrl = async (req, res) => {
 
     // Send email
     await mailSender(
-      "vikasmaheshwari6267@gmail.com",
-      "Order Placed ",
+      "sppatel@9rx.com",
+      "New User",
       emailContent
     );
 
@@ -153,4 +158,61 @@ exports.accountActivation = async (req, res) => {
 };
 
 
+exports.contactCtrl = async (req, res) => {
+  const { name, email, contact, message } = req.body;
+  try {
 
+    if (!name || !contact) {
+      return res.status(500).send({
+        message: "Plase provide all fields",
+        success: false
+      })
+    }
+
+    const emailRes = await mailSender(
+         "sppatel@9rx.com",
+      "Contact Details",
+      contactUsEmail(name, email, contact, message)
+    )
+    res.status(200).send({
+      message: "Email send successfully.Our team will contact you soon!",
+      emailRes,
+      success: true
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({
+      message: "Error in sending email",
+    })
+  }
+}
+
+
+exports.customization = async (req, res) => {
+  const { name, email, phone, selectedProducts } = req.body;
+  try {
+
+    if (!name || !phone) {
+      return res.status(500).send({
+        message: "Plase provide all fields",
+        success: false
+      })
+    }
+
+    const emailRes = await mailSender(
+         "vikasmaheshwari6267@gmail.com",
+      "Your Data send successfully",
+      customizationQueryEmail(name, email, phone, selectedProducts)
+    )
+    res.status(200).send({
+      message: "Email send successfully.Our team will contact you soon!",
+      emailRes,
+      success: true
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({
+      message: "Error in sending email",
+    })
+  }
+}

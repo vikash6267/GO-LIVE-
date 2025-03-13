@@ -22,6 +22,7 @@ import { useCart } from "@/hooks/use-cart";
 import axios from "../../../axiosconfig";
 import { InvoiceStatus, PaymentMethod } from "../invoices/types/invoice.types";
 import CreateOrderPaymentForm from "../CreateOrderPayment";
+import { pid } from "process";
 
 export interface CreateOrderFormProps {
   initialData?: Partial<OrderFormValues>;
@@ -48,7 +49,7 @@ export function CreateOrderForm({
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isCus, setIsCus] = useState<boolean>(false);
 
-  console.log(initialData);
+  console.log(cartItems);
   const [pId, setPId] = useState(
     initialData?.customerInfo.cusid || userProfile?.id || ""
   );
@@ -133,14 +134,14 @@ export function CreateOrderForm({
 
   // Load pending order items from localStorage if they exist
   useEffect(() => {
-    const pendingOrderItems = localStorage.getItem("pendingOrderItems");
+    const pendingOrderItems = localStorage.getItem("cartItems");
     if (pendingOrderItems) {
       const items = JSON.parse(pendingOrderItems);
       form.setValue("items", items);
       setOrderItems(items.map((_, index) => ({ id: index + 1 })));
       localStorage.removeItem("pendingOrderItems"); // Clear after loading
     }
-  }, [form]);
+  }, [form,cartItems]);
 
   const { validateForm } = useOrderValidation(form, onFormChange);
 
@@ -216,7 +217,7 @@ export function CreateOrderForm({
       // Prepare order data
       const orderData = {
         order_number: generateOrderId(),
-        profile_id: pId || userProfile.id,
+        profile_id: userProfile.id,
         status: data.status,
         total_amount: calculatedTotal + (isCus ? 0.5 : 0),
         shipping_cost: data.shipping?.cost || 0,
@@ -231,6 +232,7 @@ export function CreateOrderForm({
         estimated_delivery:
           data.shipping?.estimatedDelivery ||
           defaultEstimatedDelivery.toISOString(),
+          location_id:pId
       };
 
       console.log(orderData);
@@ -355,7 +357,18 @@ export function CreateOrderForm({
 
       form.reset();
       // setOrderItems([{ id: 1 }]);
-      navigate("/pharmacy/orders");
+
+      const userType = sessionStorage.getItem('userType');
+
+      if(userType.toLocaleLowerCase() === 'group'){
+        navigate("/group/orders");
+
+      }
+      if(userType.toLocaleLowerCase() === 'pharmacy'){
+        navigate("/pharmacy/orders");
+
+      }
+
       await clearCart();
     } catch (error) {
       console.error("Order creation error:", error);
@@ -379,6 +392,8 @@ export function CreateOrderForm({
 
   return (
     <>
+
+   
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <CustomerSelectionField

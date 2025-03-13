@@ -4,7 +4,7 @@ import { supabase } from "@/supabaseClient";
 export const generateOrderId = () => {
   const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
   const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  const orderId = `O${timestamp}${random}`;
+  const orderId = `9RX${timestamp}${random}`;
   console.log('Generated Order ID:', orderId);
   return orderId;
 };

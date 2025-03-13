@@ -187,13 +187,7 @@ export function OrdersList({
     }
   };
 
-  const [copiedOrderId, setCopiedOrderId] = useState<string | null>(null);
-
-  const handleCopy = (orderId: string) => {
-    navigator.clipboard.writeText(orderId);
-    setCopiedOrderId(orderId);
-    setTimeout(() => setCopiedOrderId(null), 2000);
-  };
+ 
 
   if (isLoading) {
     return (
@@ -212,139 +206,141 @@ export function OrdersList({
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          {userRole === "admin" && onOrderSelect && (
-            <TableHead className="w-[50px]">
-              <span className="sr-only">Select</span>
-            </TableHead>
-          )}
-          <TableHead className="font-semibold">Customer Name</TableHead>
-
-          <TableHead className="font-semibold">Order Date</TableHead>
-          <TableHead className="font-semibold">Total</TableHead>
-          <TableHead className="font-semibold">Status</TableHead>
-          <TableHead className="font-semibold">Payment Status</TableHead>
-          <TableHead className="font-semibold">Tracking</TableHead>
-          {userRole === "admin" && (
-            <TableHead className="font-semibold">Actions</TableHead>
-          )}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {orders.map((order) => {
-          const orderId = order.id || "";
-          // console.log(orderId)
-          return (
-            <TableRow key={orderId} className="cursor-pointer hover:bg-gray-50">
-              {userRole === "admin" && onOrderSelect && (
-                <TableCell onClick={(e) => e.stopPropagation()}>
-                  <Checkbox
-                    checked={selectedOrders.includes(orderId)}
-                    onCheckedChange={() => onOrderSelect(orderId)}
-                  />
-                </TableCell>
-              )}
-              <TableCell
-                onClick={() => onOrderClick(order)}
-                className="font-medium"
-              >
-                {order.customerInfo?.name || "N/A"}
-              </TableCell>
-
-              <TableCell>{getOrderDate(order)}</TableCell>
-              <TableCell>{formatTotal(order.total)}</TableCell>
-              <TableCell>
-                <Badge
-                  variant="secondary"
-                  className={getStatusColor(order.status || "")}
-                >
-                  {order.status.toUpperCase() || "pending"}
-                </Badge>
-              </TableCell>
-
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <Badge
-                    variant="secondary"
-                    className={getStatusColor(order?.payment_status || "")}
-                  >
-                    {order?.payment_status.toUpperCase() || "UNPAID"}
-                  </Badge>
-
-                  {order?.payment_status.toLowerCase() === "unpaid" && (
-                    <button
-                      onClick={() => {
-                        setSelectCustomerInfo(order);
-                        setModalIsOpen(true);
-                      }}
-                      className="bg-green-600 text-[14px] text-white px-5 py-1 rounded-md transition"
-                    >
-                      Pay
-                    </button>
-                  )}
-                </div>
-              </TableCell>
-
-              <TableCell>
-                {order.shipping?.trackingNumber && (
-                  <Button
-                    variant="link"
-                    className="p-0 h-auto font-normal"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      window.open(
-                        getTrackingUrl(
-                          order.shipping.method,
-                          order.shipping.trackingNumber!
-                        ),
-                        "_blank"
-                      );
-                    }}
-                  >
-                    {order.shipping.trackingNumber}
-                    <ExternalLink className="ml-1 h-3 w-3" />
-                  </Button>
-                )}
-              </TableCell>
-              {userRole === "admin" && (
-                <TableCell onClick={(e) => e.stopPropagation()}>
-                  <OrderActions
-                    order={order}
-                    onProcessOrder={async (id) => {
-                      await handleStatusChange(id, "processing");
-                    }}
-                    onShipOrder={async (id) => {
-                      await handleStatusChange(
-                        id,
-                        "shipped",
-                        order.shipping?.trackingNumber,
-                        order.shipping?.method
-                      );
-                    }}
-                    onConfirmOrder={async (id) => {
-                      await handleStatusChange(id, "pending");
-                    }}
-                    onDeleteOrder={onDeleteOrder}
-                  />
-                </TableCell>
-              )}
-            </TableRow>
-          );
-        })}
-
-        {modalIsOpen && selectCustomerInfo && (
-          <PaymentForm
-            modalIsOpen={modalIsOpen}
-            setModalIsOpen={setModalIsOpen}
-            customer={selectCustomerInfo.customerInfo}
-            amountP={selectCustomerInfo.total}
-            orderId={selectCustomerInfo.id}
-            orders={orders}
-          />
+    <Table className=" border-gray-300">
+    <TableHeader className="bg-gray-100">
+      <TableRow>
+        {userRole === "admin" && onOrderSelect && (
+          <TableHead className="w-[50px] text-center  border-gray-300">
+            <span className="sr-only">Select</span>
+          </TableHead>
         )}
-      </TableBody>
-    </Table>
+        <TableHead className="font-semibold text-center border-gray-300">
+          Customer Name
+        </TableHead>
+        <TableHead className="font-semibold text-center border-gray-300">
+          Order Date
+        </TableHead>
+        <TableHead className="font-semibold text-center border-gray-300">
+          Total
+        </TableHead>
+        <TableHead className="font-semibold text-center border-gray-300">
+          Status
+        </TableHead>
+        <TableHead className="font-semibold text-center border-gray-300">
+          Payment Status
+        </TableHead>
+        <TableHead className="font-semibold text-center border-gray-300">
+          Tracking
+        </TableHead>
+        {userRole === "admin" && (
+          <TableHead className="font-semibold text-center border-gray-300">
+            Actions
+          </TableHead>
+        )}
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {orders.map((order) => {
+        const orderId = order.id || "";
+        return (
+          <TableRow key={orderId} className="cursor-pointer hover:bg-gray-50">
+            {userRole === "admin" && onOrderSelect && (
+              <TableCell onClick={(e) => e.stopPropagation()} className="text-center border-gray-300">
+                <Checkbox
+                  checked={selectedOrders.includes(orderId)}
+                  onCheckedChange={() => onOrderSelect(orderId)}
+                />
+              </TableCell>
+            )}
+            <TableCell onClick={() => onOrderClick(order)} className="font-medium text-center border-gray-300">
+              {order.customerInfo?.name || "N/A"}
+            </TableCell>
+            <TableCell className="text-center border-gray-300">
+              {(() => {
+                const dateObj = new Date(order.date);
+                const formattedDate = dateObj.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "2-digit",
+                  year: "numeric",
+                });
+                const formattedTime = dateObj.toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                });
+                return (
+                  <>
+                    {formattedDate} <br />
+                    {formattedTime}
+                  </>
+                );
+              })()}
+            </TableCell>
+            <TableCell className="text-center border-gray-300">{formatTotal(order.total)}</TableCell>
+            <TableCell className="text-center border-gray-300">
+              <Badge variant="secondary" className={getStatusColor(order.status || "")}>
+                {order.status.toUpperCase() || "pending"}
+              </Badge>
+            </TableCell>
+            <TableCell className="text-center border-gray-300">
+              <div className="flex items-center justify-center gap-2">
+                <Badge variant="secondary" className={getStatusColor(order?.payment_status || "")}>
+                  {order?.payment_status.toUpperCase() || "UNPAID"}
+                </Badge>
+                {order?.payment_status.toLowerCase() === "unpaid" && (
+                  <button
+                    onClick={() => {
+                      setSelectCustomerInfo(order);
+                      setModalIsOpen(true);
+                    }}
+                    className="bg-green-600 text-[14px] text-white px-5 py-1 rounded-md transition"
+                  >
+                    Pay
+                  </button>
+                )}
+              </div>
+            </TableCell>
+            <TableCell className="text-center border-gray-300">
+              {order.shipping?.trackingNumber && (
+                <Button
+                  variant="link"
+                  className="p-0 h-auto font-normal"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    window.open(
+                      getTrackingUrl(order.shipping.method, order.shipping.trackingNumber!),
+                      "_blank"
+                    );
+                  }}
+                >
+                  {order.shipping.trackingNumber}
+                  <ExternalLink className="ml-1 h-3 w-3" />
+                </Button>
+              )}
+            </TableCell>
+            {userRole === "admin" && (
+              <TableCell onClick={(e) => e.stopPropagation()} className="text-center border-gray-300">
+                <OrderActions
+                  order={order}
+                  onProcessOrder={async (id) => {
+                    await handleStatusChange(id, "processing");
+                  }}
+                  onShipOrder={async (id) => {
+                    await handleStatusChange(id, "shipped", order.shipping?.trackingNumber, order.shipping?.method);
+                  }}
+                  onConfirmOrder={async (id) => {
+                    await handleStatusChange(id, "pending");
+                  }}
+                  onDeleteOrder={onDeleteOrder}
+                />
+              </TableCell>
+            )}
+          </TableRow>
+        );
+      })}
+    </TableBody>
+  </Table>
+  
+  
   );
 }

@@ -351,6 +351,7 @@ export type Database = {
         Row: {
           contact_email: string | null;
           contact_phone: string | null;
+          
           created_at: string | null;
           id: string;
           manager: string | null;

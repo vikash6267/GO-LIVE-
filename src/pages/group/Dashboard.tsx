@@ -15,17 +15,16 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const fetchCustomerLocation = async (userId) => {
   try {
-    console.log(userId)
     const { data, error } = await supabase
-      .from("profiles")
+      .from("locations")
       .select("*")
-      .eq("group_id", userId);
+      .eq("profile_id", userId);
 
     if (error) {
       console.error("Failed to fetch customer information:", error);
       throw new Error("Failed to fetch customer information: " + error.message);
     }
-console.log(data)
+
     if (!data || data.length === 0) {
       throw new Error("No customer information found.");
     }
@@ -38,6 +37,8 @@ console.log(data)
     return null;
   }
 };
+
+
 const GroupDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddPharmacyOpen, setIsAddPharmacyOpen] = useState(false);
@@ -92,66 +93,54 @@ const GroupDashboard = () => {
 
 
 
-
+ 
   
 
   const fetchLocations = async () => {
     if (!userProfile?.id) return; // Agar ID nahi hai to return kar do
-  
     try {
       const res = await fetchCustomerLocation(userProfile.id);
       if (!res) return;
-  
-      // Map ko async function banana padega
-      const formatLocations = async (data) => {
-        return Promise.all(data.map(async (location, index) => {
-          const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-          const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).toISOString();
-  
-          // ✅ Supabase se orders count fetch karo
-          const { count, error } = await supabase
-            .from("orders")
-            .select("*", { count: "exact", head: true })
-            .eq("profile_id", location.id)
-            .gte("created_at", startOfMonth)
-            .lte("created_at", endOfMonth);
-  
-          if (error) {
-            console.error("Error fetching count:", error);
-          }
-  
-          return {
-            id: location.id || index + 1,
-            name: location.display_name?.trim() ? location.display_name : `Location ${index + 1}`,
-            address: `${location.billing_address?.street1?.trim() ? location.billing_address.street1 : "N/A"}, 
-                      ${location.billing_address?.city?.trim() ? location.billing_address.city : "N/A"} 
-                      ${location.billing_address?.zip_code?.trim() ? location.billing_address.zip_code : "N/A"}`,
-            countryRegion: location.countryRegion || "N/A",
-            phone: location.phone || "N/A",
-            faxNumber: location.faxNumber || "N/A",
-            contact_email: location.email || "N/A",
-            contact_phone: location.mobile_phone || "N/A",
-            created_at: location.created_at ? new Date(location.created_at).toISOString() : "N/A",
-            updated_at: location.updated_at ? new Date(location.updated_at).toISOString() : "N/A",
-            profile_id: location.profile_id || "N/A",
-            type: location.type || "N/A",
-            status: location.status || "pending",
-            manager: location?.locations?.find(item => item.manager)?.manager || "N/A",
-            ordersThisMonth: count || 0 // Agar count undefined ho to 0 set karna
-          };
+
+      const formatLocations = (data) => {
+        return data.map((location, index) => ({
+          id: location.id || index + 1,
+          name: location.name?.trim() ? location.name : `Location ${index + 1}`, // Agar name undefined ya empty ho to default set karega
+          address: `${
+            location.address?.street1?.trim() ? location.address.street1 : "N/A"
+          }, ${
+            location.address?.city?.trim() ? location.address.city : "N/A"
+          } ${
+            location.address?.zip_code?.trim() ? location.address.zip_code : "N/A"
+          }`
+          
+          ,
+          countryRegion: location.countryRegion || "N/A",
+          phone: location.phone || "N/A",
+          faxNumber: location.faxNumber || "N/A",
+          contact_email: location.contact_email || "N/A",
+          contact_phone: location.contact_phone || "N/A",
+          created_at: location.created_at ? new Date(location.created_at).toISOString() : "N/A",
+          updated_at: location.updated_at ? new Date(location.updated_at).toISOString() : "N/A",
+          profile_id: location.profile_id || "N/A",
+          type: location.type || "N/A",
+          status: location.status || "pending",
+          manager: location.manager || "N/A",
+          ordersThisMonth: Math.floor(Math.random() * 100), // Dummy data
         }));
       };
-  
-      const formattedLocations = await formatLocations(res);
+      
+      
+
+      const formattedLocations = formatLocations(res);
       console.log("Formatted Locations:", formattedLocations);
-  
+
       setDbLocations(formattedLocations);
       console.log("User Profile:", userProfile);
     } catch (error) {
       console.error("Error fetching locations:", error);
     }
   };
-  
 
 
   useEffect(() => {

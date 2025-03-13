@@ -12,8 +12,9 @@ interface ProductSizeOptionsProps {
   onSizeSelect?: (sizeId: string[]) => void;
   onSizeSelectSKU?: (sizeId: string[]) => void;
   quantity: { [key: string]: number };
-  onIncreaseQuantity: (id:string) => void; // No sizeId required
-  onDecreaseQuantity: (id:string) => void; // No sizeId required
+  onIncreaseQuantity: (id: string) => void; // No sizeId required
+  onDecreaseQuantity: (id: string) => void; // No sizeId required
+  
 }
 
 export const ProductSizeOptions = ({
@@ -75,7 +76,7 @@ export const ProductSizeOptions = ({
   return (
     <div className="space-y-3">
       {product.sizes.map((size, index) => {
-       console.log(size)
+        console.log(size)
         const sizeId = `${size.size_value}-${size.size_unit}`;
         const sizeSKU = `${size.sku} - ${size.id}` || "";
         const totalPrice = size.price * quantity[size.id] || size.price; // Using single quantity
@@ -89,7 +90,7 @@ export const ProductSizeOptions = ({
                 onCheckedChange={() => {
                   handleSizeToggle(sizeId);
                   handleSizeToggleSKU(sizeSKU)
-                  
+
                 }}
               />
               <Label
@@ -104,15 +105,15 @@ export const ProductSizeOptions = ({
 
 
                     <div className="flex items-center space-x-2">
-  {size.originalPrice > 0 && (
-    <p className="text-lg font-medium text-red-500 relative discount-price">
-      <span className="line-through discount-line">${formatPrice(size.originalPrice)}</span>
-    </p>
-  )}
-  <p className="text-xl font-bold text-green-600 final-price">
-    ${formatPrice(totalPrice)}
-  </p>
-</div>
+                      {size.originalPrice > 0 && (
+                        <p className="text-lg font-medium text-red-500 relative discount-price">
+                          <span className="line-through discount-line">${formatPrice(size.originalPrice)}</span>
+                        </p>
+                      )}
+                      <p className="text-xl font-bold text-green-600 final-price">
+                        ${formatPrice(totalPrice)}
+                      </p>
+                    </div>
 
 
 
@@ -120,7 +121,12 @@ export const ProductSizeOptions = ({
 
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {size.quantity_per_case} Units per case
+                    {size.quantity_per_case} {" "}
+                    {
+
+                      product.name === "LIQUID OVAL ADAPTERS" ? "Bottel Per Case" : product.name === "OINTMENT JARS" ? "Jar's And Caps In One Case" : product.name === "RX VIALS" ? "Vials And Caps In One Case" : product.name === "RX LABELS" ? `Labels Per Roll , ${size.rolls_per_case} Roll Per Case` : "Units per case"
+                    }
+
                   </div>
                 </div>
               </Label>
@@ -130,7 +136,7 @@ export const ProductSizeOptions = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={()=>onDecreaseQuantity(size.id)} // Fixed function execution
+                  onClick={() => onDecreaseQuantity(size.id)} // Fixed function execution
                   disabled={quantity[size.id] <= 1}
                 >
                   -
@@ -139,7 +145,7 @@ export const ProductSizeOptions = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={()=>onIncreaseQuantity(size?.id)} // Fixed function execution
+                  onClick={() => onIncreaseQuantity(size?.id)} // Fixed function execution
                 >
                   +
                 </Button>

@@ -19,6 +19,8 @@ import { CreateOrderForm } from "./CreateOrderForm";
 import { useState, useEffect } from "react";
 import { supabase } from "@/supabaseClient";
 import { generateOrderId } from "./utils/orderUtils";
+import ProductShowcase from "../pharmacy/ProductShowcase";
+import { useLocation } from "react-router-dom";
 
 interface OrdersContainerProps {
   userRole?: "admin" | "pharmacy" | "group" | "hospital";
@@ -36,7 +38,11 @@ export const OrdersContainer = ({
   onDeleteOrder,
 }: OrdersContainerProps) => {
   const { toast } = useToast();
-  const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  
+  const createOrder = location.state?.createOrder || false;
+  const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(createOrder);
 
   const {
     orders,
@@ -109,32 +115,65 @@ export const OrdersContainer = ({
           onDateChange={setDateRange}
           onExport={() => console.log("Export functionality to be implemented")}
         />
-        {userRole === "admin" && (
-          <Sheet open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>
-            <SheetTrigger asChild>
-              <Button>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Create Order
-              </Button>
-            </SheetTrigger>
-            <SheetContent
-              side="right"
-              className="w-[90vw] sm:max-w-[640px] overflow-y-auto"
-            >
-              <SheetHeader>
-                <SheetTitle>Create New Order</SheetTitle>
-              </SheetHeader>
-              <div className="mt-4">
-                <CreateOrderForm
-                  onFormChange={(data) => console.log("Form changed:", data)}
-                  isEditing={false}
-                />
-              </div>
-            </SheetContent>
-          </Sheet>
-        )}
+    {userRole === "admin" && (
+  <>
+    <Sheet open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>
+      <SheetTrigger asChild>
+        <Button>
+          <PlusCircle className="mr-2 h-4 w-4" />
+          Create Order
+        </Button>
+      </SheetTrigger>
+      <SheetContent
+        side="right"
+        className="w-[90vw] sm:max-w-[640px] overflow-y-auto"
+      >
+        <SheetHeader>
+          <SheetTitle>Create New Order</SheetTitle>
+        </SheetHeader>
+
+        <div className="mt-4">
+          <CreateOrderForm
+            onFormChange={(data) => console.log("Form changed:", data)}
+            isEditing={false}
+          />
+        </div>
+      </SheetContent>
+    </Sheet>
+
+    {/* Move the Show Products button outside of SheetTrigger */}
+    <button
+      onClick={() => setIsOpen(true)}
+      className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
+    >
+       Add to Cart Product
+    </button>
+  </>
+)}
+
       </div>
 
+
+
+      {/* Popup Modal */}
+      {isOpen && (
+        <div className="fixed -inset-4 flex items-center justify-center bg-black bg-opacity-50 h-screen z-[50]">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] md:w-[50%] relative h-[80vh] overflow-y-scroll">
+            {/* Close Button */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="absolute top-3 right-3 text-gray-600 hover:text-black text-lg"
+            >
+              ✖
+            </button>
+
+            {/* Modal Content */}
+            
+            <ProductShowcase groupShow={true} />
+          </div>
+        </div>
+      )}
+ 
       <StatusFilter value={statusFilter} onValueChange={setStatusFilter} />
 
       <OrdersList

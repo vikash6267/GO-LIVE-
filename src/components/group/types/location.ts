@@ -5,9 +5,10 @@ export interface Location {
   status: "active" | "inactive";
   ordersThisMonth: number;
   lastActive: string;
-  manager: string;
+  manager?: string;
   phone?: string;
    contact_email?: string;
   contact_phone?: string;
+
   email?: string;
 }

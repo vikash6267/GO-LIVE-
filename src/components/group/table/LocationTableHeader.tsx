@@ -4,7 +4,7 @@ import { Building2, MapPin, User, ShoppingCart, Clock } from "lucide-react";
 export function LocationTableHeader() {
   return (
     <TableHeader>
-      <TableRow className="sticky top-0 bg-white z-10">
+      <TableRow className="sticky top-0 bg-white z-10  ">
         <TableHead className="bg-white">
           <div className="flex items-center gap-2">
             <Building2 className="h-4 w-4" />
@@ -17,7 +17,7 @@ export function LocationTableHeader() {
             Address
           </div>
         </TableHead>
-        <TableHead className="bg-white">Status</TableHead>
+        {/* <TableHead className="bg-white">Status</TableHead> */}
         <TableHead className="bg-white">
           <div className="flex items-center gap-2">
             <User className="h-4 w-4" />

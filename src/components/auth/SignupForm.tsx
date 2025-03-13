@@ -103,8 +103,17 @@ export const SignupForm = () => {
       }
 
 
-      const response = await axios.post("/user-verification", {name:`${formData.firstName} ${formData.lastName}` , email:formData.email});
-
+      try {
+        const response = await axios.post("/user-verification", {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+        });
+      
+        console.log("Verification Successful:", response.data);
+      } catch (error) {
+        console.error("Error in user verification:", error.response?.data || error.message);
+      }
+      
       console.log("Profile created successfully");
       toast({
         title: "Account Created",

@@ -6,7 +6,7 @@ const ProductCategories = () => {
   const navigate = useNavigate();
 
   return (
-    <section className="py-16 sm:py-20 md:py-24 bg-gradient-to-b from-white to-emerald-50">
+    <section className=" bg-gradient-to-b from-white to-emerald-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12 sm:mb-16">
           <span className="text-emerald-600 font-semibold tracking-wider uppercase text-sm">
@@ -25,25 +25,25 @@ const ProductCategories = () => {
           <ProductCard
             imageSrc="/lovable-uploads/e9408ea3-9050-4323-a89d-40caa8f41d24.png"
             title="RX VIALS"
-            description="Premium prescription vials and containers in various sizes for secure medication dispensing"
+            description="Premium prescription vials and containers in various sizes for secure medication dispensing."
             price="Starting from $27/case"
           />
           <ProductCard
             imageSrc="/LIQUID.png"
-            title="LIQUID OVAL "
-            description="Our Oral Syringes ensure accurate, Safe dosing of Liquid Medications, Ideal for Pharmacies and Patients."
+            title="LIQUID BOTTELS"
+            description="Our liquid ovals with child-resistant (CR) caps offer a secure and convenient solution for storing and dispensing liquid medications."
             price="Starting from $29/case"
           />
           <ProductCard
             imageSrc="/922.png"
             title="RX LABELS"
-            description="High-quality prescription labels in various sizes and formats for all pharmacy needs"
+            description="High-quality prescription labels in various sizes and formats for all pharmacy needs."
             price="Starting from $10/Roll"
           />
           <ProductCard
             imageSrc="/rxpaper.png"
             title="RX PAPER BAGS"
-            description="Premium prescription paper bags for pharmacies, available in various sizes and styles"
+            description="Premium prescription paper bags for pharmacies, available in various sizes and styles."
             price="Starting from $55/case"
           />
         </div>
@@ -53,7 +53,7 @@ const ProductCategories = () => {
             onClick={() =>
               navigate("/login", { state: { defaultTab: "signup" } })
             }
-            className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white px-6 sm:px-8 py-5 sm:py-6 h-auto text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white  h-auto text-base sm:text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
           >
             Sign Up Now
           </Button>

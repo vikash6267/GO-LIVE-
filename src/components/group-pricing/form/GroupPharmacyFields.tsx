@@ -33,26 +33,7 @@ export function GroupPharmacyFields({ form, groups, pharmacies }: GroupPharmacyF
         )}
       />
 
-      {/* Multi-select for Pharmacies */}
-      {/* <FormField
-        control={form.control}
-        name="pharmacy"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Pharmacy (Optional)</FormLabel>
-            <FormControl>
-              <Select
-                isMulti
-                options={pharmacies.map((pharmacy) => ({ value: pharmacy.id, label: pharmacy.name }))}
-                value={pharmacies.filter((pharmacy) => field.value?.includes(pharmacy.id)).map((pharmacy) => ({ value: pharmacy.id, label: pharmacy.name }))}
-                onChange={(selectedOptions) => field.onChange(selectedOptions.map((option) => option.value))}
-                placeholder="Select pharmacies"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      /> */}
+     
     </>
   );
 }

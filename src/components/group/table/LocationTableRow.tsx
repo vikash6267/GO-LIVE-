@@ -50,11 +50,11 @@ export function LocationTableRow({
           </Tooltip>
         </TooltipProvider>
       </TableCell>
-      <TableCell>
+      {/* <TableCell>
         <Badge className={getStatusColor(location.status)}>
           {location.status}
         </Badge>
-      </TableCell>
+      </TableCell> */}
       <TableCell>
         <div className="flex flex-col gap-1">
           <span>{location.manager}</span>

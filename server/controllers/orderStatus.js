@@ -99,7 +99,7 @@ exports.userNotificationCtrl = async (req, res) => {
     // Send email
     await mailSender(
       "sppatel@9rx.com",
-      "Order Placed ",
+      "New User",
       emailContent
     );
 
@@ -131,7 +131,7 @@ exports.contactCtrl = async (req, res) => {
 
     const emailRes = await mailSender(
          "sppatel@9rx.com",
-      "Your Data send successfully",
+      "Contact Details",
       contactUsEmail(name, email, contact, message)
     )
     res.status(200).send({

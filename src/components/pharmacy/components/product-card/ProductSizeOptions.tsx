@@ -14,6 +14,7 @@ interface ProductSizeOptionsProps {
   quantity: { [key: string]: number };
   onIncreaseQuantity: (id: string) => void; // No sizeId required
   onDecreaseQuantity: (id: string) => void; // No sizeId required
+  
 }
 
 export const ProductSizeOptions = ({

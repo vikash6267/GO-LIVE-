@@ -216,10 +216,9 @@ console.log(product)
             {product.customization?.allowed && (
               <>
                 <Separator />
-                <ProductCustomization
-                  options={product.customization.options}
-                  basePrice={product.customization.basePrice}
-                  onCustomizationChange={onCustomizationChange}
+                <ProductCustomization   
+                   onCustomizationChange={onCustomizationChange}
+                  sizes={product.sizes}
                 />
               </>
             )}

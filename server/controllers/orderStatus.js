@@ -1,4 +1,5 @@
 const { contactUsEmail } = require("../templates/contactFormRes");
+const { customizationQueryEmail } = require("../templates/customizationQuaery");
 const orderConfirmationTemplate = require("../templates/orderCreate");
 const orderStatusTemplate = require("../templates/orderTemlate");
 const userVerificationTemplate = require("../templates/userVerificationTemplate");
@@ -132,6 +133,36 @@ exports.contactCtrl = async (req, res) => {
          "sppatel@9rx.com",
       "Your Data send successfully",
       contactUsEmail(name, email, contact, message)
+    )
+    res.status(200).send({
+      message: "Email send successfully.Our team will contact you soon!",
+      emailRes,
+      success: true
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({
+      message: "Error in sending email",
+    })
+  }
+}
+
+
+exports.customization = async (req, res) => {
+  const { name, email, phone, selectedProducts } = req.body;
+  try {
+
+    if (!name || !phone) {
+      return res.status(500).send({
+        message: "Plase provide all fields",
+        success: false
+      })
+    }
+
+    const emailRes = await mailSender(
+         "vikasmaheshwari6267@gmail.com",
+      "Your Data send successfully",
+      customizationQueryEmail(name, email, phone, selectedProducts)
     )
     res.status(200).send({
       message: "Email send successfully.Our team will contact you soon!",

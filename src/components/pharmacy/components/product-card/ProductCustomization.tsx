@@ -10,7 +10,8 @@ import { Switch } from "@/components/ui/switch";
 interface ProductCustomizationProps {
   options?: CustomizationOption[];
   basePrice?: number;
-  onCustomizationChange?: (customizations: { customizations: Record<string, string>, totalPrice: number }) => void;
+  onCustomizationChange: (customizations: Record<string, string>) => void;
+
 }
 
 export const ProductCustomization = ({ 
@@ -22,23 +23,20 @@ export const ProductCustomization = ({
   const [customizationEnabled, setCustomizationEnabled] = useState(false);
 
 
-  const handleCustomizationChange = (optionLabel: string, value: string) => {
-    const newCustomizations = {
-      ...customizations,
-      [optionLabel]: value
-    };
-    setCustomizations(newCustomizations);
-    
-    const totalPrice = customizationEnabled ? basePrice : 0;
-    onCustomizationChange?.({ customizations: newCustomizations, totalPrice });
-  };
+ 
 
   const handleToggleChange = (checked: boolean) => {
     setCustomizationEnabled(checked);
     const totalPrice = checked ? basePrice : 0;
-    onCustomizationChange?.({ customizations, totalPrice });
-    console.log(totalPrice)
+  
+    const customizationNew: Record<string, string> = {
+      availble: checked ? "yes" : "no"
+    };
+  
+    onCustomizationChange(customizationNew);
+    console.log(totalPrice);
   };
+  
 
   return (
     <div className="space-y-4">

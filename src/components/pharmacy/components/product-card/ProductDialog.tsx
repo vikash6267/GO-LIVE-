@@ -219,7 +219,7 @@ console.log(product)
                 <ProductCustomization
                   options={product.customization.options}
                   basePrice={product.customization.basePrice}
-
+                  onCustomizationChange={onCustomizationChange}
                 />
               </>
             )}

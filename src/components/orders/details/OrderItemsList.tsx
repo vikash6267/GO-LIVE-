@@ -14,7 +14,7 @@ export function OrderItemsList({ items }: OrderItemsListProps) {
           <div key={index} className="border p-4 rounded shadow">
             <p className="font-medium">🛒 Product: {item.name}</p>
             <p>
-                      <strong>Customizations:</strong> {item.customizations?.totalPrice > 0 ? "Yes" : "No"}
+                      <strong>Customizations:</strong> {item.customizations?.availble ==="yes" ? "Yes" : "No"}
                     </p>
             {/* <p className="font-medium"> Order ID: {item.id}</p> */}
 

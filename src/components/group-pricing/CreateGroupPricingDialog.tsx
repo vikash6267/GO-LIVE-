@@ -319,7 +319,7 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
                   <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 ">
                     <BasicInfoFields form={form} />
                     <ProductSelection form={form} products={productsSizes} />
-                    <DiscountFields form={form} />
+                    {/* <DiscountFields form={form} /> */}
                     {/* <QuantityFields form={form} /> */}
                     <GroupPharmacyFields
                       form={form}

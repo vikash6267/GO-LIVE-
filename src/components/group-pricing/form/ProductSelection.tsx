@@ -56,12 +56,15 @@ export function ProductSelection({ form, products }: ProductSelectionProps) {
   };
 
   // ✅ Flatten available products for Select dropdown
-  const availableProducts = products.flatMap((group) =>
-    group.options.map((option) => ({
+  const availableProducts = products.map(group => ({
+    label: group.label, // ग्रुप का नाम
+    options: group.options.map(option => ({
       ...option,
-      groupLabel: group.label,
+      label: `${option.label} (${group.label})`, // प्रोडक्ट के नाम के साथ ग्रुप नाम जोड़ना
+      value: option.value
     }))
-  );
+  }));
+  
 
   return (
     <div>
@@ -73,19 +76,23 @@ export function ProductSelection({ form, products }: ProductSelectionProps) {
           name="product_arrayjson"
           render={({ field }) => (
             <Select
-              {...field}
-              isMulti
-              options={availableProducts}
-              getOptionLabel={(e) => `${e.label} (${e.label})`}
-              getOptionValue={(e) => e.value}
-              onChange={handleProductChange}
-              value={selectedProducts.map((p) => ({
-                value: p.product_id,
-                label: p.product_name,
-              }))}
-              filterOption={(option, input) => option.data.label?.toLowerCase().includes(input.toLowerCase())}
-              menuPlacement="auto"
-            />
+            {...field}
+            isMulti
+            options={availableProducts} // ✅ Proper grouped options
+            getOptionLabel={(e) => `${e.label}`} // ❌ गलत दोहराव हटा दिया
+            getOptionValue={(e) => e.value}
+            onChange={handleProductChange}
+            value={selectedProducts.map((p) => ({
+              value: p.product_id,
+              label: `${p.product_name} `, // सही तरीके से groupLabel दिखाना
+            }))}
+            filterOption={(option, input) =>
+              option.data.label?.toLowerCase().includes(input.toLowerCase())
+            }
+            menuPlacement="auto"
+          />
+          
+          
           )}
         />
         <FormMessage />
@@ -98,7 +105,7 @@ export function ProductSelection({ form, products }: ProductSelectionProps) {
           {selectedProducts.map((product) => (
             <div key={product.product_id} className="flex items-center justify-between mb-2 p-2 border-b">
               <span className="text-sm">
-                <strong>Product:</strong> {product.product_name} ({product.groupLabel})
+                <strong>Product:</strong> {product.product_name} 
               </span>
               <span className="text-sm">
                 <strong>Actual Price:</strong> ${product.actual_price}

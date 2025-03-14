@@ -290,6 +290,7 @@ export function OrdersList({
                 {order?.payment_status.toLowerCase() === "unpaid" && (
                   <button
                     onClick={() => {
+                      console.log("Cliced")
                       setSelectCustomerInfo(order);
                       setModalIsOpen(true);
                     }}
@@ -338,6 +339,18 @@ export function OrdersList({
           </TableRow>
         );
       })}
+
+
+{modalIsOpen && selectCustomerInfo && (
+          <PaymentForm
+            modalIsOpen={modalIsOpen}
+            setModalIsOpen={setModalIsOpen}
+            customer={selectCustomerInfo.customerInfo}
+            amountP={selectCustomerInfo.total}
+            orderId={selectCustomerInfo.id}
+            orders={orders}
+          />
+        )}
     </TableBody>
   </Table>
   

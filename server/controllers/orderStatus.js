@@ -1,9 +1,7 @@
-<<<<<<< HEAD
+
 const accountActiveTemplate = require("../templates/accountActiveTemplate");
-=======
 const { contactUsEmail } = require("../templates/contactFormRes");
 const { customizationQueryEmail } = require("../templates/customizationQuaery");
->>>>>>> 5be1d206dd13678d160aa4c76ed4b8461534b2c0
 const orderConfirmationTemplate = require("../templates/orderCreate");
 const orderStatusTemplate = require("../templates/orderTemlate");
 const userVerificationTemplate = require("../templates/userVerificationTemplate");
@@ -120,6 +118,8 @@ exports.userNotificationCtrl = async (req, res) => {
     });
   }
 };
+
+
 exports.accountActivation = async (req, res) => {
   try {
     const { name, email } = req.body;

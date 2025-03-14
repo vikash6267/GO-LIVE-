@@ -32,6 +32,7 @@ import { useEffect } from "react";
 import { useToast } from "./hooks/use-toast";
 import { useAuthCheck } from "./useAuthCheck";
 import GroupProducts from "./pages/group/GroupProduct";
+import ActivationUser from "./components/ActiovationUser";
 
 
 // Protected route wrapper component
@@ -75,6 +76,7 @@ function App() {
       {/* Public routes */}
       <Route path="/" element={<Index />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/activation" element={<ActivationUser />} />
       <Route path="/products" element={<Products />} />
       
       {/* Admin Routes */}

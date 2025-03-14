@@ -16,11 +16,10 @@ app.use(express.urlencoded({ limit: "500mb", extended: true }));
 const cookieParser = require("cookie-parser");
 
 const logger = require("morgan");
-<<<<<<< HEAD
-const { orderSatusCtrl, orderPlacedCtrl, userNotificationCtrl, accountActivation } = require("./controllers/orderStatus");
-=======
-const { orderSatusCtrl, orderPlacedCtrl, userNotificationCtrl, contactCtrl, customization } = require("./controllers/orderStatus");
->>>>>>> 5be1d206dd13678d160aa4c76ed4b8461534b2c0
+
+
+const { orderSatusCtrl, orderPlacedCtrl, userNotificationCtrl, contactCtrl, customization, accountActivation } = require("./controllers/orderStatus");
+
 app.use(logger("dev"));
 
 app.use(cookieParser());
@@ -292,13 +291,11 @@ app.post("/pay", async (req, res) => {
 app.post("/order-status", orderSatusCtrl)
 app.post("/order-place", orderPlacedCtrl)
 app.post("/user-verification", userNotificationCtrl)
-<<<<<<< HEAD
+
 app.post("/active", accountActivation)
-=======
+
 app.post("/contact", contactCtrl)
 app.post("/customization", customization)
->>>>>>> 5be1d206dd13678d160aa4c76ed4b8461534b2c0
-
 
 
 

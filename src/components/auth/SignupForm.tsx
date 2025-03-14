@@ -130,7 +130,8 @@ export const SignupForm = () => {
         phone: "",
       });
 
-      // navigate("/login", { state: { defaultTab: "login" } });
+      navigate("/login", { state: { defaultTab: "login" } });
+      
       window.location.reload();
     } catch (error: any) {
       // console.error("Detailed signup error:", error);

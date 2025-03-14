@@ -1,6 +1,7 @@
 import { supabase } from "@/supabaseClient";
 import { BaseUserFormData } from "../../schemas/sharedFormSchema";
 import { toast } from "@/hooks/use-toast";
+import axios from '../../../../../axiosconfig'
 
 export const fetchUserProfile = async (userId: string) => {
   console.log("Fetching user data for ID:", userId);
@@ -105,6 +106,20 @@ export const updateUserProfile = async (
       throw new Error(`Database error: ${error.message}`);
     }
 
+console.log(data)
+if(profileData.status==="active"){
+  try {
+    const response = await axios.post("/active", {
+      name: `${data.first_name} ${data.last_name}`,
+      email: data.email,
+    });
+  
+    console.log("Verification Successful:", response.data);
+  } catch (error) {
+    console.error("Error in user verification:", error.response?.data || error.message);
+  }
+}
+  
     // // ❌ STEP 1: Delete old locations
 
     // console.log("hello this is location updatation code")

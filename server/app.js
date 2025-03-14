@@ -16,7 +16,11 @@ app.use(express.urlencoded({ limit: "500mb", extended: true }));
 const cookieParser = require("cookie-parser");
 
 const logger = require("morgan");
+<<<<<<< HEAD
+const { orderSatusCtrl, orderPlacedCtrl, userNotificationCtrl, accountActivation } = require("./controllers/orderStatus");
+=======
 const { orderSatusCtrl, orderPlacedCtrl, userNotificationCtrl, contactCtrl, customization } = require("./controllers/orderStatus");
+>>>>>>> 5be1d206dd13678d160aa4c76ed4b8461534b2c0
 app.use(logger("dev"));
 
 app.use(cookieParser());
@@ -58,46 +62,46 @@ function createMerchantAuthenticationType() {
 
 app.post("/pay", async (req, res) => {
   try {
-    
-      // Destructure request body
-      const {
-       
-        amount: rawAmount,
-        cardNumber,
-        expirationDate,
-        cvv,
-        cardholderName,
-        address,
-        city,
-        state,
-        zip: rawZip,
-        country
-      } = req.body;
 
-      // Convert necessary fields
-      const amount = rawAmount ? parseFloat(rawAmount) : 0; // Convert amount to number safely
-      const zip = rawZip ? parseInt(rawZip, 10) : 0; // Convert zip to number safely
-      const formattedExpirationDate = expirationDate.toString().padStart(4, '0');
+    // Destructure request body
+    const {
 
-      // Ensure cardNumber, expirationDate, and cvv remain strings
-      const parsedData = {
-  
-        amount,
-        cardNumber: cardNumber.toString(),
-        expirationDate: expirationDate.toString(),
-        cvv: cvv.toString(),
-        cardholderName,
-        address,
-        city,
-        state,
-        zip,
-        country
-      };
+      amount: rawAmount,
+      cardNumber,
+      expirationDate,
+      cvv,
+      cardholderName,
+      address,
+      city,
+      state,
+      zip: rawZip,
+      country
+    } = req.body;
 
-      console.log("parsse", parsedData);
+    // Convert necessary fields
+    const amount = rawAmount ? parseFloat(rawAmount) : 0; // Convert amount to number safely
+    const zip = rawZip ? parseInt(rawZip, 10) : 0; // Convert zip to number safely
+    const formattedExpirationDate = expirationDate.toString().padStart(4, '0');
 
-     
-   
+    // Ensure cardNumber, expirationDate, and cvv remain strings
+    const parsedData = {
+
+      amount,
+      cardNumber: cardNumber.toString(),
+      expirationDate: expirationDate.toString(),
+      cvv: cvv.toString(),
+      cardholderName,
+      address,
+      city,
+      state,
+      zip,
+      country
+    };
+
+    console.log("parsse", parsedData);
+
+
+
 
 
     console.log(req.body)
@@ -193,7 +197,7 @@ app.post("/pay", async (req, res) => {
     // Set environment
     ctrl.setEnvironment(ENVIRONMENT);
 
- await   ctrl.execute(function () {
+    await ctrl.execute(function () {
       try {
         const apiResponse = ctrl.getResponse();
         console.log(apiResponse)
@@ -217,9 +221,9 @@ app.post("/pay", async (req, res) => {
 
           if (transactionResponse && transactionResponse) {
             console.error("Payment API Error:", JSON.stringify(transactionResponse));
-        }
+          }
 
-        
+
 
           if (
             transactionResponse &&
@@ -288,8 +292,12 @@ app.post("/pay", async (req, res) => {
 app.post("/order-status", orderSatusCtrl)
 app.post("/order-place", orderPlacedCtrl)
 app.post("/user-verification", userNotificationCtrl)
+<<<<<<< HEAD
+app.post("/active", accountActivation)
+=======
 app.post("/contact", contactCtrl)
 app.post("/customization", customization)
+>>>>>>> 5be1d206dd13678d160aa4c76ed4b8461534b2c0
 
 
 

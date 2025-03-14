@@ -4,13 +4,13 @@ import AboutUsSection from "@/components/landing/AboutUsSection";
 import TrustSection from "@/components/landing/TrustSection";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Phone } from "lucide-react";
+import { Phone, ShieldQuestion } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import TestimonialsSection from "@/components/landing/TestimonialsSection";
-import axios from '../../axiosconfig'
+import axios from "../../axiosconfig";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -63,7 +63,6 @@ const Index = () => {
       });
     } finally {
       setIsLoading(false);
-
     }
   };
 
@@ -75,23 +74,31 @@ const Index = () => {
       <TrustSection />
 
       {/* Fixed Contact Button */}
-      <div className="fixed right-0 top-[30%] transform -translate-y-1/2 z-50 flex flex-col gap-4">
+      <div className="fixed right-0 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-4">
         <Button
           asChild
-          className="w-48 bg-white text-emerald-600 hover:bg-emerald-50 shadow-lg rounded-l-lg rounded-r-none transition-all duration-300 md:flex"
+          className=" w-5 absolute right-0 lg:w-48 bg-white text-emerald-600 hover:bg-emerald-50 shadow-lg rounded-l-lg rounded-r-none transition-all duration-300  md:flex"
         >
-          <a href="tel:+18009696295" className="flex items-center justify-center gap-2">
+          <a
+            href="tel:+18009696295"
+            className="flex items-center justify-center gap-2"
+          >
             <Phone className="w-5 h-5 text-emerald-600 animate-pulse" />
-            <span>1-800-9RX-HELP</span>
+            <span className="hidden md:block">1-800-9RX-HELP</span>
           </a>
         </Button>
+        <br />
 
         {/* Inquiry Form Toggle Button */}
         <Button
           onClick={() => setShowForm(!showForm)}
-          className="w-48 bg-emerald-600 text-white rounded-l-lg rounded-r-none hover:bg-emerald-700 transition-all duration-300 md:block"
+          className="w-5 lg:w-48 bg-emerald-600 text-white rounded-l-lg rounded-r-none hover:bg-emerald-700 transition-all duration-300  md:block"
         >
-          Quick Inquiry
+          <span className="hidden lg:block">Quick Inquiry</span>
+          <span className="block lg:hidden">
+            {" "}
+            <ShieldQuestion />
+          </span>
         </Button>
 
         {/* Floating Inquiry Form */}
@@ -146,13 +153,24 @@ const Index = () => {
           </div>
         )}
       </div>
-
-
-
     </div>
   );
 };
 
-
+const FooterColumn = ({ title, items }: { title: string; items: string[] }) => (
+  <div>
+    <h4 className="text-white font-bold mb-4 md:mb-6">{title}</h4>
+    <ul className="space-y-2 md:space-y-3">
+      {items.map((item, index) => (
+        <li
+          key={index}
+          className="text-gray-400 hover:text-white transition-colors duration-300 cursor-pointer text-sm md:text-base"
+        >
+          {item}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
 export default Index;

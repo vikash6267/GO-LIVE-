@@ -1,5 +1,9 @@
+<<<<<<< HEAD
+const accountActiveTemplate = require("../templates/accountActiveTemplate");
+=======
 const { contactUsEmail } = require("../templates/contactFormRes");
 const { customizationQueryEmail } = require("../templates/customizationQuaery");
+>>>>>>> 5be1d206dd13678d160aa4c76ed4b8461534b2c0
 const orderConfirmationTemplate = require("../templates/orderCreate");
 const orderStatusTemplate = require("../templates/orderTemlate");
 const userVerificationTemplate = require("../templates/userVerificationTemplate");
@@ -99,13 +103,49 @@ exports.userNotificationCtrl = async (req, res) => {
     // Send email
     await mailSender(
       "sppatel@9rx.com",
-      "Order Placed ",
+      "New User",
       emailContent
     );
 
     return res.status(200).json({
       success: true,
       message: "Order status email sent successfully!",
+    });
+  } catch (error) {
+    console.error("Error in Order Status Controller:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong in Order Status",
+      error: error.message,
+    });
+  }
+};
+exports.accountActivation = async (req, res) => {
+  try {
+    const { name, email } = req.body;
+
+
+    // Ensure required fields are present
+    if (!name || !email) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required order details.",
+      });
+    }
+
+    // Generate email content using the template
+    const emailContent = accountActiveTemplate(name, email);
+
+    // Send email
+    await mailSender(
+      email,
+      "Your Account Active Successfully! ",
+      emailContent
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Account Active",
     });
   } catch (error) {
     console.error("Error in Order Status Controller:", error);
@@ -131,7 +171,7 @@ exports.contactCtrl = async (req, res) => {
 
     const emailRes = await mailSender(
          "sppatel@9rx.com",
-      "Your Data send successfully",
+      "Contact Details",
       contactUsEmail(name, email, contact, message)
     )
     res.status(200).send({

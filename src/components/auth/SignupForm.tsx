@@ -103,36 +103,36 @@ export const SignupForm = () => {
       }
 
 
-      // try {
-      //   const response = await axios.post("/user-verification", {
-      //     name: `${formData.firstName} ${formData.lastName}`,
-      //     email: formData.email,
-      //   });
+      try {
+        const response = await axios.post("/user-verification", {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+        });
       
-      //   console.log("Verification Successful:", response.data);
-      // } catch (error) {
-      //   console.error("Error in user verification:", error.response?.data || error.message);
-      // }
+        console.log("Verification Successful:", response.data);
+      } catch (error) {
+        console.error("Error in user verification:", error.response?.data || error.message);
+      }
       
-      // console.log("Profile created successfully");
-      // toast({
-      //   title: "Account Created",
-      //   description:
-      //     "Your account has been created successfully. Please check your email to verify your account.",
-      // });
+      console.log("Profile created successfully");
+      toast({
+        title: "Account Created",
+        description:
+          "Your account has been created successfully. Please check your email to verify your account.",
+      });
 
-      // setFormData({
-      //   email: "",
-      //   password: "",
-      //   confirmPassword: "",
-      //   firstName: "",
-      //   lastName: "",
-      //   phone: "",
-      // });
+      setFormData({
+        email: "",
+        password: "",
+        confirmPassword: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+      });
 
-      // navigate("/login", { state: { defaultTab: "login" } });
+      navigate("/login", { state: { defaultTab: "login" } });
       
-      // window.location.reload();
+      window.location.reload();
     } catch (error: any) {
       // console.error("Detailed signup error:", error);
       // console.error("Error stack trace:", error.stack);

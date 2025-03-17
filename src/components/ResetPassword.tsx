@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
-import { useSearchParams } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { Navbar } from "./landing/HeroSection"
 import { supabase } from "@/integrations/supabase/client"
 
@@ -23,6 +23,7 @@ export default function PasswordReset() {
   const { toast } = useToast()
   const [searchParams] = useSearchParams();
   const userEmail = searchParams.get("email");
+  const navigate = useNavigate();
 
   const {
     register,
@@ -60,6 +61,8 @@ export default function PasswordReset() {
         title: "Password reset successful",
         description: "Your password has been reset successfully.",
       })
+      navigate("/login", { state: { defaultTab: "login" } });
+
     } catch (error) {
       toast({
         title: "Error",

@@ -13,10 +13,12 @@ import { AddressFields } from "../AddressFields";
 
 interface AddressInformationSectionProps {
   form: UseFormReturn<BaseUserFormData>;
+  self?: boolean;
 }
 
 export function AddressInformationSection({
   form,
+  self = false
 }: AddressInformationSectionProps) {
   const sameAsShipping = form.watch("sameAsShipping");
   const billingAddress = form.watch("billingAddress");
@@ -60,48 +62,53 @@ export function AddressInformationSection({
             </FormItem>
           )}
         />
+        {!self &&
+          <>
+            <FormField
+              control={form.control}
+              name="freeShipping"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel htmlFor="free-shipping-switch" className="text-base">
+                      Free Shipping
+                    </FormLabel>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      id="free-shipping-switch"
+                      checked={field.value ?? false} // Ensure it's always a boolean
+                      onCheckedChange={field.onChange}
+                      aria-label="Enable free shipping"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="order_pay"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel htmlFor="order_pay-switch" className="text-base">
+                      Order Without Payment                </FormLabel>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      id="order_pay-switch"
+                      checked={field.value ?? false} // Ensure it's always a boolean
+                      onCheckedChange={field.onChange}
+                      aria-label="Enable free shipping"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </>
 
-        <FormField
-          control={form.control}
-          name="freeShipping"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel htmlFor="free-shipping-switch" className="text-base">
-                  Free Shipping
-                </FormLabel>
-              </div>
-              <FormControl>
-                <Switch
-                  id="free-shipping-switch"
-                  checked={field.value ?? false} // Ensure it's always a boolean
-                  onCheckedChange={field.onChange}
-                  aria-label="Enable free shipping"
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="order_pay"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel htmlFor="order_pay-switch" className="text-base">
-Order Without Payment                </FormLabel>
-              </div>
-              <FormControl>
-                <Switch
-                  id="order_pay-switch"
-                  checked={field.value ?? false} // Ensure it's always a boolean
-                  onCheckedChange={field.onChange}
-                  aria-label="Enable free shipping"
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+
+        }
 
         <AddressFields form={form} type="shipping" />
       </CardContent>

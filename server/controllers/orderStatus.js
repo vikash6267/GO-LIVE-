@@ -122,7 +122,7 @@ exports.userNotificationCtrl = async (req, res) => {
 
 exports.accountActivation = async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { name, email,admin=false } = req.body;
 
 
     // Ensure required fields are present
@@ -134,7 +134,7 @@ exports.accountActivation = async (req, res) => {
     }
 
     // Generate email content using the template
-    const emailContent = accountActiveTemplate(name, email);
+    const emailContent = accountActiveTemplate(name, email,admin);
 
     // Send email
     await mailSender(

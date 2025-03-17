@@ -12,6 +12,7 @@ interface SharedUserFormProps {
   onSubmit: (values: BaseUserFormData) => Promise<void>;
   submitLabel: string;
   isSubmitting?: boolean;
+  self?: boolean;
 }
 
 export function SharedUserForm({
@@ -19,6 +20,7 @@ export function SharedUserForm({
   onSubmit,
   submitLabel,
   isSubmitting = false,
+  self=false
 }: SharedUserFormProps) {
   const handleSubmit = async (values: BaseUserFormData) => {
     console.log(
@@ -127,7 +129,7 @@ export function SharedUserForm({
         )}
         className="space-y-6"
       >
-        <BaseUserFields form={form} />
+        <BaseUserFields form={form} self={self} />
 
         {userType === "group" && (
           <GroupUserFields form={form as UseFormReturn<any>} />

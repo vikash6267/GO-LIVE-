@@ -34,6 +34,7 @@ import { useAuthCheck } from "./useAuthCheck";
 import GroupProducts from "./pages/group/GroupProduct";
 import ActivationUser from "./components/ActiovationUser";
 import PasswordReset from "./components/ResetPassword";
+import UserSelfDetails from "./components/UserSelfDetails";
 
 
 // Protected route wrapper component
@@ -78,6 +79,7 @@ function App() {
       <Route path="/" element={<Index />} />
       <Route path="/login" element={<Login />} />
       <Route path="/activation" element={<ActivationUser />} />
+      <Route path="/update-profile" element={<UserSelfDetails />} />
       <Route path="/reset-password" element={<PasswordReset />} />
       <Route path="/products" element={<Products />} />
       

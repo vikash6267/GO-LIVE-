@@ -59,7 +59,7 @@ const HeroSection = () => {
     <div className="relative">
       {/* Navigation Bar */}
   
-
+<Navbar />
       {/* Hero Section */}
       <section className="min-h-[90vh] flex items-center pt-16 sm:pt-20 relative overflow-hidden">
         <div className="absolute inset-0 z-0">

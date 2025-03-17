@@ -30,7 +30,7 @@ if (!rootElement) {
 const root = createRoot(rootElement)
 
 root.render(
-  <StrictMode>
+  // <StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Provider store={store}>
@@ -43,5 +43,5 @@ root.render(
         </Provider>
       </BrowserRouter>
     </QueryClientProvider>
-  </StrictMode>
+  // </StrictMode>
 )

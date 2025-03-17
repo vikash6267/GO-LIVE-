@@ -71,7 +71,7 @@ export default function PasswordReset() {
     }
   }
 
-  if(!userEmail) return
+
   return (
 
   <div>

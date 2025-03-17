@@ -18,6 +18,7 @@ interface EditUserModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onUserUpdated: () => void;
+  self?:boolean
 }
 
 export function EditUserModal({
@@ -25,6 +26,7 @@ export function EditUserModal({
   open,
   onOpenChange,
   onUserUpdated,
+  self
 }: EditUserModalProps) {
   const queryClient = useQueryClient(); // ✅ Query Client
 
@@ -71,7 +73,7 @@ export function EditUserModal({
         aria-describedby="edit-user-description"
       >
         <DialogHeader>
-          <DialogTitle>Edit Customer Profile</DialogTitle>
+          <DialogTitle>{ self ? "Update Profile" : "Edit Customer Profile"}</DialogTitle>
         </DialogHeader>
 
         <div id="edit-user-description" className="sr-only">
@@ -100,6 +102,7 @@ export function EditUserModal({
             onSubmit={handleSubmit}
             submitLabel={formState.isSaving ? "Saving..." : "Save changes"}
             isSubmitting={formState.isSaving}
+            self={self}
           />
         )}
       </DialogContent>

@@ -112,6 +112,7 @@ if(profileData.status==="active"){
     const response = await axios.post("/active", {
       name: `${data.first_name} ${data.last_name}`,
       email: data.email,
+      admin: true
     });
   
     console.log("Verification Successful:", response.data);

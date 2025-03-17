@@ -84,6 +84,7 @@ const UsersTable = ({ users, selectedUsers, onSelectionChange }: UsersTableProps
       </ScrollArea>
 
       <Dialog open={!!selectedPendingUser} onOpenChange={() => setSelectedPendingUser(null)}>
+       
         {selectedPendingUser && (
           <PendingUserReview
             user={selectedPendingUser}

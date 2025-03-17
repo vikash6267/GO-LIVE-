@@ -1,4 +1,4 @@
-const accountActiveTemplate = (name, email) => {
+const accountActiveTemplate = (name, email, admin) => {
     return `<!DOCTYPE html>
     <html>
     <head>
@@ -67,14 +67,26 @@ const accountActiveTemplate = (name, email) => {
     <body>
         <div class="container">
             <img src="https://cfyqeilfmodrbiamqgme.supabase.co/storage/v1/object/public/product-images/download.png" alt="Company Logo" class="logo">
-            <div class="header">✅ Your Account is Now Active!</div>
-            <p class="message">Congratulations, your account has been successfully verified.</p>
+            
+            <div class="header">
+                ${admin ? "✅ Your Account is Now Active!" : "⏳ Your Account is Not Active Yet"}
+            </div>
+            
+            <p class="message">
+                ${admin ? "Congratulations, your account has been successfully verified." 
+                : "Our team will review your information and contact you for further details. Once verified, we will confirm your account activation."}
+            </p>
+            
             <div class="user-info">
                 <p><strong>Name:</strong> ${name}</p>
                 <p><strong>Email:</strong> ${email}</p>
             </div>
             <br>
-            <a href="https://www.9rx.com/login" class="login-button">Login Account</a>
+            
+            <a href="${admin ? 'https://www.9rx.com/login' : `https://www.9rx.com/update-profile?email=${email}`}" class="login-button">
+                ${admin ? "Login Account" : "Update Profile"}
+            </a>
+
             <div class="footer">If you have any questions, feel free to contact our support team.</div>
         </div>
     </body>

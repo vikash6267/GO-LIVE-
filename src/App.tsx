@@ -33,6 +33,7 @@ import { useToast } from "./hooks/use-toast";
 import { useAuthCheck } from "./useAuthCheck";
 import GroupProducts from "./pages/group/GroupProduct";
 import ActivationUser from "./components/ActiovationUser";
+import PasswordReset from "./components/ResetPassword";
 
 
 // Protected route wrapper component
@@ -77,6 +78,7 @@ function App() {
       <Route path="/" element={<Index />} />
       <Route path="/login" element={<Login />} />
       <Route path="/activation" element={<ActivationUser />} />
+      <Route path="/reset-password" element={<PasswordReset />} />
       <Route path="/products" element={<Products />} />
       
       {/* Admin Routes */}

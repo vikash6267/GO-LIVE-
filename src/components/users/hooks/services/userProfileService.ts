@@ -115,53 +115,25 @@ if(profileData.status==="active"){
     });
   
     console.log("Verification Successful:", response.data);
+
+    // async function sendResetPasswordLink(email) {
+    //   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    //     redirectTo: `http://localhost:3000/reset-password?email=${email}`,
+    //   });
+    
+    //   if (error) {
+    //     console.error('Error sending reset password email:', error.message);
+    //   } else {
+    //     console.log('Password reset email sent successfully!', data);
+    //   }
+    // }
+    // sendResetPasswordLink(data.email)
   } catch (error) {
     console.error("Error in user verification:", error.response?.data || error.message);
   }
 }
   
-    // // ❌ STEP 1: Delete old locations
-
-    // console.log("hello this is location updatation code")
-    // const { error: deleteError } = await supabase
-    //   .from("locations")
-    //   .delete()
-    //   .eq("profile_id", userId);
-
-    // if (deleteError) {
-    //   console.error("Error deleting locations:", deleteError);
-    //   toast({
-    //     title: "Error",
-    //     description: `Failed to delete old locations: ${deleteError.message}`,
-    //     variant: "destructive",
-    //   });
-    //   throw new Error(`Delete error: ${deleteError.message}`);
-    // }
-
-    // // ✅ STEP 2: Insert new locations
-    // if (values.locations && values.locations.length > 0) {
-    //   const newLocations = values.locations.map((location) => ({
-    //     profile_id: userId,
-    //     name: location.name || "",
-    //     type: location.type || "branch",
-    //     status: location.status || "pending",
-    //     address: location.address,
-    //     contact_email: location.contactEmail || "",
-    //     contact_phone: location.contactPhone || "",
-    //   }));
-
-    //   const { error: insertError } = await supabase.from("locations").insert(newLocations);
-
-    //   if (insertError) {
-    //     console.error("Error inserting new locations:", insertError);
-    //     toast({
-    //       title: "Error",
-    //       description: `Failed to add new locations: ${insertError.message}`,
-    //       variant: "destructive",
-    //     });
-    //     throw new Error(`Insert error: ${insertError.message}`);
-    //   }
-    // }
+   
 
     if (!data) {
       console.error("Update Error: No data returned after update");

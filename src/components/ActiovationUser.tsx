@@ -34,10 +34,21 @@ function ActivationUser() {
         );
       }
 
-      if (!data ) {
-        throw new Error("No customer information found.");
-      }
-      console.log("Data",data);
+      // async function sendResetPasswordLink(email) {
+      //   const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+      
+      //   if (error) {
+      //     console.error('Error sending reset password email:', error.message);
+      //   } else {
+      //     console.log('Password reset email sent successfully!', data);
+      //   }
+      // }
+      // sendResetPasswordLink(email)
+
+      // if (!data ) {
+      //   throw new Error("No customer information found.");
+      // }
+      // console.log("Data",data);
 
   
       setUserData(data);

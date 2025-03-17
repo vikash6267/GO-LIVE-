@@ -13,46 +13,52 @@ import image1 from "../../assests/home/1.png";
 import image2 from "../../assests/home/2.png";
 import image3 from "../../assests/home/3.png";
 
-const HeroSection = () => {
+
+export const Navbar =() =>{
   const navigate = useNavigate();
+  
+  return(
+  <nav className="fixed w-full top-0 bg-white/95 backdrop-blur-sm z-50 shadow-sm">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div className="flex justify-between items-center">
+      <div className="flex items-center space-x-4 sm:space-x-8">
+        <div className="relative">
+          <div className="absolute inset-0  rounded-full blur-lg transform scale-150"></div>
+
+          <img
+            src="/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png"
+            alt="9rx Logo"
+            className=" h-16 relative z-10 con "
+          />
+        </div>
+      </div>
+      <div className="flex items-center space-x-3 sm:space-x-6">
+        <Button
+          onClick={() =>
+            navigate("/login", { state: { defaultTab: "signup" } })
+          }
+          variant="outline"
+          className="hidden md:inline-flex border-emerald-600 text-emerald-600 hover:bg-emerald-50 transition-all duration-300 transform hover:scale-105"
+        >
+          Sign Up
+        </Button>
+        <Button
+          className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base px-3 sm:px-4"
+          onClick={() => navigate("/login")}
+        >
+          Login
+        </Button>
+      </div>
+    </div>
+  </div>
+</nav>
+)}
+const HeroSection = () => {
 
   return (
     <div className="relative">
       {/* Navigation Bar */}
-      <nav className="fixed w-full top-0 bg-white/95 backdrop-blur-sm z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4 sm:space-x-8">
-              <div className="relative">
-                <div className="absolute inset-0  rounded-full blur-lg transform scale-150"></div>
-
-                <img
-                  src="/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png"
-                  alt="9rx Logo"
-                  className=" h-16 relative z-10 con "
-                />
-              </div>
-            </div>
-            <div className="flex items-center space-x-3 sm:space-x-6">
-              <Button
-                onClick={() =>
-                  navigate("/login", { state: { defaultTab: "signup" } })
-                }
-                variant="outline"
-                className="hidden md:inline-flex border-emerald-600 text-emerald-600 hover:bg-emerald-50 transition-all duration-300 transform hover:scale-105"
-              >
-                Sign Up
-              </Button>
-              <Button
-                className="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base px-3 sm:px-4"
-                onClick={() => navigate("/login")}
-              >
-                Login
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
+  
 
       {/* Hero Section */}
       <section className="min-h-[90vh] flex items-center pt-16 sm:pt-20 relative overflow-hidden">

@@ -20,7 +20,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/supabaseClient";
 import { generateOrderId } from "./utils/orderUtils";
 import ProductShowcase from "../pharmacy/ProductShowcase";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { OrderFormValues } from "./schemas/orderSchema";
 import {
   Select,
@@ -50,12 +50,15 @@ export const OrdersContainer = ({
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
-  const createOrder = location.state?.createOrder || false;
-  const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(createOrder);
+
+const navigate = useNavigate();
+
+  const [isCreateOrderOpen, setIsCreateOrderOpen] = useState<boolean>(!!location.state?.createOrder);
+
   const [orderData, setOrderData] = useState<Partial<OrderFormValues>>({});
   const [selectedPharmacy, setSelectedPharmacy] = useState<string>("");
   const [userData, setUserData] = useState<any[]>([]);
-
+  
   const {
     orders,
     selectedOrder,
@@ -70,6 +73,16 @@ export const OrdersContainer = ({
     handleShipOrder: shipOrder,
     handleConfirmOrder: confirmOrder,
   } = useOrderManagement();
+
+
+  useEffect(() => {
+    if (location.state?.createOrder) {
+      setIsCreateOrderOpen(true);
+  
+      // 🔹 Location state ko reset karne ke liye navigate ka istemal karein
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   console.log(orders);
   const {

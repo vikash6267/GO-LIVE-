@@ -4,6 +4,7 @@ const { contactUsEmail } = require("../templates/contactFormRes");
 const { customizationQueryEmail } = require("../templates/customizationQuaery");
 const orderConfirmationTemplate = require("../templates/orderCreate");
 const orderStatusTemplate = require("../templates/orderTemlate");
+const paymentLink = require("../templates/paymentLink");
 const userVerificationTemplate = require("../templates/userVerificationTemplate");
 const mailSender = require("../utils/mailSender");
 
@@ -12,8 +13,6 @@ exports.orderSatusCtrl = async (req, res) => {
   try {
     const order = req.body;
 
-
-    // Ensure required fields are present
     if (!order || !order.customerInfo || !order.customerInfo.email) {
       return res.status(400).json({
         success: false,
@@ -82,23 +81,19 @@ exports.orderPlacedCtrl = async (req, res) => {
     });
   }
 };
+
+
 exports.userNotificationCtrl = async (req, res) => {
   try {
     const { groupname, name, email } = req.body;
-
-
-    // Ensure required fields are present
     if (!name || !email) {
       return res.status(400).json({
         success: false,
         message: "Missing required order details.",
       });
     }
-
-    // Generate email content using the template
     const emailContent = userVerificationTemplate(groupname, name, email);
 
-    // Send email
     await mailSender(
       "sppatel@9rx.com",
       "New User",
@@ -122,7 +117,7 @@ exports.userNotificationCtrl = async (req, res) => {
 
 exports.accountActivation = async (req, res) => {
   try {
-    const { name, email,admin=false } = req.body;
+    const { name, email, admin = false } = req.body;
 
 
     // Ensure required fields are present
@@ -134,7 +129,7 @@ exports.accountActivation = async (req, res) => {
     }
 
     // Generate email content using the template
-    const emailContent = accountActiveTemplate(name, email,admin);
+    const emailContent = accountActiveTemplate(name, email, admin);
 
     // Send email
     await mailSender(
@@ -170,7 +165,7 @@ exports.contactCtrl = async (req, res) => {
     }
 
     const emailRes = await mailSender(
-         "sppatel@9rx.com",
+      "sppatel@9rx.com",
       "Contact Details",
       contactUsEmail(name, email, contact, message)
     )
@@ -200,7 +195,7 @@ exports.customization = async (req, res) => {
     }
 
     const emailRes = await mailSender(
-         "sppatel@9rx.com",
+      "sppatel@9rx.com",
       "Your Data send successfully",
       customizationQueryEmail(name, email, phone, selectedProducts)
     )
@@ -216,3 +211,40 @@ exports.customization = async (req, res) => {
     })
   }
 }
+
+
+exports.paymentLinkCtrl = async (req, res) => {
+  try {
+    const order = req.body;
+
+    if (!order || !order.customerInfo || !order.customerInfo.email) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required order details.",
+      });
+    }
+
+    const emailContent = paymentLink(order);
+
+    await mailSender(
+      order.customerInfo.email,
+      "Payment Link Send Successfully!",
+      emailContent
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Payment Link Send Successfully",
+    });
+  } catch (error) {
+    console.error("Error in payment link:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong in payment link",
+      error: error.message,
+    });
+  }
+}
+
+
+

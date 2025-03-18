@@ -18,7 +18,7 @@ const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 
 
-const { orderSatusCtrl, orderPlacedCtrl, userNotificationCtrl, contactCtrl, customization, accountActivation } = require("./controllers/orderStatus");
+const { orderSatusCtrl, orderPlacedCtrl, userNotificationCtrl, contactCtrl, customization, accountActivation, paymentLink, paymentLinkCtrl } = require("./controllers/orderStatus");
 
 app.use(logger("dev"));
 
@@ -296,6 +296,7 @@ app.post("/active", accountActivation)
 
 app.post("/contact", contactCtrl)
 app.post("/customization", customization)
+app.post("/paynow-user", paymentLinkCtrl)
 
 
 

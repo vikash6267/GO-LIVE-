@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 Modal.setAppElement(document.getElementById("body"));
 
@@ -22,11 +23,15 @@ const PaymentForm = ({
   amountP,
   orderId,
   orders,
+  payNow=false
   
 }) => {
   const [paymentType, setPaymentType] = useState("credit_card");
   const { toast } = useToast();
   const [loading, setLoading] = useState(false); // Loading state
+  const navigate = useNavigate();
+const [notes,setNotes] = useState("")
+
 
   const [formData, setFormData] = useState({
     amount: 0,
@@ -70,6 +75,12 @@ const PaymentForm = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true)
+
+    if(paymentType === "manaul_payemnt"){
+
+
+      return
+    }
     const paymentData =
       paymentType === "credit_card"
         ? {
@@ -129,12 +140,27 @@ const PaymentForm = ({
 
       console.log('Invoice created successfully:', data);
 
+
+      if(payNow){
+        navigate("/pharmacy/orders");
+
+      }
+
         setModalIsOpen(false)
         toast({
           title: "Payment Successfull",
           description: response.data.message,
         });
 
+        setTimeout(() => {
+          if(payNow){
+            navigate("/pharmacy/orders");
+    
+          };
+        }, 500);
+        
+
+      
       }else{
         console.log(response)
     setLoading(false)
@@ -174,7 +200,8 @@ const PaymentForm = ({
           className="border p-2 w-full mb-3 rounded"
         >
           <option value="credit_card">Credit Card</option>
-          <option value="ach">ACH (Bank Transfer)</option>
+          <option value="manaul_payemnt">Manual Payment</option>
+          {/* <option value="ach">Bank Transfer</option> */}
         </select>
 
         <form onSubmit={handleSubmit} className="space-y-3">
@@ -297,107 +324,124 @@ const PaymentForm = ({
               />
             </>
           ) : (
+           paymentType === "manaul_payemnt" ? (<>
+           
+           <div className="relative">
+             
+              <input
+                type="text"
+                name="notes"
+                placeholder="Notes"
+                onChange={handleChange}
+                value={formData.accountNumber}
+                required
+                className="border p-2 w-full rounded pl-10"
+              />
+            </div>
+            
+            </>) : (
             <>
-              <select
-                name="accountType"
-                onChange={handleChange}
-                value={formData.accountType}
-                className="border p-2 w-full rounded"
-              >
-                <option value="checking">Checking</option>
-                <option value="savings">Savings</option>
-              </select>
-              <div className="relative">
-                <Landmark className="absolute left-3 top-3 text-gray-500" />
-                <input
-                  type="text"
-                  name="routingNumber"
-                  placeholder="Routing Number"
-                  onChange={handleChange}
-                  value={formData.routingNumber}
-                  required
-                  className="border p-2 w-full rounded pl-10"
-                />
-              </div>
-              <div className="relative">
-                <Hash className="absolute left-3 top-3 text-gray-500" />
-                <input
-                  type="text"
-                  name="accountNumber"
-                  placeholder="Account Number"
-                  onChange={handleChange}
-                  value={formData.accountNumber}
-                  required
-                  className="border p-2 w-full rounded pl-10"
-                />
-              </div>
-              <div className="relative">
-                <User className="absolute left-3 top-3 text-gray-500" />
-                <input
-                  type="text"
-                  name="nameOnAccount"
-                  placeholder="Name on Account"
-                  onChange={handleChange}
-                  value={formData.nameOnAccount}
-                  required
-                  className="border p-2 w-full rounded pl-10"
-                />
-              </div>
-              <div className="relative">
-                <MapPin className="absolute left-3 top-3 text-gray-500" />
-                <input
-                  type="text"
-                  name="address"
-                  placeholder="Address"
-                  onChange={handleChange}
-                  value={formData.address}
-                  required
-                  className="border p-2 w-full rounded pl-10"
-                />
-              </div>
-              <div className="relative">
-                <Building className="absolute left-3 top-3 text-gray-500" />
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="City"
-                  onChange={handleChange}
-                  value={formData.city}
-                  required
-                  className="border p-2 w-full rounded pl-10"
-                />
-              </div>
-              <div className="relative">
-                <Globe className="absolute left-3 top-3 text-gray-500" />
-                <input
-                  type="text"
-                  name="state"
-                  placeholder="State"
-                  onChange={handleChange}
-                  value={formData.state}
-                  required
-                  className="border p-2 w-full rounded pl-10"
-                />
-              </div>
+            <select
+              name="accountType"
+              onChange={handleChange}
+              value={formData.accountType}
+              className="border p-2 w-full rounded"
+            >
+              <option value="checking">Checking</option>
+              <option value="savings">Savings</option>
+            </select>
+            <div className="relative">
+              <Landmark className="absolute left-3 top-3 text-gray-500" />
               <input
                 type="text"
-                name="zip"
-                placeholder="ZIP Code"
+                name="routingNumber"
+                placeholder="Routing Number"
                 onChange={handleChange}
-                value={formData.zip}
+                value={formData.routingNumber}
                 required
-                className="border p-2 w-full rounded"
+                className="border p-2 w-full rounded pl-10"
               />
+            </div>
+            <div className="relative">
+              <Hash className="absolute left-3 top-3 text-gray-500" />
               <input
                 type="text"
-                name="country"
-                placeholder="Country"
+                name="accountNumber"
+                placeholder="Account Number"
                 onChange={handleChange}
-                value={formData.country}
+                value={formData.accountNumber}
                 required
-                className="border p-2 w-full rounded"
+                className="border p-2 w-full rounded pl-10"
               />
-            </>
+            </div>
+            <div className="relative">
+              <User className="absolute left-3 top-3 text-gray-500" />
+              <input
+                type="text"
+                name="nameOnAccount"
+                placeholder="Name on Account"
+                onChange={handleChange}
+                value={formData.nameOnAccount}
+                required
+                className="border p-2 w-full rounded pl-10"
+              />
+            </div>
+            <div className="relative">
+              <MapPin className="absolute left-3 top-3 text-gray-500" />
+              <input
+                type="text"
+                name="address"
+                placeholder="Address"
+                onChange={handleChange}
+                value={formData.address}
+                required
+                className="border p-2 w-full rounded pl-10"
+              />
+            </div>
+            <div className="relative">
+              <Building className="absolute left-3 top-3 text-gray-500" />
+              <input
+                type="text"
+                name="city"
+                placeholder="City"
+                onChange={handleChange}
+                value={formData.city}
+                required
+                className="border p-2 w-full rounded pl-10"
+              />
+            </div>
+            <div className="relative">
+              <Globe className="absolute left-3 top-3 text-gray-500" />
+              <input
+                type="text"
+                name="state"
+                placeholder="State"
+                onChange={handleChange}
+                value={formData.state}
+                required
+                className="border p-2 w-full rounded pl-10"
+              />
+            </div>
+            <input
+              type="text"
+              name="zip"
+              placeholder="ZIP Code"
+              onChange={handleChange}
+              value={formData.zip}
+              required
+              className="border p-2 w-full rounded"
+            />
+            <input
+              type="text"
+              name="country"
+              placeholder="Country"
+              onChange={handleChange}
+              value={formData.country}
+              required
+              className="border p-2 w-full rounded"
+            />
+          </>
+           ) 
           )}
 <div className="flex gap-2 justify-between px-2">
   <button

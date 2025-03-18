@@ -20,13 +20,16 @@ export function OrderTotals({
   const [shippingCost, setShippingCost] = useState(0);
   const [customizePrice, setCustomizePrice] = useState(0);
   const [total, setTotal] = useState(0);
+  const [tax, settax] = useState(0);
+const taxper = sessionStorage.getItem("taxper")
 
   useEffect(() => {
     // Calculate subtotal
+   
     const calculateSubtotal = (items: any[]) => {
       return items.reduce((total, item) => {
         const itemPrice = parseFloat(item.price) || 0;
-        return total + itemPrice;
+        return total + itemPrice ;
       }, 0);
     };
 
@@ -49,11 +52,14 @@ export function OrderTotals({
     const newSubtotal = calculateSubtotal(cartItems);
     const newShippingCost = calculateShipping(cartItems);
     const newCustomizePrice = calculateCustomizationCost(cartItems);
-
+    const newtax = (newSubtotal * Number(taxper)) / 100;
+   
+    settax(newtax);
+   
     setSubtotal(newSubtotal);
     setShippingCost(newShippingCost);
     setCustomizePrice(newCustomizePrice);
-    setTotal(newSubtotal + newShippingCost + newCustomizePrice);
+    setTotal(newSubtotal + newShippingCost + newCustomizePrice + newtax);
   }, [items]);
 
   return (
@@ -79,6 +85,11 @@ export function OrderTotals({
       <div className="flex justify-between text-base font-bold">
         <span>Customizations Fee:</span>
         <span>${customizePrice.toFixed(2)}</span>
+      </div>
+      <div className="flex justify-between text-base font-bold">
+        <span>Tax({`${taxper}%`})</span>
+        <span>${tax.toFixed(2)}</span>
+
       </div>
       <div className="flex justify-between text-base font-bold">
         <span>Total:</span>

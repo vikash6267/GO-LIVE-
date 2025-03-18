@@ -216,7 +216,7 @@ exports.customization = async (req, res) => {
 exports.paymentLinkCtrl = async (req, res) => {
   try {
     const order = req.body;
-
+console.log(order)
     if (!order || !order.customerInfo || !order.customerInfo.email) {
       return res.status(400).json({
         success: false,

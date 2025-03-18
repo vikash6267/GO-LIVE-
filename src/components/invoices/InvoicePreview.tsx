@@ -157,7 +157,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
                 <th className="border p-1 sm:p-2 text-left">Description</th>
                 <th className="border p-1 sm:p-2 text-left">Sizes</th>
                 <th className="border p-1 sm:p-2 text-right">Qty</th>
-                <th className="border p-1 sm:p-2 text-right">Rate</th>
+                {/* <th className="border p-1 sm:p-2 text-right">Rate</th> */}
                 <th className="border p-1 sm:p-2 text-right">Amount</th>
               </tr>
             </thead>
@@ -169,8 +169,8 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
                     {item.sizes?.map((size) => `${size.size_value} ${size.size_unit}`).join(", ")}
                   </td>
                   <td className="border p-1 sm:p-2 text-right">{item.quantity}</td>
+                  {/* <td className="border p-1 sm:p-2 text-right">${item.price}</td> */}
                   <td className="border p-1 sm:p-2 text-right">${item.price}</td>
-                  <td className="border p-1 sm:p-2 text-right">${item.price * item.quantity}</td>
                 </tr>
               ))}
             </tbody>
@@ -180,14 +180,17 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
         {/* Totals */}
         <div className="flex justify-end border-t pt-4">
           <div className="w-full sm:w-64 space-y-2">
-            <div className="flex justify-between text-xs sm:text-sm">
-              <span>Sub Total</span>
-              <span>${invoice?.subtotal || "0.00"}</span>
-            </div>
-            <div className="flex justify-between text-xs sm:text-sm">
-              <span>Tax (6%)</span>
-              <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
-            </div>
+          <div className="flex justify-between text-xs sm:text-sm">
+  <span>Sub Total</span>
+  <span>${(invoice?.subtotal - invoice?.tax)?.toFixed(2) || "0.00"}</span>
+
+</div>
+
+<div className="flex justify-between text-xs sm:text-sm">
+  <span>Tax ({invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)</span>
+  <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
+</div>
+
             <Separator />
             <div className="flex justify-between font-bold text-sm sm:text-base">
               <span>Total</span>
@@ -269,8 +272,8 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
                 <th className="border p-2 text-left">Description</th>
                 <th className="border p-2 text-left">Sizes</th>
                 <th className="border p-2 text-right">Qty</th>
-                <th className="border p-2 text-right">Rate</th>
                 <th className="border p-2 text-right">Amount</th>
+               
               </tr>
             </thead>
             <tbody>
@@ -282,7 +285,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
                   </td>
                   <td className="border p-2 text-right">{item.quantity}</td>
                   <td className="border p-2 text-right">${item.price}</td>
-                  <td className="border p-2 text-right">${item.price * item.quantity}</td>
+                  <td className="border p-2 text-right">${item.price }</td>
                 </tr>
               ))}
             </tbody>
@@ -291,14 +294,16 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
           {/* Totals */}
           <div className="flex justify-end border-t pt-4">
             <div className="w-64 space-y-2">
-              <div className="flex justify-between">
-                <span>Sub Total</span>
-                <span>${invoice?.subtotal || "0.00"}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Tax (6%)</span>
-                <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
-              </div>
+            <div className="flex justify-between text-xs sm:text-sm">
+  <span>Sub Total</span>
+  <span>${invoice?.subtotal?.toFixed(2) || "0.00"}</span>
+</div>
+
+<div className="flex justify-between text-xs sm:text-sm">
+  <span>Tax ({invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)</span>
+  <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
+</div>
+
               <div className="border-t border-gray-300 my-2"></div>
               <div className="flex justify-between font-bold">
                 <span>Total</span>

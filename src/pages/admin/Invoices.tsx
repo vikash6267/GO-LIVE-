@@ -22,12 +22,12 @@ const Invoices = () => {
         </div>
 
         <Tabs defaultValue="list" className="space-y-4">
-          <TabsList>
+          {/* <TabsList>
             <TabsTrigger value="list">All Invoices</TabsTrigger>
             <TabsTrigger value="create">Create Invoice</TabsTrigger>
             <TabsTrigger value="pending">Needs Payment</TabsTrigger>
             <TabsTrigger value="sent">Payment Links Sent</TabsTrigger>
-          </TabsList>
+          </TabsList> */}
 
           <TabsContent value="list" className="space-y-4">
             <InvoiceTableContainer />

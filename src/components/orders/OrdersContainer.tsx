@@ -21,6 +21,15 @@ import { supabase } from "@/supabaseClient";
 import { generateOrderId } from "./utils/orderUtils";
 import ProductShowcase from "../pharmacy/ProductShowcase";
 import { useLocation } from "react-router-dom";
+import { OrderFormValues } from "./schemas/orderSchema";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 interface OrdersContainerProps {
   userRole?: "admin" | "pharmacy" | "group" | "hospital";
@@ -40,9 +49,12 @@ export const OrdersContainer = ({
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  
+
   const createOrder = location.state?.createOrder || false;
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState(createOrder);
+  const [orderData, setOrderData] = useState<Partial<OrderFormValues>>({});
+  const [selectedPharmacy, setSelectedPharmacy] = useState<string>("");
+  const [userData, setUserData] = useState<any[]>([]);
 
   const {
     orders,
@@ -70,12 +82,14 @@ export const OrdersContainer = ({
     filteredOrders,
   } = useOrderFilters(orders);
 
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const {
           data: { session },
         } = await supabase.auth.getSession();
+
         if (!session) {
           toast({
             title: "Error",
@@ -104,8 +118,77 @@ export const OrdersContainer = ({
       }
     };
 
+    const fetchUsers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("id, display_name")
+          .eq("type", "pharmacy");
+
+        if (error) {
+          console.error("Failed to fetch customer information:", error);
+          throw new Error(`Failed to fetch customer information: ${error.message}`);
+        }
+        console.log("Fetched pharmacies:", data);
+        setUserData(data)
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchUsers();
     fetchOrders();
-  }, []);
+  }, []); // Ensure dependencies are correctly placed if needed
+
+  const handlePharmacyChange = async (pharmacyId: string) => {
+    setSelectedPharmacy(pharmacyId);
+    setOrderData(null)
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", pharmacyId) // Use pharmacyId, not selectedPharmacy
+        .maybeSingle();
+
+      if (error) {
+        console.error("Database Error - Failed to fetch profile:", error);
+        throw new Error(`Database error: ${error.message}`);
+      }
+
+      if (!data) {
+        console.error("User profile not found for ID:", pharmacyId);
+        return;
+      }
+
+      console.log("Successfully fetched profile:", data);
+
+      setOrderData((prevState) => ({
+        ...prevState,
+        customerInfo: {
+          cusid: data.id || "test",
+          type: "Pharmacy",
+          name: data.display_name,
+          email: data.email || "",
+          phone: data.mobile_phone || "",
+          address: {
+            street: `${data.billing_address?.street1 || ""}`,
+            city: data.billing_address?.city || "",
+            state: data.billing_address?.state || "",
+            zip_code: data.billing_address?.zip_code || "",
+          },
+        },
+      }));
+
+      console.log("Updated Order Data:", orderData);
+    } catch (err) {
+      console.error("Error in handlePharmacyChange:", err);
+    }
+  };
+
+
+  const handleFormChange = (data: Partial<OrderFormValues>) => {
+    setOrderData(data);
+  };
 
   return (
     <div className="space-y-4">
@@ -115,41 +198,67 @@ export const OrdersContainer = ({
           onDateChange={setDateRange}
           onExport={() => console.log("Export functionality to be implemented")}
         />
-    {userRole === "admin" && (
-  <div className=" flex flex-wrap">
-    <Sheet open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>
-      <SheetTrigger asChild>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Create Order
-        </Button>
-      </SheetTrigger>
-      <SheetContent
-        side="right"
-        className="w-[90vw] sm:max-w-[640px] overflow-y-auto"
-      >
-        <SheetHeader>
-          <SheetTitle>Create New Order</SheetTitle>
-        </SheetHeader>
+        {userRole === "admin" && (
+          <div className=" flex flex-wrap">
+            <Sheet open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>
+              <SheetTrigger asChild>
+                <Button>
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Create Order
+                </Button>
+              </SheetTrigger>
+              <SheetContent
+                side="right"
+                className="w-[90vw] sm:max-w-[640px] overflow-y-auto"
+              >
+                <SheetHeader>
+                  <SheetTitle>Create New Order</SheetTitle>
+                </SheetHeader>
 
-        <div className="mt-4">
-          <CreateOrderForm
-            onFormChange={(data) => console.log("Form changed:", data)}
-            isEditing={false}
-          />
-        </div>
-      </SheetContent>
-    </Sheet>
 
-    {/* Move the Show Products button outside of SheetTrigger */}
-    <button
-      onClick={() => setIsOpen(true)}
-      className="bg-blue-600 text-white px-4 lg:mt-0 mt-3 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
-    >
-        Products All
-    </button>
-  </div>
-)}
+                <div className="mb-6">
+                  <Label htmlFor="pharmacy-select">Select Pharmacy</Label>
+                  <Select
+                    value={selectedPharmacy}
+                    onValueChange={handlePharmacyChange}
+                  >
+                    <SelectTrigger className="w-full md:w-[300px]">
+                      <SelectValue placeholder="Select a pharmacy" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {userData.map((pharmacy) => (
+                        <SelectItem key={pharmacy.id} value={pharmacy.id}>
+                          {pharmacy.display_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Button to Open Popup */}
+
+
+                </div>
+                {orderData?.customerInfo && <div className="mt-4">
+                  <CreateOrderForm
+
+                    isEditing={false}
+                    initialData={orderData}
+                    onFormChange={handleFormChange}
+
+                  />
+                </div>}
+              </SheetContent>
+            </Sheet>
+
+            {/* Move the Show Products button outside of SheetTrigger */}
+            <button
+              onClick={() => setIsOpen(true)}
+              className="bg-blue-600 text-white px-4 lg:mt-0 mt-3 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
+            >
+              Products All
+            </button>
+          </div>
+        )}
 
       </div>
 
@@ -168,12 +277,12 @@ export const OrdersContainer = ({
             </button>
 
             {/* Modal Content */}
-            
+
             <ProductShowcase groupShow={true} />
           </div>
         </div>
       )}
- 
+
       <StatusFilter value={statusFilter} onValueChange={setStatusFilter} />
 
       <OrdersList

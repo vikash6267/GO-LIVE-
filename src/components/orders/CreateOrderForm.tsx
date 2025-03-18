@@ -49,13 +49,13 @@ export function CreateOrderForm({
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isCus, setIsCus] = useState<boolean>(false);
 
-  console.log(cartItems);
+  console.log(initialData);
   const [pId, setPId] = useState(
     initialData?.customerInfo.cusid || userProfile?.id || ""
   );
 
   useEffect(() => {
-    setPId(initialData?.customerInfo.cusid  || userProfile?.id);
+    setPId(initialData?.customerInfo.cusid || userProfile?.id);
   }, [initialData, userProfile]);
 
   const totalShippingCost =
@@ -141,7 +141,7 @@ export function CreateOrderForm({
       setOrderItems(items.map((_, index) => ({ id: index + 1 })));
       localStorage.removeItem("pendingOrderItems"); // Clear after loading
     }
-  }, [form,cartItems]);
+  }, [form, cartItems]);
 
   const { validateForm } = useOrderValidation(form, onFormChange);
 
@@ -159,17 +159,19 @@ export function CreateOrderForm({
     try {
       setIsSubmitting(true);
       console.log("Starting order submission:", data);
+      const taxper = sessionStorage.getItem("taxper")
 
       // Validate order items
       validateOrderItems(data.items);
 
-     
+
       // Calculate order total
       const calculatedTotal = calculateOrderTotal(
         cartItems,
         totalShippingCost || 0
       );
 
+      const newtax = (calculatedTotal * Number(taxper)) / 100;
 
 
       if (userProfile?.id == null) {
@@ -219,9 +221,9 @@ export function CreateOrderForm({
         order_number: generateOrderId(),
         profile_id: userProfile.id,
         status: data.status,
-        total_amount: calculatedTotal + (isCus ? 0.5 : 0),
+        total_amount: calculatedTotal + newtax,
         shipping_cost: data.shipping?.cost || 0,
-        tax_amount: 0,
+        tax_amount: newtax,
         customization: isCus,
         items: data.items,
         notes: data.specialInstructions,
@@ -232,7 +234,7 @@ export function CreateOrderForm({
         estimated_delivery:
           data.shipping?.estimatedDelivery ||
           defaultEstimatedDelivery.toISOString(),
-          location_id:pId
+        location_id: pId
       };
 
       console.log(orderData);
@@ -271,9 +273,9 @@ export function CreateOrderForm({
         due_date: formattedDueDate,
         profile_id: newOrder.profile_id,
         status: "pending" as InvoiceStatus,
-        amount: parseFloat(calculatedTotal) || 0,
+        amount: parseFloat(calculatedTotal + newtax) || 0,
         tax_amount: orderData.tax_amount || 0,
-        total_amount: parseFloat(calculatedTotal),
+        total_amount: parseFloat(calculatedTotal + newtax),
         payment_status: newOrder.payment_status,
         payment_method: newOrder.paymentMethod as PaymentMethod,
         payment_notes: newOrder.notes || null,
@@ -285,8 +287,8 @@ export function CreateOrderForm({
         },
         shipping_info: orderData.shippingAddress || {},
         subtotal:
-          calculatedTotal + (isCus ? 0.5 : 0) ||
-          parseFloat(calculatedTotal + (isCus ? 0.5 : 0)),
+        calculatedTotal + newtax + (isCus ? 0.5 : 0) ||
+          parseFloat(calculatedTotal + newtax + (isCus ? 0.5 : 0)),
       };
 
       console.log("Creating invoice with data:", invoiceData);
@@ -360,11 +362,11 @@ export function CreateOrderForm({
 
       const userType = sessionStorage.getItem('userType');
 
-      if(userType.toLocaleLowerCase() === 'group'){
+      if (userType.toLocaleLowerCase() === 'group') {
         navigate("/group/orders");
 
       }
-      if(userType.toLocaleLowerCase() === 'pharmacy'){
+      if (userType.toLocaleLowerCase() === 'pharmacy') {
         navigate("/pharmacy/orders");
 
       }
@@ -393,7 +395,7 @@ export function CreateOrderForm({
   return (
     <>
 
-   
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <CustomerSelectionField
@@ -409,7 +411,6 @@ export function CreateOrderForm({
             isCus={isCus}
 
           />
-
           <ShippingSection form={form} />
 
           <PaymentSection form={form} />

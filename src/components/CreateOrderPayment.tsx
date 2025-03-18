@@ -40,6 +40,9 @@ const CreateOrderPaymentForm = ({
   const userProfile = useSelector(selectUserProfile);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false); // Loading state
+  const [tax, settax] = useState(0);
+const taxper = sessionStorage.getItem("taxper")
+
 
   const [formData, setFormData] = useState({
     amount: 0,
@@ -65,7 +68,11 @@ const CreateOrderPaymentForm = ({
 
   useEffect(() => {
     console.log(formDataa);
+
     if (formDataa) {
+      const totalAmount = calculateOrderTotal(formDataa.items, totalShippingCost || 0)
+      const newtax = (totalAmount * Number(taxper)) / 100;
+      settax(newtax)
       setFormData((prevData) => ({
         ...prevData,
         nameOnAccount: formDataa.customerInfo.name || "",
@@ -76,7 +83,8 @@ const CreateOrderPaymentForm = ({
         zip: formDataa.customerInfo.address?.zip_code || "",
         email: formDataa.customerInfo.email || "",
         phone: formDataa.customerInfo.phone || "",
-        amount: calculateOrderTotal(formDataa.items, totalShippingCost || 0),
+   
+    amount: totalAmount + newtax ,
       }));
     }
   }, []);
@@ -92,7 +100,7 @@ const CreateOrderPaymentForm = ({
       paymentType === "credit_card"
         ? {
             paymentType,
-            amount: formData.amount + (isCus ? 0.5 : 0),
+            amount: formData.amount,
             cardNumber: formData.cardNumber,
             expirationDate: formData.expirationDate,
             cvv: formData.cvv,
@@ -183,9 +191,9 @@ const CreateOrderPaymentForm = ({
             order_number: generateOrderId(),
             profile_id: pId || userProfile.id,
             status: data.status,
-            total_amount: calculatedTotal + (isCus ? 0.5 : 0),
+            total_amount: calculatedTotal + tax,
             shipping_cost: data.shipping?.cost || 0,
-            tax_amount: 0,
+            tax_amount: Number(tax),
             items: data.items,
             payment_status: "paid", // Use correct column name
 
@@ -235,7 +243,7 @@ const CreateOrderPaymentForm = ({
             due_date: formattedDueDate,
             profile_id: newOrder.profile_id,
             status: "pending" as InvoiceStatus,
-            amount: parseFloat(calculatedTotal + (isCus ? 0.5 : 0)) || 0,
+            amount: parseFloat(calculatedTotal + tax) || 0,
             tax_amount: orderData.tax_amount || 0,
             total_amount: parseFloat(calculatedTotal + (isCus ? 0.5 : 0)),
             payment_status: "paid", // Use correct column name

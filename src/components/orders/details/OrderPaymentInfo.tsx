@@ -7,7 +7,7 @@ interface OrderPaymentInfoProps {
 
 export function OrderPaymentInfo({ payment, specialInstructions }: OrderPaymentInfoProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 hidden">
       <div className="space-y-2">
         <h3 className="font-semibold">Payment Details</h3>
         <p>Method: {payment.method}</p>

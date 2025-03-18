@@ -152,7 +152,11 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
                           {size.size_value} {size.size_unit}
                         </span>
                         <span className="text-sm text-gray-500">
-                          {size.quantity_per_case} units per case
+                          {size.quantity_per_case} {""}
+                          {
+                      product.name === "LIQUID OVAL ADAPTERS" ? "Bottel Per Case" : product.name === "OINTMENT JARS" ? "Jar's And Caps In One Case" : product.name === "RX VIALS" ? "Vials And Caps In One Case" : product.name === "RX LABELS" ? `Labels Per Roll , ${size.rolls_per_case} Roll Per Case` : "Units per case"
+
+                          }
                         </span>
                       </div>
                       <span className="font-medium text-emerald-600">

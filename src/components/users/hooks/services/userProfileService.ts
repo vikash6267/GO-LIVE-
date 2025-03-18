@@ -77,6 +77,7 @@ export const updateUserProfile = async (
       payment_terms: values.paymentTerms || "DueOnReceipt",
       enable_portal: values.enablePortal || false,
       portal_language: values.portalLanguage || "English",
+      taxPercantage: Number(values.taxPercantage) || 0,
       updated_at: new Date().toISOString(),
     };
 

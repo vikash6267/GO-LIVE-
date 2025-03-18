@@ -68,7 +68,7 @@ export function TaxAndDocumentsSection({ form }: TaxAndDocumentsSectionProps) {
       </CardHeader>
       <CardContent className="space-y-4">
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="paymentTerms"
           render={({ field }) => (
@@ -94,7 +94,7 @@ export function TaxAndDocumentsSection({ form }: TaxAndDocumentsSectionProps) {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
 
         <FormField
@@ -121,6 +121,22 @@ export function TaxAndDocumentsSection({ form }: TaxAndDocumentsSectionProps) {
             </FormItem>
           )}
         />
+           {
+          form.getValues("taxPreference") === "Taxable"
+          &&   <FormField
+          control={form.control}
+          name="taxPercantage"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Tax Percantage</FormLabel>
+              <FormControl>
+                <Input placeholder="Tax Percantage" {...field} type="number" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        }
         <FormField
           control={form.control}
           name="taxId"
@@ -134,6 +150,9 @@ export function TaxAndDocumentsSection({ form }: TaxAndDocumentsSectionProps) {
             </FormItem>
           )}
         />
+
+     
+      
 
         <div className="space-y-2">
           <FormLabel>Documents</FormLabel>

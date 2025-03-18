@@ -116,7 +116,7 @@ export const OrdersContainer = ({
           onExport={() => console.log("Export functionality to be implemented")}
         />
     {userRole === "admin" && (
-  <>
+  <div className=" flex flex-wrap">
     <Sheet open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>
       <SheetTrigger asChild>
         <Button>
@@ -144,11 +144,11 @@ export const OrdersContainer = ({
     {/* Move the Show Products button outside of SheetTrigger */}
     <button
       onClick={() => setIsOpen(true)}
-      className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
+      className="bg-blue-600 text-white px-4 lg:mt-0 mt-3 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
     >
-       Add to Cart Product
+        Products All
     </button>
-  </>
+  </div>
 )}
 
       </div>

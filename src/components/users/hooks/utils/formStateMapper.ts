@@ -51,6 +51,7 @@ export const mapProfileDataToFormState = (
     contactPerson: data.contact_person || "",
     department: data.department || "",
     notes: data.notes || "",
+    taxPercantage: data.taxPercantage || 0,
     preferredContactMethod: data.preferred_contact_method || "",
     languagePreference: data.language_preference || "",
     creditLimit: data.credit_limit || "",

@@ -26,22 +26,22 @@ export function ProductSelection({ form, products }: ProductSelectionProps) {
   const handleProductChange = (selectedOptions: any) => {
     if (!selectedOptions || selectedOptions.length === 0) {
       setSelectedProducts([]);
-      form.setValue("product_arrayjson", [], { shouldValidate: true }); // ✅ Empty list को भी update करें
+      form.setValue("product_arrayjson", [], { shouldValidate: true }); 
       return;
     }
   
-    // पहले से मौजूद प्रोडक्ट्स को Map में बदलें
+
     const existingProductsMap = new Map(
       selectedProducts.map((p) => [p.product_id, p])
     );
   
-    // नए प्रोडक्ट्स को merge करें
+   
     const updatedProducts = selectedOptions.map((option: any) => {
       const existingProduct = existingProductsMap.get(option.value);
       return {
         product_id: option.value,
         product_name: option.label,
-        groupLabel: option.groupLabel || "", // ⚡ groupLabel को default "" दें
+        groupLabel: option.groupLabel || "", 
         actual_price: existingProduct?.actual_price ?? option.actual_price ?? 0, 
         new_price: existingProduct?.new_price ?? "",
       };
@@ -91,8 +91,8 @@ export function ProductSelection({ form, products }: ProductSelectionProps) {
       getOptionLabel={(e) => `${e.label}`}
       getOptionValue={(e) => e.value}
       onChange={(selectedOptions) => {
-        field.onChange(selectedOptions); // ✅ React Hook Form अपडेट करें
-        handleProductChange(selectedOptions); // ✅ State अपडेट करें
+        field.onChange(selectedOptions); 
+        handleProductChange(selectedOptions); 
       }}
       value={selectedProducts.map((p) => ({
         value: p.product_id,
@@ -102,8 +102,8 @@ export function ProductSelection({ form, products }: ProductSelectionProps) {
         option.data.label?.toLowerCase().includes(input.toLowerCase())
       }
       menuPlacement="auto"
-      autoFocus={false} // ✅ फोकस हटाने के लिए
-      menuIsOpen={undefined} // ✅ Dropdown auto-open न हो
+      autoFocus={false} 
+      menuIsOpen={undefined} 
     />
   )}
 />

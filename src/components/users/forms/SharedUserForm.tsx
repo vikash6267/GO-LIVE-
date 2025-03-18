@@ -98,6 +98,7 @@ export function SharedUserForm({
         contactPerson: values.contactPerson,
         department: values.department,
         notes: values.notes,
+        taxPercantage: values.taxPercantage,
         preferredContactMethod: values.preferredContactMethod || "email",
         languagePreference: values.languagePreference || "English",
         creditLimit: values.creditLimit,

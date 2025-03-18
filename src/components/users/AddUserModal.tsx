@@ -78,6 +78,7 @@ export function AddUserModal({
       paymentTerms: "DueOnReceipt",
       enablePortal: false,
       portalLanguage: "English",
+      taxPercantage:'0',
       locations: [
         // ✅ Fix: Change from object `{}` to an array `[]`
         {
@@ -194,6 +195,7 @@ export function AddUserModal({
         payment_terms: values.paymentTerms,
         enable_portal: Boolean(values.enablePortal),
         portal_language: values.portalLanguage,
+        taxPercantage: values.taxPercantage,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         alternative_email: values.alternativeEmail || null,

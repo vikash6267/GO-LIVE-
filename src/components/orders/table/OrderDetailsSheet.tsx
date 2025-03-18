@@ -97,71 +97,73 @@ console.log(currentOrder)
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full md:max-w-3xl overflow-y-auto z-50">
-        <SheetHeader>
-          <SheetTitle>Order Details</SheetTitle>
-          <SheetDescription>
-            {isEditing ? "Edit order details " : "View order details"}
-          </SheetDescription>
-        </SheetHeader>
-
-        {isEditing ? (
-          <div className="mt-6">
-            <CreateOrderForm initialData={currentOrder} isEditing={isEditing} />
-            <Button
-              variant="outline"
-              onClick={() => setIsEditing(false)}
-              className="mt-4"
-            >
-              Cancel Edit
-            </Button>
-          </div>
-        ) : (
-          <div className="mt-6 space-y-6">
-            <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Order Status</h3>
-           Order Number:   {currentOrder.order_number}
-              {userRole === "admin" && (
-                <Button
-                  onClick={() => setIsEditing(true)}
-                  variant="outline"
-                  size="sm"
-                >
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit Order
-                </Button>
-              )}
-            </div>
-
-            <OrderWorkflowStatus status={currentOrder.status} />
-
-            {currentOrder.payment_status !== "paid" && (
-              <div className="flex justify-end text-red-900 font-bold">
-                UnPaid
-              </div>
-            )}
-
+    <SheetContent className="w-full max-w-full md:max-w-3xl overflow-y-auto z-50 p-4 md:p-6">
+      <SheetHeader>
+        <SheetTitle className="text-lg md:text-xl">Order Details</SheetTitle>
+        <SheetDescription className="text-sm md:text-base">
+          {isEditing ? "Edit order details" : "View order details"}
+        </SheetDescription>
+      </SheetHeader>
+  
+      {isEditing ? (
+        <div className="mt-6">
+          <CreateOrderForm initialData={currentOrder} isEditing={isEditing} />
+          <Button
+            variant="outline"
+            onClick={() => setIsEditing(false)}
+            className="mt-4 w-full md:w-auto"
+          >
+            Cancel Edit
+          </Button>
+        </div>
+      ) : (
+        <div className="mt-6 space-y-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+            <h3 className="text-base md:text-lg font-semibold">Order Status</h3>
+            <span className="text-sm md:text-base">Order Number: {currentOrder.order_number}</span>
             {userRole === "admin" && (
-              <div className="flex justify-end">
-                <OrderActions
-                  order={currentOrder}
-                  onProcessOrder={() => handleStatusUpdate("process")}
-                  onShipOrder={() => handleStatusUpdate("ship")}
-                  onConfirmOrder={() => handleStatusUpdate("confirm")}
-                  onDeleteOrder={onDeleteOrder}
-                />
-              </div>
+              <Button
+                onClick={() => setIsEditing(true)}
+                variant="outline"
+                size="sm"
+                className="w-full md:w-auto"
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Order
+              </Button>
             )}
-
-            <OrderCustomerInfo customerInfo={currentOrder.customerInfo} shippingAddress={currentOrder.shippingAddress} />
-            <OrderItemsList items={currentOrder.items} />
-            <OrderPaymentInfo
-              payment={currentOrder.payment}
-              specialInstructions={currentOrder.specialInstructions}
-            />
           </div>
-        )}
-      </SheetContent>
-    </Sheet>
+  
+          <OrderWorkflowStatus status={currentOrder.status} />
+  
+          {currentOrder.payment_status !== "paid" && (
+            <div className="flex justify-end text-red-900 font-bold text-sm md:text-base">
+              UnPaid
+            </div>
+          )}
+  
+          {userRole === "admin" && (
+            <div className="flex justify-end">
+              <OrderActions
+                order={currentOrder}
+                onProcessOrder={() => handleStatusUpdate("process")}
+                onShipOrder={() => handleStatusUpdate("ship")}
+                onConfirmOrder={() => handleStatusUpdate("confirm")}
+                onDeleteOrder={onDeleteOrder}
+              />
+            </div>
+          )}
+  
+          <OrderCustomerInfo customerInfo={currentOrder.customerInfo} shippingAddress={currentOrder.shippingAddress} />
+          <OrderItemsList items={currentOrder.items} />
+          <OrderPaymentInfo
+            payment={currentOrder.payment}
+            specialInstructions={currentOrder.specialInstructions}
+          />
+        </div>
+      )}
+    </SheetContent>
+  </Sheet>
+  
   );
 };

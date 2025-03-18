@@ -56,6 +56,7 @@ export const useEditUserForm = ({
       },
       sameAsShipping: false,
       freeShipping: false,
+      taxPercantage:"",
       taxPreference: "Taxable",
       currency: "USD",
       paymentTerms: "DueOnReceipt",
@@ -99,7 +100,7 @@ export const useEditUserForm = ({
             state: "",
             zip_code: "",
           },
-
+          taxPercantage:data.taxPercantage,
           sameAsShipping: data.same_as_shipping || false,
           freeShipping: data.freeShipping || false,
           order_pay: data.order_pay || false,

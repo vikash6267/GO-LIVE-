@@ -54,6 +54,7 @@ export const baseUserSchema = z.object({
   department: z.string().optional(),
   notes: z.string().optional(),
   preferredContactMethod: z.string().optional(),
+  taxPercantage: z.string().optional(),
   languagePreference: z.string().optional(),
   creditLimit: z.string().optional(),
   paymentMethod: z.string().optional(),

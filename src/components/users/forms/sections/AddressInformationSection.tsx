@@ -33,7 +33,7 @@ export function AddressInformationSection({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Address Information</CardTitle>
+        <CardTitle>Shipping Address</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <AddressFields form={form} type="billing" />

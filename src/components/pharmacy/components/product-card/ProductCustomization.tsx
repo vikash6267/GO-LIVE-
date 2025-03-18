@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { selectUserProfile } from "@/store/selectors/userSelectors";
 import { useSelector } from "react-redux";
 import axios from "../../../../../axiosconfig"
+import { useToast } from "@/hooks/use-toast";
 interface ProductCustomizationProps {
   sizes: { size_value: string; size_unit: string }[];
   onCustomizationChange: (customizations: Record<string, string>) => void;
@@ -18,6 +19,7 @@ export const ProductCustomization = ({
 }: ProductCustomizationProps) => {
   const [customizationEnabled, setCustomizationEnabled] = useState(false);
   const [selectedProducts, setSelectedProducts] = useState<any[]>([]);
+  const { toast } = useToast();
 
   const handleToggleChange = (checked: boolean) => {
     setCustomizationEnabled(checked);
@@ -44,9 +46,18 @@ console.log(selectedProducts)
 
     try {
       await axios.post("/customization", {name,email,phone,selectedProducts});
-      console.log("Order status sent successfully to backend.");
+      toast({
+        title: "Send Enquiry Successfully",
+        description: "Our team will connect shortly",
+        variant: "destructive",
+      });
     } catch (apiError) {
       console.error("Failed to send order status to backend:", apiError);
+      toast({
+        title: "Send Enquiry Failed",
+        description: "Please Try Again!",
+        variant: "destructive",
+      });
     }
   }
   return (

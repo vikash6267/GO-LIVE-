@@ -61,7 +61,7 @@ export function BasicInformationSection({ form, self = false }: BasicInformation
           )}
         />
 
-        <FormField
+ {  !self &&     <FormField
           control={form.control}
           name="type"
           render={({ field }) => (
@@ -82,7 +82,7 @@ export function BasicInformationSection({ form, self = false }: BasicInformation
               <FormMessage />
             </FormItem>
           )}
-        />
+        />}
         {!self &&
           <FormField
             control={form.control}

@@ -1,16 +1,31 @@
 import { UseFormReturn } from "react-hook-form";
 import { BaseUserFormData } from "../../schemas/sharedFormSchema";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface BasicInformationSectionProps {
   form: UseFormReturn<BaseUserFormData>;
-  self?: boolean
+  self?: boolean;
 }
 
-export function BasicInformationSection({ form, self = false }: BasicInformationSectionProps) {
+export function BasicInformationSection({
+  form,
+  self = false,
+}: BasicInformationSectionProps) {
   return (
     <Card>
       <CardHeader>
@@ -23,9 +38,13 @@ export function BasicInformationSection({ form, self = false }: BasicInformation
             name="firstName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="firstName">First Name</FormLabel>
+                <FormLabel htmlFor="firstName">First Name *</FormLabel>
                 <FormControl>
-                  <Input id="firstName" placeholder="Enter first name" {...field} />
+                  <Input
+                    id="firstName"
+                    placeholder="Enter first name"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -37,9 +56,13 @@ export function BasicInformationSection({ form, self = false }: BasicInformation
             name="lastName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="lastName">Last Name</FormLabel>
+                <FormLabel htmlFor="lastName">Last Name *</FormLabel>
                 <FormControl>
-                  <Input id="lastName" placeholder="Enter last name" {...field} />
+                  <Input
+                    id="lastName"
+                    placeholder="Enter last name"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -52,45 +75,58 @@ export function BasicInformationSection({ form, self = false }: BasicInformation
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel htmlFor="email">Email</FormLabel>
+              <FormLabel htmlFor="email">Email *</FormLabel>
               <FormControl>
-                <Input id="email" type="email" placeholder="Enter email address" {...field} />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter email address"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
- {  !self &&     <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel htmlFor="type">Customer Type</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger id="type">
-                    <SelectValue placeholder="Select customer type" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="pharmacy">Pharmacy</SelectItem>
-                  <SelectItem value="hospital">Hospital</SelectItem>
-                  <SelectItem value="group">Group</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />}
-        {!self &&
+        {!self && (
+          <FormField
+            control={form.control}
+            name="type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel htmlFor="type">Customer Type</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger id="type">
+                      <SelectValue placeholder="Select customer type" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="pharmacy">Pharmacy</SelectItem>
+                    <SelectItem value="hospital">Hospital</SelectItem>
+                    <SelectItem value="group">Group</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+        {!self && (
           <FormField
             control={form.control}
             name="status"
             render={({ field }) => (
               <FormItem>
                 <FormLabel htmlFor="status">Status</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger id="status">
                       <SelectValue placeholder="Select status" />
@@ -105,16 +141,21 @@ export function BasicInformationSection({ form, self = false }: BasicInformation
                 <FormMessage />
               </FormItem>
             )}
-          />}
+          />
+        )}
 
         <FormField
           control={form.control}
           name="companyName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel htmlFor="companyName">Company Name</FormLabel>
+              <FormLabel htmlFor="companyName">Company Name *</FormLabel>
               <FormControl>
-                <Input id="companyName" placeholder="Enter company name" {...field} />
+                <Input
+                  id="companyName"
+                  placeholder="Enter company name"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

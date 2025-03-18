@@ -18,7 +18,7 @@ interface AddressInformationSectionProps {
 
 export function AddressInformationSection({
   form,
-  self = false
+  self = false,
 }: AddressInformationSectionProps) {
   const sameAsShipping = form.watch("sameAsShipping");
   const billingAddress = form.watch("billingAddress");
@@ -27,6 +27,7 @@ export function AddressInformationSection({
   useEffect(() => {
     if (sameAsShipping) {
       form.setValue("shippingAddress", billingAddress);
+      console.log(form.getValues());
     }
   }, [sameAsShipping, billingAddress, form]);
 
@@ -62,7 +63,7 @@ export function AddressInformationSection({
             </FormItem>
           )}
         />
-        {!self &&
+        {!self && (
           <>
             <FormField
               control={form.control}
@@ -70,7 +71,10 @@ export function AddressInformationSection({
               render={({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
-                    <FormLabel htmlFor="free-shipping-switch" className="text-base">
+                    <FormLabel
+                      htmlFor="free-shipping-switch"
+                      className="text-base"
+                    >
                       Free Shipping
                     </FormLabel>
                   </div>
@@ -92,7 +96,8 @@ export function AddressInformationSection({
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel htmlFor="order_pay-switch" className="text-base">
-                      Order Without Payment                </FormLabel>
+                      Order Without Payment{" "}
+                    </FormLabel>
                   </div>
                   <FormControl>
                     <Switch
@@ -106,9 +111,8 @@ export function AddressInformationSection({
               )}
             />
           </>
-
-
-        }
+        )}
+        <CardTitle>Billing Address</CardTitle>
 
         <AddressFields form={form} type="shipping" />
       </CardContent>

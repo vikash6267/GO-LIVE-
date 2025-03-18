@@ -1,6 +1,7 @@
 import { UseFormReturn } from "react-hook-form";
 import { AddressInput } from "./address/AddressInput";
 import { StateSelect } from "./address/StateSelect";
+import { CardTitle } from "@/components/ui/card";
 
 interface AddressFieldsProps {
   form: UseFormReturn<any>;
@@ -9,7 +10,8 @@ interface AddressFieldsProps {
 }
 
 export function AddressFields({ form, type, prefix = "" }: AddressFieldsProps) {
-  const fieldName = (field: string) => `${prefix ? `${prefix}.` : ""}${type}Address.${field}`;
+  const fieldName = (field: string) =>
+    `${prefix ? `${prefix}.` : ""}${type}Address.${field}`;
 
   return (
     <div className="space-y-4">

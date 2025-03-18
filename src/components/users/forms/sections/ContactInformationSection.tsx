@@ -1,6 +1,12 @@
 import { UseFormReturn } from "react-hook-form";
 import { BaseUserFormData } from "../../schemas/sharedFormSchema";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, Phone, Globe, Building2, User2 } from "lucide-react";
@@ -9,7 +15,9 @@ interface ContactInformationSectionProps {
   form: UseFormReturn<BaseUserFormData>;
 }
 
-export function ContactInformationSection({ form }: ContactInformationSectionProps) {
+export function ContactInformationSection({
+  form,
+}: ContactInformationSectionProps) {
   return (
     <Card>
       <CardHeader>
@@ -27,7 +35,7 @@ export function ContactInformationSection({ form }: ContactInformationSectionPro
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
                   <Phone className="h-4 w-4" />
-                  Work Phone
+                  Work Phone *
                 </FormLabel>
                 <FormControl>
                   <Input placeholder="Enter work phone" type="tel" {...field} />
@@ -44,10 +52,14 @@ export function ContactInformationSection({ form }: ContactInformationSectionPro
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
                   <Phone className="h-4 w-4" />
-                  Mobile Phone
+                  Mobile Phone *
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter mobile phone" type="tel" {...field} />
+                  <Input
+                    placeholder="Enter mobile phone"
+                    type="tel"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -63,10 +75,14 @@ export function ContactInformationSection({ form }: ContactInformationSectionPro
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  Email
+                  Email *
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter email address" type="email" {...field} />
+                  <Input
+                    placeholder="Enter email address"
+                    type="email"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -83,7 +99,11 @@ export function ContactInformationSection({ form }: ContactInformationSectionPro
                   Alternative Email
                 </FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter alternative email" type="email" {...field} />
+                  <Input
+                    placeholder="Enter alternative email"
+                    type="email"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -116,7 +136,7 @@ export function ContactInformationSection({ form }: ContactInformationSectionPro
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
                   <User2 className="h-4 w-4" />
-                  Primary Contact Person
+                  Primary Contact Person *
                 </FormLabel>
                 <FormControl>
                   <Input placeholder="Enter contact person name" {...field} />

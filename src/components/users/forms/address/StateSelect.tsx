@@ -1,5 +1,17 @@
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { UseFormReturn } from "react-hook-form";
 import { UserFormData } from "../../schemas/userFormSchemas";
 import { US_STATES } from "./constants";
@@ -17,7 +29,7 @@ export function StateSelect({ form, fieldName }: StateSelectProps) {
       render={({ field }) => (
         <FormItem>
           <FormLabel>State</FormLabel>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select value={field.value} onValueChange={field.onChange}>
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder="Select state" />

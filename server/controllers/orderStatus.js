@@ -200,7 +200,7 @@ exports.customization = async (req, res) => {
     }
 
     const emailRes = await mailSender(
-         "vikasmaheshwari6267@gmail.com",
+         "sppatel@9rx.com",
       "Your Data send successfully",
       customizationQueryEmail(name, email, phone, selectedProducts)
     )

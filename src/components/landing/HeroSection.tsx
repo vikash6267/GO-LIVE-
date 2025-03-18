@@ -28,7 +28,7 @@ export const Navbar =() =>{
           <img
             src="/logo.png"
             alt="9rx Logo"
-            className=" h-16 relative z-10 con "
+            className=" h-14 relative z-10 con "
           />
         </div>
       </div>

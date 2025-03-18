@@ -24,7 +24,7 @@ export function AddressFields({ form, type, prefix = "" }: AddressFieldsProps) {
       <AddressInput
         form={form}
         fieldName={fieldName("street1")}
-        label="Street Address 1"
+        label="Street Address 1 *"
       />
 
       <AddressInput
@@ -34,7 +34,7 @@ export function AddressFields({ form, type, prefix = "" }: AddressFieldsProps) {
       />
 
       <div className="grid grid-cols-2 gap-4">
-        <AddressInput form={form} fieldName={fieldName("city")} label="City" />
+        <AddressInput form={form} fieldName={fieldName("city")} label="City *" />
         <StateSelect form={form} fieldName={fieldName("state")} />
       </div>
 
@@ -42,7 +42,7 @@ export function AddressFields({ form, type, prefix = "" }: AddressFieldsProps) {
         <AddressInput
           form={form}
           fieldName={fieldName("zip_code")}
-          label="ZIP Code"
+          label="ZIP Code *"
         />
 
         <AddressInput

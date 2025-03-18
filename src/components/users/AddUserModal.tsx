@@ -14,7 +14,7 @@ import { supabase } from "@/supabaseClient";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useQueryClient } from "@tanstack/react-query";
-
+import axios from "../../../axiosconfig"
 interface AddUserModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -146,6 +146,7 @@ export function AddUserModal({
           body: JSON.stringify({
             email: values.email,
             password: "12345678",
+            email_confirm: true, // ❗ Set to false so user gets a confirmation email
             type: "pharmacy",
             user_metadata: {
               first_name: values.firstName,
@@ -215,6 +216,34 @@ export function AddUserModal({
 
       const { error } = await supabase.from("profiles").upsert(userData);
 
+
+      if(userData.status==="active"){
+        try {
+          const response = await axios.post("/active", {
+            name: `${userData.first_name} ${userData.last_name}`,
+            email: userData.email,
+            admin: true
+          });
+        
+          console.log("Verification Successful:", response.data);
+      
+          // async function sendResetPasswordLink(email) {
+          //   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+          //     redirectTo: `http://localhost:3000/reset-password?email=${email}`,
+          //   });
+          
+          //   if (error) {
+          //     console.error('Error sending reset password email:', error.message);
+          //   } else {
+          //     console.log('Password reset email sent successfully!', data);
+          //   }
+          // }
+          // sendResetPasswordLink(data.email)
+        } catch (error) {
+          console.error("Error in user verification:", error.response?.data || error.message);
+        }
+      }
+        
       // const { data, error } = await supabase
       //   .from('profiles')
       //   .insert([userData])

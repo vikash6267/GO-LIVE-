@@ -52,7 +52,7 @@ export function ContactInformationSection({
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
                   <Phone className="h-4 w-4" />
-                  Mobile Phone *
+                  Mobile Phone 
                 </FormLabel>
                 <FormControl>
                   <Input

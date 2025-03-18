@@ -219,7 +219,7 @@ export function CreateOrderForm({
       // Prepare order data
       const orderData = {
         order_number: generateOrderId(),
-        profile_id: userProfile.id,
+        profile_id: data.customer || userProfile.id,
         status: data.status,
         total_amount: calculatedTotal + newtax,
         shipping_cost: data.shipping?.cost || 0,

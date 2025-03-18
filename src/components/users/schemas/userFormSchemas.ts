@@ -46,7 +46,7 @@ const baseSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   workPhone: z.string().min(10, "Work phone must be at least 10 digits"),
-  mobilePhone: z.string().min(10, "Mobile phone must be at least 10 digits"),
+  mobilePhone: z.string().optional(),
   role: z.enum(["admin", "manager", "staff", "user"] as const),
   billingAddress: addressSchema,
   shippingAddress: addressSchema,

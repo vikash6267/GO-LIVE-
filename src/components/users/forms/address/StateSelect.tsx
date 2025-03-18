@@ -28,7 +28,7 @@ export function StateSelect({ form, fieldName }: StateSelectProps) {
       name={fieldName as any} // TODO: Improve type safety here
       render={({ field }) => (
         <FormItem>
-          <FormLabel>State</FormLabel>
+          <FormLabel>State *</FormLabel>
           <Select value={field.value} onValueChange={field.onChange}>
             <FormControl>
               <SelectTrigger>

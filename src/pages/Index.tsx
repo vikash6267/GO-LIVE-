@@ -84,7 +84,7 @@ const Index = () => {
             className="flex items-center justify-center gap-2"
           >
             <Phone className="w-5 h-5 text-emerald-600 animate-pulse" />
-            <span className="hidden md:block">1-800-9RX-HELP</span>
+            <span className="hidden md:block">18009696295</span>
           </a>
         </Button>
         <br />

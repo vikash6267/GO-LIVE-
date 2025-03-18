@@ -74,7 +74,7 @@ const Index = () => {
       <TrustSection />
 
       {/* Fixed Contact Button */}
-      <div className="fixed right-0 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-4">
+      <div className="fixed right-0 top-1/3 transform -translate-y-1/2 z-50 flex flex-col gap-4">
         <Button
           asChild
           className=" w-5 absolute right-0 lg:w-48 bg-white text-emerald-600 hover:bg-emerald-50 shadow-lg rounded-l-lg rounded-r-none transition-all duration-300  md:flex"

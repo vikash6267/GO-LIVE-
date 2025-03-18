@@ -23,14 +23,14 @@ const PaymentForm = ({
   amountP,
   orderId,
   orders,
-  payNow=false
-  
+  payNow = false
+
 }) => {
   const [paymentType, setPaymentType] = useState("credit_card");
   const { toast } = useToast();
   const [loading, setLoading] = useState(false); // Loading state
   const navigate = useNavigate();
-const [notes,setNotes] = useState("")
+  const [notes, setNotes] = useState("")
 
 
   const [formData, setFormData] = useState({
@@ -48,6 +48,7 @@ const [notes,setNotes] = useState("")
     state: "",
     zip: "",
     country: "",
+    notes: "",
   });
 
   useEffect(() => {
@@ -76,55 +77,20 @@ const [notes,setNotes] = useState("")
     e.preventDefault();
     setLoading(true)
 
-    if(paymentType === "manaul_payemnt"){
+    if (paymentType === "manaul_payemnt") {
+      const { error: updateError } = await supabase
+        .from("orders")
+        .update({
+          payment_status: "paid", // Use correct column name
+          notes: formData.notes, // Use correct column name
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", orderId);
+
+      if (updateError) throw updateError;
 
 
-      return
-    }
-    const paymentData =
-      paymentType === "credit_card"
-        ? {
-            paymentType,
-            amount: formData.amount,
-            cardNumber: formData.cardNumber,
-            expirationDate: formData.expirationDate,
-            cvv: formData.cvv,
-            cardholderName: formData.cardholderName,
-            address: formData.address,
-            city: formData.city,
-            state: formData.state,
-            zip: formData.zip,
-            country: formData.country,
-          }
-        : {
-            paymentType,
-            amount: formData.amount,
-            accountType: formData.accountType,
-            routingNumber: formData.routingNumber,
-            accountNumber: formData.accountNumber,
-            nameOnAccount: formData.nameOnAccount,
-            address: formData.address,
-            city: formData.city,
-            state: formData.state,
-            zip: formData.zip,
-            country: formData.country,
-          };
-
-    try {
-      const response = await axios.post("/pay", paymentData);
-      if (response.status === 200) {
-        const { error: updateError } = await supabase
-          .from("orders") 
-          .update({
-            payment_status: "paid", // Use correct column name
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", orderId);
-
-        if (updateError) throw updateError;
-
-
-        const { data, error } = await supabase
+      const { data, error } = await supabase
         .from("invoices")
         .update({
           payment_status: "paid", // Use correct column name
@@ -139,12 +105,78 @@ const [notes,setNotes] = useState("")
       }
 
       console.log('Invoice created successfully:', data);
+      setModalIsOpen(false)
+      toast({
+        title: "Payment Successfull",
+        description: "",
+      });
+
+      return
+    }
+    const paymentData =
+      paymentType === "credit_card"
+        ? {
+          paymentType,
+          amount: formData.amount,
+          cardNumber: formData.cardNumber,
+          expirationDate: formData.expirationDate,
+          cvv: formData.cvv,
+          cardholderName: formData.cardholderName,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip: formData.zip,
+          country: formData.country,
+        }
+        : {
+          paymentType,
+          amount: formData.amount,
+          accountType: formData.accountType,
+          routingNumber: formData.routingNumber,
+          accountNumber: formData.accountNumber,
+          nameOnAccount: formData.nameOnAccount,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip: formData.zip,
+          country: formData.country,
+        };
+
+    try {
+      const response = await axios.post("/pay", paymentData);
+      if (response.status === 200) {
+        const { error: updateError } = await supabase
+          .from("orders")
+          .update({
+            payment_status: "paid", // Use correct column name
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", orderId);
+
+        if (updateError) throw updateError;
 
 
-      if(payNow){
-        navigate("/pharmacy/orders");
+        const { data, error } = await supabase
+          .from("invoices")
+          .update({
+            payment_status: "paid", // Use correct column name
+            updated_at: new Date().toISOString(),
+          })
+          .eq("order_id", orderId);
 
-      }
+
+        if (error) {
+          console.error('Error creating invoice:', error);
+          throw error;
+        }
+
+        console.log('Invoice created successfully:', data);
+
+
+        if (payNow) {
+          navigate("/pharmacy/orders");
+
+        }
 
         setModalIsOpen(false)
         toast({
@@ -153,21 +185,21 @@ const [notes,setNotes] = useState("")
         });
 
         setTimeout(() => {
-          if(payNow){
+          if (payNow) {
             navigate("/pharmacy/orders");
-    
+
           };
         }, 500);
-        
 
-      
-      }else{
+
+
+      } else {
         console.log(response)
-    setLoading(false)
+        setLoading(false)
 
       }
     } catch (error) {
-    setLoading(false)
+      setLoading(false)
 
       console.log(error);
       toast({
@@ -324,160 +356,160 @@ const [notes,setNotes] = useState("")
               />
             </>
           ) : (
-           paymentType === "manaul_payemnt" ? (<>
-           
-           <div className="relative">
-             
-              <input
-                type="text"
-                name="notes"
-                placeholder="Notes"
-                onChange={handleChange}
-                value={formData.accountNumber}
-                required
-                className="border p-2 w-full rounded pl-10"
-              />
-            </div>
-            
+            paymentType === "manaul_payemnt" ? (<>
+
+              <div className="relative">
+
+                <input
+                  type="text"
+                  name="notes"
+                  placeholder="Notes"
+                  onChange={handleChange}
+                  value={formData.notes}
+                  required
+                  className="border p-2 w-full rounded pl-10"
+                />
+              </div>
+
             </>) : (
-            <>
-            <select
-              name="accountType"
-              onChange={handleChange}
-              value={formData.accountType}
-              className="border p-2 w-full rounded"
-            >
-              <option value="checking">Checking</option>
-              <option value="savings">Savings</option>
-            </select>
-            <div className="relative">
-              <Landmark className="absolute left-3 top-3 text-gray-500" />
-              <input
-                type="text"
-                name="routingNumber"
-                placeholder="Routing Number"
-                onChange={handleChange}
-                value={formData.routingNumber}
-                required
-                className="border p-2 w-full rounded pl-10"
-              />
-            </div>
-            <div className="relative">
-              <Hash className="absolute left-3 top-3 text-gray-500" />
-              <input
-                type="text"
-                name="accountNumber"
-                placeholder="Account Number"
-                onChange={handleChange}
-                value={formData.accountNumber}
-                required
-                className="border p-2 w-full rounded pl-10"
-              />
-            </div>
-            <div className="relative">
-              <User className="absolute left-3 top-3 text-gray-500" />
-              <input
-                type="text"
-                name="nameOnAccount"
-                placeholder="Name on Account"
-                onChange={handleChange}
-                value={formData.nameOnAccount}
-                required
-                className="border p-2 w-full rounded pl-10"
-              />
-            </div>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-3 text-gray-500" />
-              <input
-                type="text"
-                name="address"
-                placeholder="Address"
-                onChange={handleChange}
-                value={formData.address}
-                required
-                className="border p-2 w-full rounded pl-10"
-              />
-            </div>
-            <div className="relative">
-              <Building className="absolute left-3 top-3 text-gray-500" />
-              <input
-                type="text"
-                name="city"
-                placeholder="City"
-                onChange={handleChange}
-                value={formData.city}
-                required
-                className="border p-2 w-full rounded pl-10"
-              />
-            </div>
-            <div className="relative">
-              <Globe className="absolute left-3 top-3 text-gray-500" />
-              <input
-                type="text"
-                name="state"
-                placeholder="State"
-                onChange={handleChange}
-                value={formData.state}
-                required
-                className="border p-2 w-full rounded pl-10"
-              />
-            </div>
-            <input
-              type="text"
-              name="zip"
-              placeholder="ZIP Code"
-              onChange={handleChange}
-              value={formData.zip}
-              required
-              className="border p-2 w-full rounded"
-            />
-            <input
-              type="text"
-              name="country"
-              placeholder="Country"
-              onChange={handleChange}
-              value={formData.country}
-              required
-              className="border p-2 w-full rounded"
-            />
-          </>
-           ) 
+              <>
+                <select
+                  name="accountType"
+                  onChange={handleChange}
+                  value={formData.accountType}
+                  className="border p-2 w-full rounded"
+                >
+                  <option value="checking">Checking</option>
+                  <option value="savings">Savings</option>
+                </select>
+                <div className="relative">
+                  <Landmark className="absolute left-3 top-3 text-gray-500" />
+                  <input
+                    type="text"
+                    name="routingNumber"
+                    placeholder="Routing Number"
+                    onChange={handleChange}
+                    value={formData.routingNumber}
+                    required
+                    className="border p-2 w-full rounded pl-10"
+                  />
+                </div>
+                <div className="relative">
+                  <Hash className="absolute left-3 top-3 text-gray-500" />
+                  <input
+                    type="text"
+                    name="accountNumber"
+                    placeholder="Account Number"
+                    onChange={handleChange}
+                    value={formData.accountNumber}
+                    required
+                    className="border p-2 w-full rounded pl-10"
+                  />
+                </div>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 text-gray-500" />
+                  <input
+                    type="text"
+                    name="nameOnAccount"
+                    placeholder="Name on Account"
+                    onChange={handleChange}
+                    value={formData.nameOnAccount}
+                    required
+                    className="border p-2 w-full rounded pl-10"
+                  />
+                </div>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-3 text-gray-500" />
+                  <input
+                    type="text"
+                    name="address"
+                    placeholder="Address"
+                    onChange={handleChange}
+                    value={formData.address}
+                    required
+                    className="border p-2 w-full rounded pl-10"
+                  />
+                </div>
+                <div className="relative">
+                  <Building className="absolute left-3 top-3 text-gray-500" />
+                  <input
+                    type="text"
+                    name="city"
+                    placeholder="City"
+                    onChange={handleChange}
+                    value={formData.city}
+                    required
+                    className="border p-2 w-full rounded pl-10"
+                  />
+                </div>
+                <div className="relative">
+                  <Globe className="absolute left-3 top-3 text-gray-500" />
+                  <input
+                    type="text"
+                    name="state"
+                    placeholder="State"
+                    onChange={handleChange}
+                    value={formData.state}
+                    required
+                    className="border p-2 w-full rounded pl-10"
+                  />
+                </div>
+                <input
+                  type="text"
+                  name="zip"
+                  placeholder="ZIP Code"
+                  onChange={handleChange}
+                  value={formData.zip}
+                  required
+                  className="border p-2 w-full rounded"
+                />
+                <input
+                  type="text"
+                  name="country"
+                  placeholder="Country"
+                  onChange={handleChange}
+                  value={formData.country}
+                  required
+                  className="border p-2 w-full rounded"
+                />
+              </>
+            )
           )}
-<div className="flex gap-2 justify-between px-2">
-  <button
-    type="submit"
-    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition w-full flex items-center justify-center"
-    disabled={loading} // Disable button when loading
-  >
-    {loading ? (
-      <>
-        <svg
-          className="animate-spin h-5 w-5 mr-2 text-white"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            strokeWidth="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8v8H4z"
-          ></path>
-        </svg>
-        Processing...
-      </>
-    ) : (
-      "Confirm Payment"
-    )}
-  </button>
-</div>
+          <div className="flex gap-2 justify-between px-2">
+            <button
+              type="submit"
+              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition w-full flex items-center justify-center"
+              disabled={loading} // Disable button when loading
+            >
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 mr-2 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8H4z"
+                    ></path>
+                  </svg>
+                  Processing...
+                </>
+              ) : (
+                "Confirm Payment"
+              )}
+            </button>
+          </div>
 
         </form>
       </Modal>

@@ -3,11 +3,11 @@ import * as z from "zod";
 export const addressSchema = z.object({
   attention: z.string().optional(),
   countryRegion: z.string().optional(),
-  street1: z.string().min(2, "Street address is required"),
+  street1: z.string().optional(),
   street2: z.string().optional(),
-  city: z.string().min(2, "City is required"),
-  state: z.string().min(2, "State is required"),
-  zip_code: z.string().min(5, "ZIP code is required"),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  zip_code: z.string().optional(),
   phone: z.string().optional(),
   faxNumber: z.string().optional(),
 });
@@ -18,7 +18,7 @@ const locationSchema = z.object({
   status: z.enum(["active", "inactive", "pending"]).optional(),
   address: addressSchema.optional(),
   manager: z.string().optional(),
-  contactEmail: z.string().email().optional(),
+  contactEmail: z.string().optional(),
   contactPhone: z.string().optional(),
 });
 

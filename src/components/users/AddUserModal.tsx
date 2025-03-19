@@ -227,18 +227,16 @@ export function AddUserModal({
         
           console.log("Verification Successful:", response.data);
       
-          // async function sendResetPasswordLink(email) {
-          //   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-          //     redirectTo: `http://localhost:3000/reset-password?email=${email}`,
-          //   });
+          async function sendResetPasswordLink(email) {
+            const { data, error } = await supabase.auth.resetPasswordForEmail(email);
           
-          //   if (error) {
-          //     console.error('Error sending reset password email:', error.message);
-          //   } else {
-          //     console.log('Password reset email sent successfully!', data);
-          //   }
-          // }
-          // sendResetPasswordLink(data.email)
+            if (error) {
+              console.error('Error sending reset password email:', error.message);
+            } else {
+              console.log('Password reset email sent successfully!', data);
+            }
+          }
+          sendResetPasswordLink(userData.email)
         } catch (error) {
           console.error("Error in user verification:", error.response?.data || error.message);
         }

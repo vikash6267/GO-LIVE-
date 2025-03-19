@@ -17,6 +17,8 @@ export interface CartState {
 }
 
 // Create typed action creators
+export const updatePrice = createAction<{ productId: string; sizeId: string; price: number }>('cart/updatePrice');
+
 export const addToCart = createAction<CartItem>("cart/addToCart");
 export const removeFromCart = createAction<string>("cart/removeFromCart");
 export const updateQuantity = createAction<{

@@ -33,7 +33,7 @@ export const baseUserSchema = z.object({
   displayName: z.string().optional(),
   workPhone: z.string().min(10, "Work phone must be at least 10 digits"),
   mobilePhone: z.string().optional(),
-  contactPerson: z.string().min(10, "Mobile phone must be at least 10 digits"),
+  contactPerson: z.string().min(2, "Primary Contact Person must be 2 latter"),
   pharmacyLicense: z.string().optional(),
   groupStation: z.string().optional(),
   taxId: z.string().optional(),

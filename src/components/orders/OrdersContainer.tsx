@@ -23,13 +23,14 @@ import ProductShowcase from "../pharmacy/ProductShowcase";
 import { useLocation, useNavigate } from "react-router-dom";
 import { OrderFormValues } from "./schemas/orderSchema";
 import {
-  Select,
+
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import Select from "react-select";
 
 interface OrdersContainerProps {
   userRole?: "admin" | "pharmacy" | "group" | "hospital";
@@ -51,14 +52,15 @@ export const OrdersContainer = ({
   const location = useLocation();
 
 
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const [isCreateOrderOpen, setIsCreateOrderOpen] = useState<boolean>(!!location.state?.createOrder);
 
   const [orderData, setOrderData] = useState<Partial<OrderFormValues>>({});
   const [selectedPharmacy, setSelectedPharmacy] = useState<string>("");
   const [userData, setUserData] = useState<any[]>([]);
-  
+  const [options, setOptions] = useState([])
+
   const {
     orders,
     selectedOrder,
@@ -78,7 +80,7 @@ const navigate = useNavigate();
   useEffect(() => {
     if (location.state?.createOrder) {
       setIsCreateOrderOpen(true);
-  
+
       // 🔹 Location state ko reset karne ke liye navigate ka istemal karein
       navigate(location.pathname, { replace: true, state: {} });
     }
@@ -135,23 +137,37 @@ const navigate = useNavigate();
       try {
         const { data, error } = await supabase
           .from("profiles")
-          .select("id, display_name")
-          .eq("type", "pharmacy");
+          .select("id, display_name, type");
 
         if (error) {
           console.error("Failed to fetch customer information:", error);
           throw new Error(`Failed to fetch customer information: ${error.message}`);
         }
+
         console.log("Fetched pharmacies:", data);
-        setUserData(data)
+        setUserData(data);
+
+        // Custom ko sabse upar laane ke liye sort karein
+        const sortedOptions = data
+          .map((pharmacy) => ({
+            value: pharmacy.id,
+            label: pharmacy.type === "admin" ? "Custom" : pharmacy.display_name,
+            isCustom: pharmacy.type === "admin" ? 0 : 1, // Custom ko 0 aur baki ko 1
+          }))
+          .sort((a, b) => a.isCustom - b.isCustom); // Sort logic: Custom sabse upar
+
+        setOptions(sortedOptions);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
 
+
+
     fetchUsers();
     fetchOrders();
   }, []); // Ensure dependencies are correctly placed if needed
+
 
   const handlePharmacyChange = async (pharmacyId: string) => {
     setSelectedPharmacy(pharmacyId);
@@ -232,24 +248,14 @@ const navigate = useNavigate();
                 <div className="mb-6">
                   <Label htmlFor="pharmacy-select">Select Pharmacy</Label>
                   <Select
-                    value={selectedPharmacy}
-                    onValueChange={handlePharmacyChange}
-                  >
-                    <SelectTrigger className="w-full md:w-[300px]">
-                      <SelectValue placeholder="Select a pharmacy" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {userData.map((pharmacy) => (
-                        <SelectItem key={pharmacy.id} value={pharmacy.id}>
-                          {pharmacy.display_name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  {/* Button to Open Popup */}
-
-
+                    id="pharmacy-select"
+                    options={options}
+                    value={options.find((option) => option.value === selectedPharmacy)}
+                    onChange={(selectedOption) => handlePharmacyChange(selectedOption.value)}
+                    placeholder="Search pharmacy..."
+                    isSearchable
+                    className="w-full md:w-[300px]"
+                  />
                 </div>
                 {orderData?.customerInfo && <div className="mt-4">
                   <CreateOrderForm

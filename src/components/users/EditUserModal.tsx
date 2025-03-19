@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import Swal from "sweetalert2";
 
 interface EditUserModalProps {
   user: {
@@ -60,6 +61,14 @@ export function EditUserModal({
     try {
       console.log('EditUserModal: Starting form submission with values:', values);
       await onSubmit(values);
+      if(self){
+        Swal.fire({
+          title: "Profile Updated",
+          text: "Thank you for submitting your information. Your account will be active once we review and approve your information. Thank you once again for choosing 9RX.",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      }
       console.log('EditUserModal: Form submission successful');
     } catch (error) {
       console.error('EditUserModal: Error submitting form:', error);

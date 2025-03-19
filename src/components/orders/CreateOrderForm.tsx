@@ -49,7 +49,7 @@ export function CreateOrderForm({
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isCus, setIsCus] = useState<boolean>(false);
 
-  console.log(initialData);
+  console.log(cartItems);
   const [pId, setPId] = useState(
     initialData?.customerInfo.cusid || userProfile?.id || ""
   );

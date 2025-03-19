@@ -124,7 +124,7 @@ export const ProductSizeOptions = ({
                     {size.quantity_per_case} {" "}
                     {
 
-                      product.name === "LIQUID OVAL ADAPTERS" ? "Bottel Per Case" : product.name === "OINTMENT JARS" ? "Jar's And Caps In One Case" : product.name === "RX VIALS" ? "Vials And Caps In One Case" : product.name === "RX LABELS" ? `Labels Per Roll , ${size.rolls_per_case} Roll Per Case` : "Units per case"
+          product.name === "LIQUID OVALS" ? "bottles and caps in one case" :   product.name.includes("RX PAPER BAGS")  ? "bags per case" :  product.name === "THERMAL PAPER RECEIPT ROLLS" ?  "Rolls per case":      product.name === "LIQUID OVAL ADAPTERS" ? "Bottel Per Case" : product.name === "OINTMENT JARS" ? "jars and caps in one case" : product.name === "RX VIALS" ? "vials and caps in one case" : product.name === "RX LABELS" ? `labels per roll,   , ${size.rolls_per_case} rolls per case` : "units per case"
                     }
 
                   </div>

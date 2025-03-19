@@ -17,7 +17,7 @@ export function BasicInfoFields({ form }: BasicInfoFieldsProps) {
           <FormItem>
             <FormLabel>Name</FormLabel>
             <FormControl>
-              <Input placeholder="Enter pricing name" {...field} />
+              <Input placeholder="Enter Group name" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>

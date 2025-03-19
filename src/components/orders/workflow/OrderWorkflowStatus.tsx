@@ -7,7 +7,7 @@ interface OrderWorkflowStatusProps {
 export const OrderWorkflowStatus = ({ status }: OrderWorkflowStatusProps) => {
   const steps = [
     { id: 'new', label: 'New Order', icon: Clock, description: 'Order received, awaiting review' },
-    { id: 'pending', label: 'Confirmed', icon: CheckCircle2, description: 'Order confirmed by admin' },
+    { id: 'pending', label: 'Confirmed', icon: CheckCircle2, description: 'Order confirmed by 9RX' },
     { id: 'processing', label: 'Processing', icon: Package, description: 'Order is being processed' },
     { id: 'shipped', label: 'Shipped', icon: Truck, description: 'Order has been shipped' }
   ];

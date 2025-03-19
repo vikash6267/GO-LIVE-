@@ -18,7 +18,7 @@ export function GroupPharmacyFields({ form, groups, pharmacies }: GroupPharmacyF
         name="group"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Group (Required)</FormLabel>
+            <FormLabel>Pharamacy (Required)</FormLabel>
             <FormControl>
               <Select
                 isMulti

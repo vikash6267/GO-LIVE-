@@ -61,7 +61,7 @@ const HeroSection = () => {
   
 <Navbar />
       {/* Hero Section */}
-      <section className="min-h-[90vh] flex items-center pt-16 sm:pt-20 relative overflow-hidden">
+      <section className="min-h-[90vh] flex items-center pt-16 sm:pt-6 relative overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
             src="/lovable-uploads/320ef3c7-e13e-4702-b3ff-d861e32d31ea.png"

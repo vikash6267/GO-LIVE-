@@ -78,7 +78,7 @@ export const OrdersContainer = ({
 
 
   useEffect(() => {
-    setIsCreateOrderOpen(location.state?.createOrder)
+    // setIsCreateOrderOpen(location.state?.createOrder) 
     if (location.state?.createOrder) {
       setIsCreateOrderOpen(true);
 

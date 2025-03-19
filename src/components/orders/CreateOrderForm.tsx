@@ -23,6 +23,7 @@ import axios from "../../../axiosconfig";
 import { InvoiceStatus, PaymentMethod } from "../invoices/types/invoice.types";
 import CreateOrderPaymentForm from "../CreateOrderPayment";
 import { pid } from "process";
+import CartItemsPricing from "../CartItemsPricing";
 
 export interface CreateOrderFormProps {
   initialData?: Partial<OrderFormValues>;
@@ -30,6 +31,7 @@ export interface CreateOrderFormProps {
   isEditing?: boolean;
   use?: string;
   locationId?: any;
+  
 }
 
 export function CreateOrderForm({
@@ -48,6 +50,7 @@ export function CreateOrderForm({
   const { cartItems, clearCart } = useCart();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isCus, setIsCus] = useState<boolean>(false);
+  const [isPriceChange, setIsPriceChange] = useState<boolean>(false);
 
   console.log(cartItems);
   const [pId, setPId] = useState(
@@ -156,6 +159,9 @@ export function CreateOrderForm({
 
   const onSubmit = async (data: OrderFormValues) => {
     console.log("first");
+
+  
+  
     try {
       setIsSubmitting(true);
       console.log("Starting order submission:", data);
@@ -287,7 +293,7 @@ export function CreateOrderForm({
         },
         shipping_info: orderData.shippingAddress || {},
         subtotal:
-        calculatedTotal + newtax + (isCus ? 0.5 : 0) ||
+          calculatedTotal + newtax + (isCus ? 0.5 : 0) ||
           parseFloat(calculatedTotal + newtax + (isCus ? 0.5 : 0)),
       };
 
@@ -370,6 +376,11 @@ export function CreateOrderForm({
         navigate("/pharmacy/orders");
 
       }
+      if (userType.toLocaleLowerCase() === 'pharmacy') {
+        navigate("/admin/orders", { state: { createOrder: false } });
+
+
+      }
 
       await clearCart();
     } catch (error) {
@@ -404,13 +415,35 @@ export function CreateOrderForm({
             locationId={locationId}
           />
 
-          <OrderItemsSection
-            orderItems={cartItems}
-            form={form}
-            setIsCus={setIsCus}
-            isCus={isCus}
 
-          />
+          <div className="">
+
+            <div className="flex justify-end w-full">
+              <p
+                onClick={(e) => {
+                  e.preventDefault(); // Form submit hone se rokne ke liye
+                  setIsPriceChange(!isPriceChange);
+                }}
+                className="cursor-pointer px-4 py-2 bg-green-600 text-white font-medium rounded-lg shadow-md hover:bg-green-700 active:scale-95 transition-all inline-block text-center"
+              >
+                {isPriceChange ? "Close Edit Price" : "Edit Price"}
+              </p>
+            </div>
+
+
+
+            {
+              isPriceChange && <CartItemsPricing />
+            }
+
+            <OrderItemsSection
+              orderItems={cartItems}
+              form={form}
+              setIsCus={setIsCus}
+              isCus={isCus}
+
+            />
+          </div>
           <ShippingSection form={form} />
 
           <PaymentSection form={form} />

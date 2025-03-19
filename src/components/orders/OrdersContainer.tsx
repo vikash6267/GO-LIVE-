@@ -78,6 +78,7 @@ export const OrdersContainer = ({
 
 
   useEffect(() => {
+    setIsCreateOrderOpen(location.state?.createOrder)
     if (location.state?.createOrder) {
       setIsCreateOrderOpen(true);
 
@@ -191,6 +192,8 @@ export const OrdersContainer = ({
 
       console.log("Successfully fetched profile:", data);
 
+      sessionStorage.setItem("taxper", data.taxPercantage);
+
       setOrderData((prevState) => ({
         ...prevState,
         customerInfo: {
@@ -263,6 +266,7 @@ export const OrdersContainer = ({
                     isEditing={false}
                     initialData={orderData}
                     onFormChange={handleFormChange}
+                
 
                   />
                 </div>}

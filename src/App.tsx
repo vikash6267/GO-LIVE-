@@ -36,6 +36,7 @@ import ActivationUser from "./components/ActiovationUser";
 import PasswordReset from "./components/ResetPassword";
 import UserSelfDetails from "./components/UserSelfDetails";
 import PayNowOrder from "./components/PayNowOrder";
+import CartItemsPricing from "./components/CartItemsPricing";
 
 
 // Protected route wrapper component
@@ -84,6 +85,7 @@ function App() {
       <Route path="/reset-password" element={<PasswordReset />} />
       <Route path="/pay-now" element={<PayNowOrder />} />
       <Route path="/products" element={<Products />} />
+      <Route path="/cart-price" element={<CartItemsPricing />} />
       
       {/* Admin Routes */}
       <Route path="/admin/dashboard" element={

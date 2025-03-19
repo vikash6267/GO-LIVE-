@@ -43,7 +43,10 @@ export const cartReducer = createReducer(initialState, (builder) => {
         const size = product.sizes.find((size) => size.id === sizeId);
         if (size) {
           size.price = price; // ✅ Size price update karo
+       
         }
+        product.price = product.sizes.reduce((total, size) => total + (size.quantity * size.price), 0);
+
       }
       localStorage.setItem("cartItems", JSON.stringify(state.items)); // ✅ Save to localStorage
     })

@@ -3,9 +3,10 @@ import { OrderFormValues } from "../schemas/orderSchema";
 interface OrderCustomerInfoProps {
   customerInfo?: OrderFormValues["customerInfo"];
   shippingAddress?: OrderFormValues["shippingAddress"];
+  componyName?:string
 }
 
-export function OrderCustomerInfo({ customerInfo, shippingAddress }: OrderCustomerInfoProps) {
+export function OrderCustomerInfo({ customerInfo, shippingAddress,componyName }: OrderCustomerInfoProps) {
   if (!customerInfo) {
     return <div>No customer information available</div>;
   }
@@ -21,6 +22,7 @@ export function OrderCustomerInfo({ customerInfo, shippingAddress }: OrderCustom
         <p><span className="font-medium">Email:</span> {customerInfo?.email || "N/A"}</p>
         <p><span className="font-medium">Phone:</span> {customerInfo?.phone || "N/A"}</p>
         <p><span className="font-medium">Type:</span> {customerInfo?.type || "N/A"}</p>
+       {componyName && <p><span className="font-medium">Compony:</span> {componyName}</p>}
       </div>
       <div className="text-sm">
         <p><span className="font-medium">Address:</span> {customerInfo?.address?.street || "N/A"}</p>
@@ -37,6 +39,8 @@ export function OrderCustomerInfo({ customerInfo, shippingAddress }: OrderCustom
         <p><span className="font-medium">Name:</span> {shippingAddress?.fullName || "N/A"}</p>
         <p><span className="font-medium">Email:</span> {shippingAddress?.email || "N/A"}</p>
         <p><span className="font-medium">Phone:</span> {shippingAddress?.phone || "N/A"}</p>
+       {componyName && <p><span className="font-medium">Compony:</span> {componyName}</p>}
+
       </div>
       <div className="text-sm">
         <p><span className="font-medium">Address:</span> {shippingAddress?.address?.street || "N/A"}</p>

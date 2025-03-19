@@ -93,6 +93,7 @@ export const OrderDetailsSheet = ({
     }
   };
   const [loading, setLoading] = useState(false);
+  const[componyName,setComponyName] = useState("")
 
 
   const sendMail = async () => {
@@ -110,6 +111,45 @@ export const OrderDetailsSheet = ({
     }
     setLoading(false);
   };
+
+
+
+      const fetchUser = async () => {
+    
+          try {
+         if(!currentOrder || !currentOrder.customer) return
+    
+            const userID = currentOrder.customer
+    
+  
+            const { data, error } = await supabase
+              .from("profiles")
+              .select("company_name")
+              .eq("id", userID)
+              .maybeSingle();
+    
+            if (error) {
+              console.error("🚨 Supabase Fetch Error:", error);
+              return;
+            }
+    
+            if (!data) {
+              console.warn("⚠️ No user found for this email.");
+              return;
+            }
+    
+            console.log("✅ User Data:", data);
+            setComponyName(data.company_name || "")
+  
+          } catch (error) {
+    
+          }
+        };
+  
+  useEffect(()=>{
+    fetchUser()
+  },[currentOrder])
+
 
   if (!currentOrder) return null;
 
@@ -198,7 +238,7 @@ export const OrderDetailsSheet = ({
               </div>
             )}
 
-            <OrderCustomerInfo customerInfo={currentOrder.customerInfo} shippingAddress={currentOrder.shippingAddress} />
+            <OrderCustomerInfo customerInfo={currentOrder.customerInfo} shippingAddress={currentOrder.shippingAddress} componyName={componyName} />
             <OrderItemsList items={currentOrder.items} />
             <OrderPaymentInfo
               payment={currentOrder.payment}

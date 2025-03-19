@@ -223,7 +223,7 @@ console.log(invoice)
         id: invoice.id,
         customerInfo,
         shippingInfo,
-
+        profile_id:invoice.profile_id,
         payment_status: invoice.payment_status, // ✅ Extracted correctly
 
         items,

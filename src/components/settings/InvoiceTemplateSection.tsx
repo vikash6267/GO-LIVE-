@@ -11,7 +11,7 @@ interface InvoiceTemplateSectionProps {
 
 export function InvoiceTemplateSection({ form }: InvoiceTemplateSectionProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 hidden">
       <div>
         <h3 className="text-lg font-medium">Invoice Template Settings</h3>
         <p className="text-sm text-muted-foreground">

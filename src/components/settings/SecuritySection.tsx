@@ -62,7 +62,7 @@ export function SecuritySection({ form }: SecuritySectionProps) {
             </FormItem>
           )}
         />
-
+{/* 
         <FormField
           control={form.control}
           name="two_factor_enabled"
@@ -84,7 +84,7 @@ export function SecuritySection({ form }: SecuritySectionProps) {
               </FormControl>
             </FormItem>
           )}
-        />
+        /> */}
       </CardContent>
     </Card>
   );

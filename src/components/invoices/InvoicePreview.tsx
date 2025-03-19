@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import jsPDF from "jspdf"
 import html2canvas from "html2canvas"
 import { SheetContent, SheetTitle } from "@/components/ui/sheet"
@@ -8,21 +8,27 @@ import { Separator } from "@/components/ui/separator"
 import { defaultValues } from "@/components/settings/settingsTypes"
 import type { SettingsFormValues } from "@/components/settings/settingsTypes"
 import { useToast } from "@/components/ui/use-toast"
+import { supabase } from "@/integrations/supabase/client"
+import { Json } from "@/integrations/supabase/types"
 
 interface InvoicePreviewProps {
   invoice?: {
     id: string
+    profile_id: string
     invoice_number: any
     order_number: any
     customerInfo?: {
       name: string
       phone: string
       email: string
+      address: Json
     }
     shippingInfo?: {
       fullName: string
       phone: string
       email: string
+      address: Json
+
     }
     items?: Array<{
       name: string
@@ -45,7 +51,9 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
   const invoiceRef = useRef<HTMLDivElement>(null)
   const pdfTemplateRef = useRef<HTMLDivElement>(null)
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
+  const [componyName, setComponyName] = useState("")
 
+  console.log(invoice)
   if (!invoice) {
     toast({
       title: "Error",
@@ -101,28 +109,65 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
     }
   }
 
+  const fetchUser = async () => {
+
+    try {
+      if (!invoice || !invoice.profile_id) return
+
+      const userID = invoice.profile_id
+
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("company_name")
+        .eq("id", userID)
+        .maybeSingle();
+
+      if (error) {
+        console.error("🚨 Supabase Fetch Error:", error);
+        return;
+      }
+
+      if (!data) {
+        console.warn("⚠️ No user found for this email.");
+        return;
+      }
+
+      console.log("✅ User Data:", data);
+      setComponyName(data.company_name || "")
+
+    } catch (error) {
+
+    }
+  };
+
+  useEffect(() => {
+    fetchUser()
+  }, [invoice])
+
   return (
     <SheetContent className="w-full sm:max-w-[600px] md:max-w-[800px] lg:max-w-[900px] overflow-y-auto p-2 sm:p-6">
       {/* Visible invoice preview - responsive */}
       <div ref={invoiceRef} className="border p-3 sm:p-6 space-y-4 sm:space-y-8 bg-white">
         {/* Company Name & Logo */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-4 ">
           <div>
             <div className="flex gap-3">
               <img
-                src={settings.logo || "/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png" || "/placeholder.svg"}
+                src={settings.logo || "/logo.png" || "/placeholder.svg"}
                 alt="Company Logo"
                 className="h-10 sm:h-12 md:h-16 relative z-10 contrast-200"
               />
             </div>
-            <div className="mt-3 ml-0 sm:ml-5 text-xs sm:text-sm">
+            <div className="mt-3 ml-0  text-xs sm:text-[12px]">
               Tax ID : 99-0540972 <br />
               936 Broad River Ln,
               <br />
-              Charlotte, <br /> NC 28211
+              Charlotte, NC 28211
               <br />
-              snehal@9rx.com <br />
-              www.9rx.com
+              +1 800 969 6295 <br />
+              info@9rx.com <br />
+              www.9rx.com <br />
             </div>
           </div>
 
@@ -137,15 +182,20 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 border-b pb-4">
           <div>
             <h3 className="font-semibold text-sm sm:text-base">Bill To</h3>
+            <p className="text-xs sm:text-sm">{componyName}</p>
             <p className="text-xs sm:text-sm">{invoice.customerInfo?.name || "N/A"}</p>
             <p className="text-xs sm:text-sm">{invoice.customerInfo?.phone || "N/A"}</p>
             <p className="text-xs sm:text-sm">{invoice.customerInfo?.email || "N/A"}</p>
+            <p className="text-xs sm:text-sm">{invoice.customerInfo.address?.street || "N/A"}, {invoice.customerInfo.address?.city || "N/A"}, {invoice.customerInfo.address?.state || "N/A"} {invoice.customerInfo.address?.zip_code || "N/A"}</p>
           </div>
           <div className="mt-4 sm:mt-0">
             <h3 className="font-semibold text-sm sm:text-base">Ship To</h3>
+            <p className="text-xs sm:text-sm">{componyName}</p>
             <p className="text-xs sm:text-sm">{invoice.shippingInfo?.fullName || "N/A"}</p>
             <p className="text-xs sm:text-sm">{invoice.shippingInfo?.phone || "N/A"}</p>
             <p className="text-xs sm:text-sm">{invoice.shippingInfo?.email || "N/A"}</p>
+            <p className="text-xs sm:text-sm">{invoice.shippingInfo.address?.street || "N/A"}, {invoice.shippingInfo.address?.city || "N/A"}, {invoice.shippingInfo.address?.state || "N/A"} {invoice.shippingInfo.address?.zip_code || "N/A"}</p>
+
           </div>
         </div>
 
@@ -180,22 +230,30 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
         {/* Totals */}
         <div className="flex justify-end border-t pt-4">
           <div className="w-full sm:w-64 space-y-2">
-          <div className="flex justify-between text-xs sm:text-sm">
-  <span>Sub Total</span>
-  <span>${(invoice?.subtotal - invoice?.tax)?.toFixed(2) || "0.00"}</span>
+            <div className="flex justify-between text-xs sm:text-sm">
+              <span>Sub Total</span>
+              <span>${(invoice?.subtotal - invoice?.tax)?.toFixed(2) || "0.00"}</span>
 
-</div>
+            </div>
 
-<div className="flex justify-between text-xs sm:text-sm">
-  <span>Tax ({invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)</span>
-  <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
-</div>
+            <div className="flex justify-between text-xs sm:text-sm">
+              <span>Tax ({invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)</span>
+              <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
+            </div>
 
             <Separator />
             <div className="flex justify-between font-bold text-sm sm:text-base">
               <span>Total</span>
               <span>${invoice?.total?.toFixed(2) || "0.00"}</span>
             </div>
+
+            <p
+              className={`px-3 py-1 rounded-full text-sm font-medium 
+              ${invoice?.payment_status === "paid" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+            >
+              {invoice?.payment_status === "paid" ? "✅ Paid" : "❌ Unpaid"}
+            </p>
+
           </div>
         </div>
       </div>
@@ -231,13 +289,14 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
                   crossOrigin="anonymous"
                 />
               </div>
-              <div className="mt-3 ml-5 text-sm">
+              <div className="mt-3 text-[12px]">
                 Tax ID : 99-0540972 <br />
                 936 Broad River Ln,
                 <br />
-                Charlotte, <br /> NC 28211
+                Charlotte,  NC 28211
                 <br />
-                snehal@9rx.com <br />
+                +1 800 969 6295 <br />
+                info@9rx.com <br />
                 www.9rx.com
               </div>
             </div>
@@ -273,7 +332,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
                 <th className="border p-2 text-left">Sizes</th>
                 <th className="border p-2 text-right">Qty</th>
                 <th className="border p-2 text-right">Amount</th>
-               
+
               </tr>
             </thead>
             <tbody>
@@ -285,7 +344,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
                   </td>
                   <td className="border p-2 text-right">{item.quantity}</td>
                   <td className="border p-2 text-right">${item.price}</td>
-                  <td className="border p-2 text-right">${item.price }</td>
+                  <td className="border p-2 text-right">${item.price}</td>
                 </tr>
               ))}
             </tbody>
@@ -294,15 +353,15 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
           {/* Totals */}
           <div className="flex justify-end border-t pt-4">
             <div className="w-64 space-y-2">
-            <div className="flex justify-between text-xs sm:text-sm">
-  <span>Sub Total</span>
-  <span>${invoice?.subtotal?.toFixed(2) || "0.00"}</span>
-</div>
+              <div className="flex justify-between text-xs sm:text-sm">
+                <span>Sub Total</span>
+                <span>${invoice?.subtotal?.toFixed(2) || "0.00"}</span>
+              </div>
 
-<div className="flex justify-between text-xs sm:text-sm">
-  <span>Tax ({invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)</span>
-  <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
-</div>
+              <div className="flex justify-between text-xs sm:text-sm">
+                <span>Tax ({invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)</span>
+                <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
+              </div>
 
               <div className="border-t border-gray-300 my-2"></div>
               <div className="flex justify-between font-bold">

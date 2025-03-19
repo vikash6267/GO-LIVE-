@@ -7,7 +7,7 @@ import { useOrderFilters } from "./hooks/useOrderFilters";
 import { useOrderManagement } from "./hooks/useOrderManagement";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import { Package, PlusCircle } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -224,66 +224,61 @@ export const OrdersContainer = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <OrderFilters
-          onSearch={setSearchQuery}
-          onDateChange={setDateRange}
-          onExport={() => console.log("Export functionality to be implemented")}
-        />
-        {userRole === "admin" && (
-          <div className=" flex flex-wrap">
-            <Sheet open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>
-              <SheetTrigger asChild>
-                <Button>
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Create Order
-                </Button>
-              </SheetTrigger>
-              <SheetContent
-                side="right"
-                className="w-[90vw] sm:max-w-[640px] overflow-y-auto"
-              >
-                <SheetHeader>
-                  <SheetTitle>Create New Order</SheetTitle>
-                </SheetHeader>
 
 
-                <div className="mb-6">
-                  <Label htmlFor="pharmacy-select">Select Pharmacy</Label>
-                  <Select
-                    id="pharmacy-select"
-                    options={options}
-                    value={options.find((option) => option.value === selectedPharmacy)}
-                    onChange={(selectedOption) => handlePharmacyChange(selectedOption.value)}
-                    placeholder="Search pharmacy..."
-                    isSearchable
-                    className="w-full md:w-[300px]"
-                  />
-                </div>
-                {orderData?.customerInfo && <div className="mt-4">
-                  <CreateOrderForm
+<div className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-2 p-2 bg-card rounded-lg shadow-sm border">
+  <OrderFilters
+    onSearch={setSearchQuery}
+    onDateChange={setDateRange}
+    onExport={() => console.log("Export functionality to be implemented")}
+  />
+  {userRole === "admin" && (
+    <div className="flex flex-wrap justify-center md:justify-end items-center gap-2 w-full md:w-auto">
+      <Sheet open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>
+        <SheetTrigger asChild>
+          <Button className="w-auto min-w-fit px-3 py-2 text-sm">
+            <PlusCircle className="mr-1 h-4 w-4" />
+            Create Order
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="right" className="w-[90vw] sm:max-w-[640px] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>Create New Order</SheetTitle>
+          </SheetHeader>
 
-                    isEditing={false}
-                    initialData={orderData}
-                    onFormChange={handleFormChange}
-                
-
-                  />
-                </div>}
-              </SheetContent>
-            </Sheet>
-
-            {/* Move the Show Products button outside of SheetTrigger */}
-            <button
-              onClick={() => setIsOpen(true)}
-              className="bg-blue-600 text-white px-4 lg:mt-0 mt-3 py-2 rounded-lg shadow-md hover:bg-blue-700 transition"
-            >
-              Products All
-            </button>
+          <div className="mb-4 mt-2">
+            <Label htmlFor="pharmacy-select">Select Pharmacy</Label>
+            <Select
+              id="pharmacy-select"
+              options={options}
+              value={options.find((option) => option.value === selectedPharmacy)}
+              onChange={(selectedOption) => handlePharmacyChange(selectedOption.value)}
+              placeholder="Search pharmacy..."
+              isSearchable
+              className="w-full mt-1"
+            />
           </div>
-        )}
+          {orderData?.customerInfo && (
+            <div className="mt-2">
+              <CreateOrderForm isEditing={false} initialData={orderData} onFormChange={handleFormChange} />
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
 
-      </div>
+      <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>
+          <Button variant="secondary" className="w-auto min-w-fit px-3 py-2 bg-blue-500 text-white text-sm">
+            <Package className="mr-1 h-4 w-4" />
+            All Products
+          </Button>
+        </SheetTrigger>
+      </Sheet>
+    </div>
+  )}
+</div>
+
+
 
 
 

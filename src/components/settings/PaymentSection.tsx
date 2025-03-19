@@ -10,7 +10,7 @@ interface PaymentSectionProps {
 
 export function PaymentSection({ form }: PaymentSectionProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 hidden">
       <div>
         <h3 className="text-lg font-medium">Payment Settings</h3>
         <p className="text-sm text-muted-foreground">

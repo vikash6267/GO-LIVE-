@@ -56,6 +56,7 @@ export function CreateOrderForm({
   const [pId, setPId] = useState(
     initialData?.customerInfo.cusid || userProfile?.id || ""
   );
+  const userTypeRole = sessionStorage.getItem('userType');
 
   useEffect(() => {
     setPId(initialData?.customerInfo.cusid || userProfile?.id);
@@ -418,7 +419,7 @@ export function CreateOrderForm({
 
           <div className="">
 
-            <div className="flex justify-end w-full">
+           { userTypeRole === "admin" &&  <div className="flex justify-end w-full">
               <p
                 onClick={(e) => {
                   e.preventDefault(); // Form submit hone se rokne ke liye
@@ -428,7 +429,7 @@ export function CreateOrderForm({
               >
                 {isPriceChange ? "Close Edit Price" : "Edit Price"}
               </p>
-            </div>
+            </div>}
 
 
 

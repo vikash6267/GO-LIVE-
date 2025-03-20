@@ -83,6 +83,7 @@ const ProductShowcase = ({ groupShow }: ProductShowcaseProps) => {
               basePrice: item.customization?.price || 0,
             },
             key_features: item.key_features,
+            squanence: item.squanence,
             productId: item.id.toString(),
             specifications: {
               safetyInfo: item.description || "",
@@ -119,6 +120,7 @@ const ProductShowcase = ({ groupShow }: ProductShowcaseProps) => {
                   originalPrice: size.price === newPrice ? 0 : size.price, // Track original price
                   sku: size.sku || "",
                   key_features: size.key_features || "",
+                  squanence: size.squanence || "",
                   quantity_per_case: size.quantity_per_case,
                   pricePerCase: size.price_per_case,
                   price_per_case: size.price_per_case,

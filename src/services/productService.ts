@@ -19,7 +19,7 @@ export const fetchProductsService = async (
     `,
       { count: "exact" }
     )
-    .order("created_at", { ascending: false })
+    .order("squanence", { ascending: true }) // Sorting by sequence
     .range(offset, offset + pageSize - 1);
 
   if (category !== "all") {
@@ -37,6 +37,7 @@ export const addProductService = async (data: ProductFormValues) => {
   const productData = {
     sku: data.sku,
     key_features: data.key_features,
+    squanence: data.squanence,
     name: data.name,
     description: data.description || "",
     category: data.category,
@@ -105,6 +106,7 @@ export const updateProductService = async (
       .update({
         sku: data.sku,
         key_features: data.key_features,
+        squanence: data.squanence,
         name: data.name,
         description: data.description || "",
         category: data.category,

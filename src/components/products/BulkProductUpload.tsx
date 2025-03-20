@@ -25,6 +25,7 @@ export const BulkProductUpload = ({
       name: rawProduct.PRODUCT || "",
       sku: sku,
       key_features: rawProduct.key_features,
+      squanence: rawProduct.squanence || "",
       description: rawProduct.PRODUCT || "",
       category: rawProduct.CATEGORY || "OTHER",
       base_price: basePrice,

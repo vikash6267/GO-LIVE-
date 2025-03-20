@@ -624,6 +624,7 @@ export type Database = {
           size_value: number | null;
           sku: string;
           key_features: string;
+          squanence: string;
           updated_at: string | null;
         };
         Insert: {
@@ -647,6 +648,7 @@ export type Database = {
           size_value?: number | null;
           sku: string;
           key_features: string;
+          squanence: string;
           updated_at?: string | null;
         };
         Update: {
@@ -670,6 +672,7 @@ export type Database = {
           size_value?: number | null;
           sku?: string;
           key_features?: string;
+          squanence?: string;
           updated_at?: string | null;
         };
         Relationships: [];

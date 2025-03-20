@@ -17,6 +17,7 @@ export interface Product {
   id: string;
   sku: string;
   key_features: string;
+  squanence?: string;
   name: string;
   description: string;
   category: string;

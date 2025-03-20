@@ -138,6 +138,19 @@ export const BasicInfoSection = ({
           </FormItem>
         )}
       />
+      <FormField
+        control={form.control}
+        name="squanence"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Product Sequence</FormLabel>
+            <FormControl>
+              <Input placeholder="Product Squanence" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
 
       <FormField
         control={form.control}

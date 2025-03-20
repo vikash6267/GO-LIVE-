@@ -81,6 +81,8 @@ export const productFormSchema = z.object({
   description: z.string().min(10, "Description must be at least 10 characters"),
   sku: z.string().min(2, "SKU must be at least 2 characters"),
   key_features: z.string().min(2, "key features must be at least 2 characters"),
+  squanence: z.any().optional(),
+ 
   category: z.string(),
   images: z.array(z.string()).default([]),
   sizes: z

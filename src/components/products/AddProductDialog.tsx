@@ -43,6 +43,8 @@ export function AddProductDialog({
       name: initialData?.name || "",
       sku: initialData?.sku || "",
       key_features: initialData?.key_features || "",
+  squanence:initialData?.squanence || "",
+
       description: initialData?.description || "",
       category: initialData?.category || "",
       images: initialData?.images || [],

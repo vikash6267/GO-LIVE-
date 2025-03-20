@@ -43,7 +43,7 @@ export function BusinessProfileSection({ form }: BusinessProfileSectionProps) {
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="description"
           render={({ field }) => (
@@ -58,7 +58,7 @@ export function BusinessProfileSection({ form }: BusinessProfileSectionProps) {
               </FormControl>
             </FormItem>
           )}
-        />
+        /> */}
       </CardContent>
     </Card>
   );

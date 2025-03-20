@@ -40,7 +40,7 @@ export interface ProductDetails {
   shipping_cost: number;
   sku: string;
   key_features: string;
-
+  squanence:string;
   images: string[];
   image_url: string;
   endsIn: string;

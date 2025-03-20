@@ -61,6 +61,7 @@ export const updateUserProfile = async (
       type: values.type,
       status: values.status,
       role: values.role,
+      contact_person: values.contactPerson,
       company_name: values.companyName?.trim() || null,
       pharmacy_license: values.pharmacyLicense?.trim() || null,
       display_name: values.displayName?.trim() || null,

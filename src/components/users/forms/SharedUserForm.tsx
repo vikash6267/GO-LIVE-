@@ -22,6 +22,8 @@ export function SharedUserForm({
   isSubmitting = false,
   self=false
 }: SharedUserFormProps) {
+
+  console.log(form.getValues())
   const handleSubmit = async (values: BaseUserFormData) => {
     console.log(
       "SharedUserForm: Starting form submission with values:",

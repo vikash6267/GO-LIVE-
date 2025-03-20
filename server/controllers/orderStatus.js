@@ -1,5 +1,6 @@
 
 const accountActiveTemplate = require("../templates/accountActiveTemplate");
+const adminAccountActiveTemplate = require("../templates/adminCreateAccount");
 const { contactUsEmail } = require("../templates/contactFormRes");
 const { customizationQueryEmail } = require("../templates/customizationQuaery");
 const orderConfirmationTemplate = require("../templates/orderCreate");
@@ -135,6 +136,43 @@ exports.accountActivation = async (req, res) => {
     await mailSender(
       email,
       "Your Account Active Successfully! ",
+      emailContent
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Account Active",
+    });
+  } catch (error) {
+    console.error("Error in Order Status Controller:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong in Order Status",
+      error: error.message,
+    });
+  }
+};
+
+exports.adminAccountActivation = async (req, res) => {
+  try {
+    const { name, email, admin = false } = req.body;
+
+
+    // Ensure required fields are present
+    if (!name || !email) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required order details.",
+      });
+    }
+
+    // Generate email content using the template
+    const emailContent = adminAccountActiveTemplate(name, email, admin);
+
+    // Send email
+    await mailSender(
+      email,
+      "Your Account has been created Successfully! ",
       emailContent
     );
 

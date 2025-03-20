@@ -37,6 +37,8 @@ import PasswordReset from "./components/ResetPassword";
 import UserSelfDetails from "./components/UserSelfDetails";
 import PayNowOrder from "./components/PayNowOrder";
 import CartItemsPricing from "./components/CartItemsPricing";
+import { supabase } from "./integrations/supabase/client";
+import ResetPasswordPage from "./components/ResetPassowrdPage";
 
 
 // Protected route wrapper component
@@ -60,7 +62,13 @@ function App() {
   const { toast } = useToast();
   const location = useLocation();
   useAuthCheck();
+
+
   useEffect(() => {
+
+   
+    
+      
     // Clear any expired sessions
     const lastActivity = sessionStorage.getItem('lastActivity');
     if (lastActivity && Date.now() - parseInt(lastActivity) > 24 * 60 * 60 * 1000) {
@@ -83,6 +91,7 @@ function App() {
       <Route path="/activation" element={<ActivationUser />} />
       <Route path="/update-profile" element={<UserSelfDetails />} />
       <Route path="/reset-password" element={<PasswordReset />} />
+      <Route path="/reset-password-page" element={<ResetPasswordPage />} />
       <Route path="/pay-now" element={<PayNowOrder />} />
       <Route path="/products" element={<Products />} />
       <Route path="/cart-price" element={<CartItemsPricing />} />

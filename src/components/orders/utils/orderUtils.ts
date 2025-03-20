@@ -1,13 +1,49 @@
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/supabaseClient";
 
-export const generateOrderId = () => {
-  const timestamp = Date.now().toString().slice(-6); // Last 6 digits of timestamp
-  const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-  const orderId = `9RX${timestamp}${random}`;
-  console.log('Generated Order ID:', orderId);
+export const generateOrderId = async () => {
+  const year = new Date().getFullYear(); // Get current year (e.g., 2025)
+
+  // Fetch latest order from the database
+  const { data, error } = await supabase
+    .from("centerize_data")
+    .select("id, order_no, order_start") 
+    .order("id", { ascending: false }) // Get latest order
+    .limit(1);
+
+  if (error) {
+    console.error("🚨 Supabase Fetch Error:", error);
+    return null;
+  }
+
+  let newOrderNo = 1; // Default to 1 if no previous order exists
+  let orderStart = "9RX"; // Default order prefix
+
+  if (data && data.length > 0) {
+    newOrderNo = (data[0].order_no || 0) + 1; // Increment last order number
+    orderStart = data[0].order_start || "9RX"; // Use existing order_start
+  }
+
+  // Format order ID like '9RX202500001'
+  const orderId = `${orderStart}${newOrderNo.toString().padStart(6, "0")}`;
+
+  // ✅ Update the latest order_no in the database
+  const { error: updateError } = await supabase
+    .from("centerize_data")
+    .update({ order_no: newOrderNo }) // Correct update syntax
+    .eq("id", data[0]?.id); // Update only the latest record
+
+  if (updateError) {
+    console.error("🚨 Supabase Update Error:", updateError);
+  } else {
+    console.log("✅ Order No Updated to:", newOrderNo);
+  }
+
+  console.log("✅ Generated Order ID:", orderId);
   return orderId;
 };
+
+
 
 export const calculateOrderTotal = (items: any[], shippingCost: number = 0) => {
   const itemsTotal = items.reduce((total, item) => {

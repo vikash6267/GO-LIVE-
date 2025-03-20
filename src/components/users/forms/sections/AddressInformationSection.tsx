@@ -39,30 +39,38 @@ export function AddressInformationSection({
       <CardContent className="space-y-4">
         <AddressFields form={form} type="billing" />
 
-        <FormField
-          control={form.control}
-          name="sameAsShipping"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-              <div className="space-y-0.5">
-                <FormLabel
-                  htmlFor="same-as-shipping-switch"
-                  className="text-base"
-                >
-                  Same as Shipping
+
+        <div className="flex items-center justify-between gap-4 ">
+          {/* Billing Address Title */}
+          <CardTitle>Billing Address</CardTitle>
+
+          {/* Same as Shipping Toggle */}
+          <FormField
+            control={form.control}
+            name="sameAsShipping"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center rounded-lg border p-4">
+                <FormLabel htmlFor="same-as-shipping-switch" className="text-base">
+                  Same as
                 </FormLabel>
-              </div>
-              <FormControl>
-                <Switch
-                  id="same-as-shipping-switch"
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  aria-label="Use billing address for shipping"
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+                <FormControl>
+                  <Switch
+                    id="same-as-shipping-switch"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    aria-label="Use billing address for shipping"
+                    className="ml-2"
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
+
+
+
+        <AddressFields form={form} type="shipping" />
+
         {!self && (
           <>
             <FormField
@@ -112,9 +120,6 @@ export function AddressInformationSection({
             />
           </>
         )}
-        <CardTitle>Billing Address</CardTitle>
-
-        <AddressFields form={form} type="shipping" />
       </CardContent>
     </Card>
   );

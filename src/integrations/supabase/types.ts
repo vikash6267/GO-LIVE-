@@ -679,6 +679,8 @@ export type Database = {
           account_status: string | null;
 
           alternative_email: string | null;
+          email_notifaction?: boolean | false;
+          order_updates?: boolean | false;
           billing_address: Json | null;
           company_name: string | null;
           contact_person: string | null;
@@ -725,6 +727,9 @@ export type Database = {
         Insert: {
           account_status?: string | null;
           alternative_email?: string | null;
+          email_notifaction?: boolean | false;
+          order_updates?: boolean | false;
+
           billing_address?: Json | null;
           company_name?: string | null;
           contact_person?: string | null;
@@ -772,6 +777,9 @@ export type Database = {
           account_status?: string | null;
           alternative_email?: string | null;
           billing_address?: Json | null;
+          email_notifaction?: boolean | false;
+          order_updates?: boolean | false;
+
           company_name?: string | null;
           contact_person?: string | null;
           created_at?: string | null;
@@ -944,6 +952,36 @@ export type Database = {
           }
         ];
       };
+      centerize_data: {
+        Row: {
+          id: string;
+          name: string;
+          order_start: string;
+          invoice_start: string;
+          order_no: number;
+          invoice_no: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          order_start: string;
+          invoice_start: string;
+          order_no: number;
+          invoice_no: number;
+          created_at?: string;
+        };
+        Update: Partial<{
+          id: string;
+          name: string;
+          order_start: string;
+          invoice_start: string;
+          order_no: number;
+          invoice_no: number;
+          created_at: string;
+        }>;
+      };
+  
     };
     Views: {
       [_ in never]: never;

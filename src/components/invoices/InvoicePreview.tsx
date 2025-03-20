@@ -9,7 +9,13 @@ import { defaultValues } from "@/components/settings/settingsTypes"
 import type { SettingsFormValues } from "@/components/settings/settingsTypes"
 import { useToast } from "@/components/ui/use-toast"
 import { supabase } from "@/integrations/supabase/client"
-import { Json } from "@/integrations/supabase/types"
+
+interface Address {
+  street: string
+  city: string
+  state: string
+  zip_code: string
+}
 
 interface InvoicePreviewProps {
   invoice?: {
@@ -21,14 +27,13 @@ interface InvoicePreviewProps {
       name: string
       phone: string
       email: string
-      address: Json
+      address: Address
     }
     shippingInfo?: {
       fullName: string
       phone: string
       email: string
-      address: Json
-
+      address: Address
     }
     items?: Array<{
       name: string
@@ -41,9 +46,13 @@ interface InvoicePreviewProps {
     subtotal?: number
     tax?: number
     total?: number
-    payment_status: string
+    payment_status: string,
+    payment_method: string,
+    payment_notes: string,
+    payment_transication: string,
   }
 }
+
 
 export function InvoicePreview({ invoice }: InvoicePreviewProps) {
   const { toast } = useToast()
@@ -228,34 +237,65 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
         </div>
 
         {/* Totals */}
-        <div className="flex justify-end border-t pt-4">
-          <div className="w-full sm:w-64 space-y-2">
-            <div className="flex justify-between text-xs sm:text-sm">
-              <span>Sub Total</span>
-              <span>${(invoice?.subtotal - invoice?.tax)?.toFixed(2) || "0.00"}</span>
+        <div className="flex flex-col lg:flex-row justify-between items-start border-t pt-4 space-y-4 lg:space-y-0 lg:space-x-4">
+  {/* Left: Payment Status */}
+  <div className="w-full lg:w-1/3 p-4 bg-gray-100 rounded-lg shadow-md border border-gray-300">
+    {/* Payment Status */}
+    <p
+      className={`px-5 py-2 rounded-full text-sm font-semibold flex items-center gap-2 w-max text-left shadow-md 
+      ${invoice?.payment_status === "paid" 
+        ? "bg-green-500 text-white" 
+        : "bg-red-500 text-white"}`}
+    >
+      {invoice?.payment_status === "paid" ? "✅ Paid" : "❌ Unpaid"}
+    </p>
 
-            </div>
+    {/* Payment Details */}
+    {invoice?.payment_status === "paid" && (
+      <div className="mt-3 p-4 bg-white rounded-lg shadow-lg border-l-4 border-green-500">
+        <p className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+          {invoice.payment_method === "card" ? "💳 Transaction ID:" : "📝 Payment Notes:"}
+        </p>
+        <p className="text-sm text-gray-700 mt-1 bg-gray-100 px-3 py-2 rounded-md shadow-sm">
+          {invoice.payment_method === "card" ? invoice?.payment_transication : invoice?.payment_notes}
+        </p>
+      </div>
+    )}
+  </div>
 
-            <div className="flex justify-between text-xs sm:text-sm">
-              <span>Tax ({invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)</span>
-              <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
-            </div>
+  {/* Right: Invoice Summary */}
+  <div className="w-full lg:w-2/3 p-4 bg-white rounded-lg shadow-md border border-gray-300">
+    <div className="space-y-2">
+      {/* Sub Total */}
+      <div className="flex justify-between text-sm sm:text-base">
+        <span>Sub Total</span>
+        <span>${(invoice?.subtotal - invoice?.tax)?.toFixed(2) || "0.00"}</span>
+      </div>
 
-            <Separator />
-            <div className="flex justify-between font-bold text-sm sm:text-base">
-              <span>Total</span>
-              <span>${invoice?.total?.toFixed(2) || "0.00"}</span>
-            </div>
+      {/* Tax */}
+      <div className="flex justify-between text-sm sm:text-base">
+        <span>Tax ({invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)</span>
+        <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
+      </div>
 
-            <p
-              className={`px-3 py-1 rounded-full text-sm font-medium 
-              ${invoice?.payment_status === "paid" ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
-            >
-              {invoice?.payment_status === "paid" ? "✅ Paid" : "❌ Unpaid"}
-            </p>
+      <Separator />
 
-          </div>
-        </div>
+      {/* Total */}
+      <div className="flex justify-between font-bold text-base sm:text-lg">
+        <span>Total</span>
+        <span>${invoice?.total?.toFixed(2) || "0.00"}</span>
+      </div>
+
+      {/* Balance Due */}
+      <div className="flex justify-between font-bold text-base sm:text-lg text-red-600">
+        <span>Balance Due</span>
+        <span>{invoice?.payment_status === "paid" ? "$0" : `${invoice?.total?.toFixed(2) || "0.00"}`}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
       </div>
 
       {/* Download Button */}
@@ -351,25 +391,63 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
           </table>
 
           {/* Totals */}
-          <div className="flex justify-end border-t pt-4">
-            <div className="w-64 space-y-2">
-              <div className="flex justify-between text-xs sm:text-sm">
-                <span>Sub Total</span>
-                <span>${invoice?.subtotal?.toFixed(2) || "0.00"}</span>
-              </div>
+          <div className="flex justify-between items-start border-t pt-4 space-x-4">
+  {/* Left: Payment Status */}
+  <div className="w-1/3 p-4 bg-gray-100 rounded-lg shadow-md border border-gray-300">
+    {/* Payment Status */}
+    <p
+      className={`px-5 py-2 rounded-full text-sm font-semibold flex items-center gap-2 w-max text-left shadow-md 
+      ${invoice?.payment_status === "paid" 
+        ? "bg-green-500 text-white" 
+        : "bg-red-500 text-white"}`}
+    >
+      {invoice?.payment_status === "paid" ? "✅ Paid" : "❌ Unpaid"}
+    </p>
 
-              <div className="flex justify-between text-xs sm:text-sm">
-                <span>Tax ({invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)</span>
-                <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
-              </div>
+    {/* Payment Details */}
+    {invoice?.payment_status === "paid" && (
+      <div className="mt-3 p-4 bg-white rounded-lg shadow-lg border-l-4 border-green-500">
+        <p className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+          {invoice.payment_method === "card" ? "💳 Transaction ID:" : "📝 Payment Notes:"}
+        </p>
+        <p className="text-sm text-gray-700 mt-1 bg-gray-100 px-3 py-2 rounded-md shadow-sm">
+          {invoice.payment_method === "card" ? invoice?.payment_transication : invoice?.payment_notes}
+        </p>
+      </div>
+    )}
+  </div>
 
-              <div className="border-t border-gray-300 my-2"></div>
-              <div className="flex justify-between font-bold">
-                <span>Total</span>
-                <span>${invoice?.total?.toFixed(2) || "0.00"}</span>
-              </div>
-            </div>
-          </div>
+  {/* Right: Invoice Summary */}
+  <div className="w-2/3 p-4 bg-white rounded-lg shadow-md border border-gray-300">
+    <div className="space-y-2">
+      {/* Sub Total */}
+      <div className="flex justify-between text-sm sm:text-base">
+        <span>Sub Total</span>
+        <span>${(invoice?.subtotal - invoice?.tax)?.toFixed(2) || "0.00"}</span>
+      </div>
+
+      {/* Tax */}
+      <div className="flex justify-between text-sm sm:text-base">
+        <span>Tax ({invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)</span>
+        <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
+      </div>
+
+      <Separator />
+
+      {/* Total */}
+      <div className="flex justify-between font-bold text-base sm:text-lg">
+        <span>Total</span>
+        <span>${invoice?.total?.toFixed(2) || "0.00"}</span>
+      </div>
+
+      {/* Balance Due */}
+      <div className="flex justify-between font-bold text-base sm:text-lg text-red-600">
+        <span>Balance Due</span>
+        <span>{invoice?.payment_status === "paid" ? "$0" : `$${invoice?.total?.toFixed(2) || "0.00"}`}</span>
+      </div>
+    </div>
+  </div>
+</div>
         </div>
       </div>
     </SheetContent>

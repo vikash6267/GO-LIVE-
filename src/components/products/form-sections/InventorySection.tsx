@@ -22,7 +22,7 @@ export const InventorySection = ({ form }: InventorySectionProps) => {
   const trackInventory = form.watch("trackInventory");
 
   return (
-    <Card className="p-6 space-y-6">
+    <Card className="p-6 space-y-6 hidden">
       <div>
         <h3 className="text-lg font-semibold mb-2">Inventory Management</h3>
         <p className="text-sm text-muted-foreground mb-4">

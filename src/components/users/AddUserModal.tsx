@@ -219,7 +219,7 @@ export function AddUserModal({
 
       if(userData.status==="active"){
         try {
-          const response = await axios.post("/active", {
+          const response = await axios.post("/active-admin", {
             name: `${userData.first_name} ${userData.last_name}`,
             email: userData.email,
             admin: true
@@ -236,7 +236,7 @@ export function AddUserModal({
               console.log('Password reset email sent successfully!', data);
             }
           }
-          sendResetPasswordLink(userData.email)
+          // sendResetPasswordLink(userData.email)
         } catch (error) {
           console.error("Error in user verification:", error.response?.data || error.message);
         }

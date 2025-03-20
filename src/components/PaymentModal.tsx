@@ -83,6 +83,7 @@ const PaymentForm = ({
         .update({
           payment_status: "paid", // Use correct column name
           notes: formData.notes, // Use correct column name
+
           updated_at: new Date().toISOString(),
         })
         .eq("id", orderId);
@@ -95,6 +96,10 @@ const PaymentForm = ({
         .update({
           payment_status: "paid", // Use correct column name
           updated_at: new Date().toISOString(),
+          payment_method: "manual",
+          payment_notes: formData.notes, // Use correct column name
+
+
         })
         .eq("order_id", orderId);
 
@@ -144,12 +149,14 @@ const PaymentForm = ({
 
     try {
       const response = await axios.post("/pay", paymentData);
+      
       if (response.status === 200) {
         const { error: updateError } = await supabase
           .from("orders")
           .update({
             payment_status: "paid", // Use correct column name
             updated_at: new Date().toISOString(),
+         
           })
           .eq("id", orderId);
 
@@ -161,6 +168,8 @@ const PaymentForm = ({
           .update({
             payment_status: "paid", // Use correct column name
             updated_at: new Date().toISOString(),
+               payment_transication:response.data.transactionId || "",
+            payment_method: "card"
           })
           .eq("order_id", orderId);
 
@@ -204,7 +213,8 @@ const PaymentForm = ({
       console.log(error);
       toast({
         title: "Payment failed",
-        description: error.data.message,
+        description: error.response.data.message || "Failed ",
+        variant:"destructive"
       });
     }
   };
@@ -232,7 +242,11 @@ const PaymentForm = ({
           className="border p-2 w-full mb-3 rounded"
         >
           <option value="credit_card">Credit Card</option>
-          <option value="manaul_payemnt">Manual Payment</option>
+          {
+  sessionStorage.getItem('userType').toLocaleLowerCase() === "admin" &&
+
+            <option value="manaul_payemnt">Manual Payment</option>
+          }
           {/* <option value="ach">Bank Transfer</option> */}
         </select>
 

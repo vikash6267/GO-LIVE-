@@ -225,6 +225,10 @@ console.log(invoice)
         shippingInfo,
         profile_id:invoice.profile_id,
         payment_status: invoice.payment_status, // ✅ Extracted correctly
+       
+        payment_transication:invoice.payment_transication,
+        payment_notes:invoice.payment_notes,
+        payment_method:invoice.payment_method,
 
         items,
         subtotal: invoice.subtotal,

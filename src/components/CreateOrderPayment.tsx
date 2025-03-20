@@ -41,7 +41,7 @@ const CreateOrderPaymentForm = ({
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false); // Loading state
   const [tax, settax] = useState(0);
-const taxper = sessionStorage.getItem("taxper")
+  const taxper = sessionStorage.getItem("taxper")
 
 
   const [formData, setFormData] = useState({
@@ -83,8 +83,8 @@ const taxper = sessionStorage.getItem("taxper")
         zip: formDataa.customerInfo.address?.zip_code || "",
         email: formDataa.customerInfo.email || "",
         phone: formDataa.customerInfo.phone || "",
-   
-    amount: totalAmount + newtax ,
+
+        amount: totalAmount + newtax,
       }));
     }
   }, []);
@@ -99,31 +99,31 @@ const taxper = sessionStorage.getItem("taxper")
     const paymentData =
       paymentType === "credit_card"
         ? {
-            paymentType,
-            amount: formData.amount,
-            cardNumber: formData.cardNumber,
-            expirationDate: formData.expirationDate,
-            cvv: formData.cvv,
-            cardholderName: formData.cardholderName,
-            address: formData.address,
-            city: formData.city,
-            state: formData.state,
-            zip: formData.zip,
-            country: formData.country,
-          }
+          paymentType,
+          amount: formData.amount,
+          cardNumber: formData.cardNumber,
+          expirationDate: formData.expirationDate,
+          cvv: formData.cvv,
+          cardholderName: formData.cardholderName,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip: formData.zip,
+          country: formData.country,
+        }
         : {
-            paymentType,
-            amount: formData.amount,
-            accountType: formData.accountType,
-            routingNumber: formData.routingNumber,
-            accountNumber: formData.accountNumber,
-            nameOnAccount: formData.nameOnAccount,
-            address: formData.address,
-            city: formData.city,
-            state: formData.state,
-            zip: formData.zip,
-            country: formData.country,
-          };
+          paymentType,
+          amount: formData.amount,
+          accountType: formData.accountType,
+          routingNumber: formData.routingNumber,
+          accountNumber: formData.accountNumber,
+          nameOnAccount: formData.nameOnAccount,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          zip: formData.zip,
+          country: formData.country,
+        };
 
     try {
       const response = await axios.post("/pay", paymentData);
@@ -186,9 +186,10 @@ const taxper = sessionStorage.getItem("taxper")
             defaultEstimatedDelivery.getDate() + 10
           );
 
+          const orderNumber = await generateOrderId()
           // Prepare order data
           const orderData = {
-            order_number: generateOrderId(),
+            order_number: orderNumber,
             profile_id: pId || userProfile.id,
             status: data.status,
             total_amount: calculatedTotal + tax,
@@ -224,10 +225,45 @@ const taxper = sessionStorage.getItem("taxper")
           const newOrder = orderResponse[0];
           console.log("Order saved:", newOrder);
 
-          const { data: invoiceNumber } = await supabase.rpc(
-            "generate_invoice_number"
-          );
 
+          const year = new Date().getFullYear(); // Get current year (e.g., 2025)
+
+
+          const { data: inData, error: erroIn } = await supabase
+            .from("centerize_data")
+            .select("id, invoice_no, invoice_start")
+            .order("id", { ascending: false }) // Get latest order
+            .limit(1);
+
+          if (erroIn) {
+            console.error("🚨 Supabase Fetch Error:", erroIn);
+            return null;
+          }
+
+          let newInvNo = 1; // Default to 1 if no previous order exists
+          let invoiceStart = "INV"; // Default order prefix
+
+
+          if (inData && inData.length > 0) {
+            newInvNo = (inData[0].invoice_no || 0) + 1; // Increment last order number
+            invoiceStart = inData[0].invoice_start || "INV"; // Use existing order_start
+          }
+
+
+          const invoiceNumber = `${invoiceStart}-${year}${newInvNo.toString().padStart(6, "0")}`;
+
+
+
+          const { error: updateError } = await supabase
+            .from("centerize_data")
+            .update({ invoice_no: newInvNo }) // Correct update syntax
+            .eq("id", inData[0]?.id); // Update only the latest record
+
+          if (updateError) {
+            console.error("🚨 Supabase Update Error:", updateError);
+          } else {
+            console.log("✅ Order No Updated to:", newInvNo);
+          }
           const estimatedDeliveryDate = new Date(newOrder.estimated_delivery);
 
           // Calculate the due_date by adding 30 days to the estimated delivery
@@ -247,8 +283,9 @@ const taxper = sessionStorage.getItem("taxper")
             tax_amount: orderData.tax_amount || 0,
             total_amount: parseFloat(calculatedTotal + (isCus ? 0.5 : 0)),
             payment_status: "paid", // Use correct column name
+            payment_transication: response.data.transactionId || "",
+            payment_method: "card",
 
-            payment_method: newOrder.paymentMethod as PaymentMethod,
             payment_notes: newOrder.notes || null,
             items: newOrder.items || [],
             customer_info: newOrder.customerInfo || {

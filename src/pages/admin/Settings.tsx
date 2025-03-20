@@ -222,7 +222,7 @@ export default function Settings() {
             <InvoiceTemplateSection form={form} />
             <PaymentSection form={form} />
             <SecuritySection form={form} />
-            <NotificationSection form={form} />
+            {/* <NotificationSection form={form} /> */}
 
             <div className="flex justify-end">
               <Button type="submit" size="lg" disabled={saving}>

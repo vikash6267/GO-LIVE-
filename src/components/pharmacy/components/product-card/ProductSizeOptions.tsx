@@ -12,9 +12,8 @@ interface ProductSizeOptionsProps {
   onSizeSelect?: (sizeId: string[]) => void;
   onSizeSelectSKU?: (sizeId: string[]) => void;
   quantity: { [key: string]: number };
-  onIncreaseQuantity: (id: string) => void; // No sizeId required
-  onDecreaseQuantity: (id: string) => void; // No sizeId required
-  
+  onIncreaseQuantity: (id: string) => void;
+  onDecreaseQuantity: (id: string) => void;
 }
 
 export const ProductSizeOptions = ({
@@ -27,14 +26,19 @@ export const ProductSizeOptions = ({
   selectedSizesSKU = [],
   onSizeSelectSKU,
 }: ProductSizeOptionsProps) => {
-  const handleSizeToggle = (sizeId: string) => {
+  const handleSizeToggle = (sizeId: string, stock: number) => {
+    if (stock <= 0) return; // Prevent selection of out-of-stock items
+
     if (selectedSizes.includes(sizeId)) {
       onSizeSelect?.(selectedSizes.filter((s) => s !== sizeId));
     } else {
       onSizeSelect?.([...selectedSizes, sizeId]);
     }
   };
-  const handleSizeToggleSKU = (sizeSKU: string) => {
+
+  const handleSizeToggleSKU = (sizeSKU: string, stock: number) => {
+    if (stock <= 0) return; // Prevent selection of out-of-stock items
+
     if (selectedSizesSKU.includes(sizeSKU)) {
       onSizeSelectSKU?.(selectedSizesSKU.filter((s) => s !== sizeSKU));
     } else {
@@ -42,101 +46,84 @@ export const ProductSizeOptions = ({
     }
   };
 
-  const quantityPerCase = product.quantityPerCase || 0;
-
-  if (!product.sizes || product.sizes.length === 0) {
-    return (
-      <Card className="p-4 hover:shadow-md transition-shadow">
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="standard"
-            checked={selectedSizes.includes("standard")}
-            onCheckedChange={() => handleSizeToggle("standard")}
-          />
-          <Label htmlFor="standard">
-            <div className="space-y-1">
-              <div className="flex justify-between items-center">
-                <span className="font-medium">Standard Size</span>
-                <div className="text-emerald-600 font-semibold">
-                  ${formatPrice(product.base_price)}
-                </div>
-              </div>
-              {quantityPerCase > 0 && (
-                <div className="text-sm u text-muted-foreground">
-                  {quantityPerCase} units per case
-                </div>
-              )}
-            </div>
-          </Label>
-        </div>
-      </Card>
-    );
-  }
-
   return (
     <div className="space-y-3">
       {product.sizes.map((size, index) => {
-        console.log(size)
         const sizeId = `${size.size_value}-${size.size_unit}`;
         const sizeSKU = `${size.sku} - ${size.id}` || "";
-        const totalPrice = size.price * quantity[size.id] || size.price; // Using single quantity
+        const totalPrice = size.price * (quantity[size.id] || 1);
+        const isOutOfStock = size.stock <= 0;
+        const isMaxReached = quantity[size.id] >= size.stock; // Prevent exceeding stock
 
         return (
-          <Card key={index} className="p-4 hover:shadow-md transition-shadow">
+          <Card
+            key={index}
+            className={`p-4 hover:shadow-md transition-shadow ${isOutOfStock ? "opacity-50 cursor-not-allowed" : ""}`}
+          >
             <div className="flex items-center space-x-3">
               <Checkbox
                 id={`size-${index}`}
                 checked={selectedSizes.includes(sizeId)}
                 onCheckedChange={() => {
-                  handleSizeToggle(sizeId);
-                  handleSizeToggleSKU(sizeSKU)
-
+                  handleSizeToggle(sizeId, size.stock);
+                  handleSizeToggleSKU(sizeSKU, size.stock);
                 }}
+                disabled={isOutOfStock} // Disable if out of stock
               />
-              <Label
-                htmlFor={`size-${index}`}
-                className="flex-1 cursor-pointer"
-              >
+              <Label htmlFor={`size-${index}`} className="flex-1 cursor-pointer">
                 <div className="space-y-1">
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium uppercase">
-                      {size.size_value} {size.size_unit}
-                    </span>
+                  <div className="flex justify-between items-center border-b py-3 px-4 bg-gray-100 rounded-lg shadow-sm">
+                    {/* Size and Stock Status */}
+                    <div className="flex flex-col">
+                      <span className="text-lg font-semibold uppercase text-gray-800">
+                        {size.size_value} {size.size_unit}
+                      </span>
+                      <span className={`text-sm font-medium ${isOutOfStock ? "text-red-500" : "text-green-600"}`}>
+                      {isOutOfStock 
+  ? "Out of Stock" 
+  : size.stock < 5 
+    ? `In Stock (${size.stock} available)` 
+    : "In Stock"
+}
 
-
-                    <div className="flex items-center space-x-2">
-                      {size.originalPrice > 0 && (
-                        <p className="text-lg font-medium text-red-500 relative discount-price">
-                          <span className="line-through discount-line">${formatPrice(size.originalPrice)}</span>
-                        </p>
-                      )}
-                      <p className="text-xl font-bold text-green-600 final-price">
-                        ${formatPrice(totalPrice)}
-                      </p>
+                      </span>
                     </div>
 
-
-
-
-
+                    {/* Pricing */}
+                    <div className="flex items-center space-x-3">
+                      {size.originalPrice > 0 && (
+                        <p className="text-lg font-medium text-gray-500 line-through">
+                          ${formatPrice(size.originalPrice)}
+                        </p>
+                      )}
+                      <p className="text-xl font-bold text-green-700">${formatPrice(totalPrice)}</p>
+                    </div>
                   </div>
+
                   <div className="text-sm text-muted-foreground">
                     {size.quantity_per_case} {" "}
                     {
-
-          product.name === "LIQUID OVALS" ? "bottles and caps in one case" :   product.name.includes("RX PAPER BAGS")  ? "bags per case" :  product.name === "THERMAL PAPER RECEIPT ROLLS" ?  "Rolls per case":      product.name === "LIQUID OVAL ADAPTERS" ? "Bottel Per Case" : product.name === "OINTMENT JARS" ? "jars and caps in one case" : product.name === "RX VIALS" ? "vials and caps in one case" : product.name === "RX LABELS" ? `labels per roll,   , ${size.rolls_per_case} rolls per case` : "units per case"
+                      product.name === "LIQUID OVALS" ? "bottles and caps in one case"
+                        : product.name.includes("RX PAPER BAGS") ? "bags per case"
+                          : product.name === "THERMAL PAPER RECEIPT ROLLS" ? "Rolls per case"
+                            : product.name === "LIQUID OVAL ADAPTERS" ? "Bottles Per Case"
+                              : product.name === "OINTMENT JARS" ? "jars and caps in one case"
+                                : product.name === "RX VIALS" ? "vials and caps in one case"
+                                  : product.name === "RX LABELS" ? `labels per roll, ${size.rolls_per_case} rolls per case`
+                                    : "units per case"
                     }
-
                   </div>
                 </div>
               </Label>
             </div>
+
+            {/* Quantity Controls */}
             {selectedSizes.includes(sizeId) && (
               <div className="flex items-center mt-2 space-x-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onDecreaseQuantity(size.id)} // Fixed function execution
+                  onClick={() => onDecreaseQuantity(size.id)}
                   disabled={quantity[size.id] <= 1}
                 >
                   -
@@ -145,7 +132,8 @@ export const ProductSizeOptions = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onIncreaseQuantity(size?.id)} // Fixed function execution
+                  onClick={() => onIncreaseQuantity(size.id)}
+                  disabled={isMaxReached} // Disable if max stock reached
                 >
                   +
                 </Button>

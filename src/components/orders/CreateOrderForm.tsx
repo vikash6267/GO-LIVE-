@@ -67,74 +67,68 @@ export function CreateOrderForm({
       ? 0
       : Math.max(...cartItems.map((item) => item.shipping_cost || 0));
 
-  // Initialize form with user profile data
-  const form = useForm<OrderFormValues>({
-    resolver: zodResolver(orderFormSchema),
-    defaultValues: {
-      id: generateOrderId(),
-      customer: pId || userProfile?.id || "",
-      date: new Date().toISOString(),
-      total: "0",
-      status: "new",
-      payment_status: "unpaid",
-      customization: isCus,
-
-      customerInfo: {
-        name:
-          initialData?.customerInfo?.name ||
-          `${initialData?.customerInfo?.name || ""} ${userProfile?.last_name || ""
-          }`,
-        email: initialData?.customerInfo?.email || "",
-        phone: userProfile?.mobile_phone || "",
-        type: "Pharmacy",
-        address: {
-          street:
-            initialData?.customerInfo?.address?.street ||
-            userProfile?.company_name ||
-            "",
-          city:
-            initialData?.customerInfo?.address?.city || userProfile?.city || "",
-          state:
-            initialData?.customerInfo?.address?.state ||
-            userProfile?.state ||
-            "",
-          zip_code:
-            initialData?.customerInfo?.address?.zip_code ||
-            userProfile?.zip_code ||
-            "",
+    const form  = useForm<OrderFormValues>({
+        resolver: zodResolver(orderFormSchema),
+        defaultValues: {
+          id: "", // ✅ Initialize as empty
+          customer: pId || userProfile?.id || "",
+          date: new Date().toISOString(),
+          total: "0",
+          status: "new",
+          payment_status: "unpaid",
+          customization: isCus,
+    
+          customerInfo: {
+            name: initialData?.customerInfo?.name || `${initialData?.customerInfo?.name || ""} ${userProfile?.last_name || ""}`,
+            email: initialData?.customerInfo?.email || "",
+            phone: userProfile?.mobile_phone || "",
+            type: "Pharmacy",
+            address: {
+              street: initialData?.customerInfo?.address?.street || userProfile?.company_name || "",
+              city: initialData?.customerInfo?.address?.city || userProfile?.city || "",
+              state: initialData?.customerInfo?.address?.state || userProfile?.state || "",
+              zip_code: initialData?.customerInfo?.address?.zip_code || userProfile?.zip_code || "",
+            },
+          },
+    
+          shippingAddress: {
+            fullName: initialData?.customerInfo?.name || `${userProfile?.first_name || ""} ${userProfile?.last_name || ""}`,
+            email: initialData?.customerInfo?.email || "",
+            phone: userProfile?.mobile_phone || "",
+            address: {
+              street: userProfile?.company_name || "",
+              city: userProfile?.city || "",
+              state: userProfile?.state || "",
+              zip_code: userProfile?.zip_code || "",
+            },
+          },
+    
+          order_number: "",
+          items: cartItems,
+          shipping: {
+            method: "FedEx",
+            cost: totalShippingCost,
+            trackingNumber: "",
+            estimatedDelivery: "",
+          },
+          payment: {
+            method: "card",
+            notes: "",
+          },
+          specialInstructions: "",
+          ...initialData,
         },
-      },
-
-      shippingAddress: {
-        fullName:
-          initialData?.customerInfo?.name ||
-          `${userProfile?.first_name || ""} ${userProfile?.last_name || ""}`,
-        email: initialData?.customerInfo?.email || "",
-        phone: userProfile?.mobile_phone || "",
-        address: {
-          street: userProfile?.company_name || "",
-          city: userProfile?.city || "",
-          state: userProfile?.state || "",
-          zip_code: userProfile?.zip_code || "",
-        },
-      },
-
-      order_number: "",
-      items: cartItems,
-      shipping: {
-        method: "FedEx",
-        cost: totalShippingCost,
-        trackingNumber: "",
-        estimatedDelivery: "",
-      },
-      payment: {
-        method: "card",
-        notes: "",
-      },
-      specialInstructions: "",
-      ...initialData,
-    },
-  });
+      });
+    
+      // ✅ Fetch and update order ID asynchronously after form initialization
+      // useEffect(() => {
+      //   const fetchOrderId = async () => {
+      //     const orderId = await generateOrderId();
+      //     form.setValue("id", orderId); // ✅ Set order ID in form
+      //   };
+    
+      //   fetchOrderId();
+      // }, [form.setValue]);
 
   // Load pending order items from localStorage if they exist
   useEffect(() => {
@@ -222,10 +216,11 @@ export function CreateOrderForm({
 
       console.log(pId)
 
+      const orderNumber = await generateOrderId()
 
       // Prepare order data
       const orderData = {
-        order_number: generateOrderId(),
+        order_number: orderNumber,
         profile_id: data.customer || userProfile.id,
         status: data.status,
         total_amount: calculatedTotal + newtax,
@@ -261,9 +256,44 @@ export function CreateOrderForm({
       const newOrder = orderResponse[0];
       console.log("Order saved:", newOrder);
 
-      const { data: invoiceNumber } = await supabase.rpc(
-        "generate_invoice_number"
-      );
+      const year = new Date().getFullYear(); // Get current year (e.g., 2025)
+
+
+      const { data:inData, error:erroIn } = await supabase
+      .from("centerize_data")
+      .select("id, invoice_no, invoice_start") 
+      .order("id", { ascending: false }) // Get latest order
+      .limit(1);
+  
+    if (erroIn) {
+      console.error("🚨 Supabase Fetch Error:", erroIn);
+      return null;
+    }
+  
+    let newInvNo = 1; // Default to 1 if no previous order exists
+    let invoiceStart = "INV"; // Default order prefix
+  
+
+    if (inData && inData.length > 0) {
+      newInvNo = (inData[0].invoice_no || 0) + 1; // Increment last order number
+      invoiceStart = inData[0].invoice_start || "INV"; // Use existing order_start
+    }
+
+
+const invoiceNumber = `${invoiceStart}-${year}${newInvNo.toString().padStart(6, "0")}`;
+
+
+
+const { error: updateError } = await supabase
+  .from("centerize_data")
+  .update({ invoice_no: newInvNo }) // Correct update syntax
+  .eq("id", inData[0]?.id); // Update only the latest record
+
+if (updateError) {
+  console.error("🚨 Supabase Update Error:", updateError);
+} else {
+  console.log("✅ Order No Updated to:", newInvNo);
+}
 
       const estimatedDeliveryDate = new Date(newOrder.estimated_delivery);
 
@@ -377,7 +407,7 @@ export function CreateOrderForm({
         navigate("/pharmacy/orders");
 
       }
-      if (userType.toLocaleLowerCase() === 'pharmacy') {
+      if (userType.toLocaleLowerCase() === 'admin') {
         navigate("/admin/orders", { state: { createOrder: false } });
 
 

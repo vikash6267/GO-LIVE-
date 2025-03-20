@@ -141,6 +141,7 @@ export interface Invoice {
   order_number?: string;
   order_id?: string | null;
   profile_id?: string | null;
+  payment_transication?: string | null;
   status: InvoiceStatus;
   amount: number;
   tax_amount: number | null;

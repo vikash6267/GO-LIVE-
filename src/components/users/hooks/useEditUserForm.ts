@@ -55,6 +55,7 @@ export const useEditUserForm = ({
         zip_code: "",
       },
       sameAsShipping: false,
+      contactPerson:'',
       freeShipping: false,
       taxPercantage:"",
       taxPreference: "Taxable",
@@ -88,6 +89,7 @@ export const useEditUserForm = ({
           displayName: data.display_name || "",
           workPhone: data.work_phone || "",
           mobilePhone: data.mobile_phone || "",
+          contactPerson:data.contact_person || "",
           billingAddress: data.billing_address || {
             street1: "",
             city: "",

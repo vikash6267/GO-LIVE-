@@ -9,6 +9,7 @@ import { defaultValues } from "@/components/settings/settingsTypes"
 import type { SettingsFormValues } from "@/components/settings/settingsTypes"
 import { useToast } from "@/components/ui/use-toast"
 import { supabase } from "@/integrations/supabase/client"
+import { Building, MapPin, Phone, Mail, Globe } from "lucide-react";
 
 interface Address {
   street: string
@@ -154,15 +155,14 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
   useEffect(() => {
     fetchUser()
   }, [invoice])
-  const formattedDate = new Date(invoice.created_at).toLocaleString("en-GB", {
+  const formattedDate = new Date(invoice.created_at).toLocaleDateString("en-US", {
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
     timeZone: "UTC",
-  });
+});
+
+
   
   console.log(formattedDate); // Example output: 20/03/2025, 10:53:41
   
@@ -174,16 +174,14 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
         <div className="flex flex-col sm:flex-row justify-between  sm:items-center border-b pb-4 gap-4 ">
           <div>
 
-            <div className="mt-3 ml-0  text-xs sm:text-[12px] w-full ">
-              Tax ID : 99-0540972 <br />
-              936 Broad River Ln,
-              <br />
-              Charlotte, NC 28211
-              <br />
-              +1 800 969 6295 <br />
-              info@9rx.com <br />
-              www.9rx.com <br />
-            </div>
+          <div className="mt-3 ml-0 text-xs sm:text-[12px] w-full">
+  <Building className="inline-block mr-1" size={12} /> Tax ID : 99-0540972 <br />
+  <MapPin className="inline-block mr-1" size={12} />936 Broad River Ln, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Charlotte, NC 28211 <br />
+  <Phone className="inline-block mr-1" size={12} /> +1 800 969 6295 <br />
+  <Mail className="inline-block mr-1" size={12} /> info@9rx.com <br />
+  <Globe className="inline-block mr-1" size={12} /> www.9rx.com <br />
+</div>
           </div>
           <div className="flex  items-center  justify-center  w-">
 
@@ -338,16 +336,14 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
           <div className="flex flex-col sm:flex-row justify-between  sm:items-center border-b pb-4 gap-4 ">
             <div>
 
-              <div className="mt-3 ml-0  text-xs sm:text-[12px] w-full ">
-                Tax ID : 99-0540972 <br />
-                936 Broad River Ln,
-                <br />
-                Charlotte, NC 28211
-                <br />
-                +1 800 969 6295 <br />
-                info@9rx.com <br />
-                www.9rx.com <br />
-              </div>
+            <div className="mt-3 ml-0 text-xs sm:text-[12px] w-full">
+  <Building className="inline-block mr-1" size={12} /> Tax ID : 99-0540972 <br />
+  <MapPin className="inline-block mr-1" size={12} />936 Broad River Ln, <br />
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Charlotte, NC 28211 <br />
+  <Phone className="inline-block mr-1" size={12} /> +1 800 969 6295 <br />
+  <Mail className="inline-block mr-1" size={12} /> info@9rx.com <br />
+  <Globe className="inline-block mr-1" size={12} /> www.9rx.com <br />
+</div>
             </div>
             <div className="flex  items-center  justify-center  w-">
 
@@ -418,7 +414,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
             <div className="w-1/3 p-4 bg-gray-100 rounded-lg shadow-md border border-gray-300">
               {/* Payment Status */}
               <p
-                className={`px-5 py-2 rounded-full text-sm font-semibold flex items-center gap-2 w-max text-left shadow-md 
+                className={`px-5 py-2 mb-5 rounded-full text-sm font-semibold flex items-center gap-2 w-max text-left shadow-md 
       ${invoice?.payment_status === "paid"
                     ? "bg-green-500 text-white"
                     : "bg-red-500 text-white"}`}

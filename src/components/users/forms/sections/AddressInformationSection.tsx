@@ -51,7 +51,7 @@ export function AddressInformationSection({
             render={({ field }) => (
               <FormItem className="flex flex-row items-center rounded-lg border p-4">
                 <FormLabel htmlFor="same-as-shipping-switch" className="text-base">
-                  Same as
+                  Same as Shipping
                 </FormLabel>
                 <FormControl>
                   <Switch

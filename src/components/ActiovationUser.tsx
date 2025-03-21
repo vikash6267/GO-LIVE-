@@ -51,7 +51,7 @@ function ActivationUser() {
           console.log('Password reset email sent successfully!', data);
         }
       }
-      sendResetPasswordLink(email)
+      // sendResetPasswordLink(email)
 
       if (!data ) {
         throw new Error("No customer information found.");

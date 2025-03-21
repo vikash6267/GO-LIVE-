@@ -552,6 +552,7 @@ export type Database = {
           price_per_case: number;
           product_id: string | null;
           rolls_per_case: number | null;
+          sizeSquanence: number | null;
           shipping_cost: number | null;
           size_unit: string;
           sku: any;
@@ -568,6 +569,7 @@ export type Database = {
           product_id?: string | null;
           quantity_per_case?: number | null;
           rolls_per_case?: number | null;
+          sizeSquanence?: number | null;
           shipping_cost?: number | null;
           size_unit: string;
           sku: any;
@@ -584,6 +586,7 @@ export type Database = {
           product_id?: string | null;
           quantity_per_case?: number | null;
           rolls_per_case?: number | null;
+          sizeSquanence?: number | null;
           shipping_cost?: number | null;
           size_unit?: string;
           size_value?: string;

@@ -77,6 +77,7 @@ export const addProductService = async (data: ProductFormValues) => {
 
       stock: size.stock || 0,
       rolls_per_case: Number(size.rolls_per_case) || 0,
+      sizeSquanence: Number(size.sizeSquanence) || 0,
       shipping_cost: Number(size.shipping_cost) || 15,
       quantity_per_case: size.quantity_per_case,
     }));
@@ -155,6 +156,7 @@ export const updateProductService = async (
       image:size.image|| "" ,
       quantity_per_case: Number(size.quantity_per_case) || 1, // ✅ Ensure conversion
       rolls_per_case: Number(size.rolls_per_case) || 1,
+      sizeSquanence: Number(size.sizeSquanence) || 0,
       shipping_cost: size.shipping_cost, // ✅ Ensure conversion
     }));
 

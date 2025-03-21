@@ -26,7 +26,8 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     quantity_per_case: "100",
     rolls_per_case: "",
     shipping_cost: "0",
-    image:""
+    image:"",
+    sizeSquanence:''
   });
 
   const handleAddSize = () => {
@@ -45,6 +46,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     const sizeToAdd = {
       size_value: newSize.size_value,
       sku: newSize.sku || "",
+      sizeSquanence: newSize.sizeSquanence || "",
       image:newSize.image || "",
       size_unit: newSize.size_unit || categoryConfig.defaultUnit,
       price: parseFloat(newSize.price) || 0,
@@ -80,6 +82,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
       stock: "",
       quantity_per_case: "",
       rolls_per_case: "",
+      sizeSquanence:'',
       shipping_cost: "0",
       image:""
     });
@@ -160,6 +163,7 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
               sizes={(field.value || []).map(size => ({
                 ...size,
                 size_value: size.size_value || '',
+                sizeSquanence:size.sizeSquanence ||0,
                 size_unit: size.size_unit || categoryConfig.defaultUnit,
                 price: size.price || 0,
                 quantity_per_case : size?.quantity_per_case || 0,

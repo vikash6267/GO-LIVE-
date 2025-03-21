@@ -15,7 +15,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const Users = () => {
   const { toast } = useToast();
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
-  
+
   const {
     users,
     isLoading,
@@ -25,7 +25,7 @@ const Users = () => {
     filterType,
     filterStatus,
     setSelectedUsers,
-    
+
     setSearchTerm,
     setFilterType,
     setFilterStatus,
@@ -37,9 +37,9 @@ const Users = () => {
   const totalUsers = users.length;
 
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(selectedUsers)
-  },[selectedUsers])
+  }, [selectedUsers])
   const handleAddUser = () => {
     setIsAddUserOpen(true);
   };
@@ -53,10 +53,10 @@ const Users = () => {
 
   const handleExportCSV = () => {
     const headers = ["Name", "Email", "Type", "Status", "Locations", "Last Active"];
-    const csvContent = users.map(user => 
+    const csvContent = users.map(user =>
       [user.name, user.email, user.type, user.status, user.locations || "", user.lastActive].join(",")
     );
-    
+
     const csv = [headers.join(","), ...csvContent].join("\n");
     const blob = new Blob([csv], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
@@ -129,7 +129,7 @@ const Users = () => {
     <DashboardLayout role="admin">
       <div className="min-h-screen bg-background">
         <div className="flex-1 space-y-6 container px-6 py-6">
-          <UsersHeader 
+          <UsersHeader
             onExportCSV={handleExportCSV}
             onAddUser={handleAddUser}
           />

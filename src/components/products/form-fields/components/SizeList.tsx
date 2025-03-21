@@ -15,6 +15,7 @@ interface Size {
   stock: number;
   quantity_per_case: number;
   rolls_per_case?: number;
+  sizeSquanence?: number;
   shipping_cost?: number;
 }
 
@@ -39,8 +40,8 @@ export const SizeList = ({
 
 
 
-    console.log(categoryConfig)
-    console.log(sizes)
+  console.log(categoryConfig)
+  console.log(sizes)
   return (
     <div className="space-y-2">
       {sizes.map((size, index) => (
@@ -86,7 +87,7 @@ export const SizeList = ({
                   onUpdateSize(index, "sku", e.target.value)
                 }
                 className="h-8"
-            
+
               />
             </div>
             <div>
@@ -151,24 +152,36 @@ export const SizeList = ({
                 min="0"
               />
             </div>
-          
+            <div>
+              <span className="text-sm font-medium">Size Squanence</span>
+              <Input
+                type="number"
+                value={size.sizeSquanence}
+                onChange={(e) =>
+                  onUpdateSize(index, "sizeSquanence", parseInt(e.target.value) || 0)
+                }
+                className="h-8"
+                min="0"
+              />
+            </div>
 
-               <SizeImageUploader
-                          form={size}
-                          indexValue={index}
-                          onUpdateSize={onUpdateSize}
-                          validateImage={(file) => {
-                            const maxSize = 5 * 1024 * 1024;
-                            if (file.size > maxSize) {
-                              return "Image size should be less than 5MB";
-                            }
-                            const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-                            if (!allowedTypes.includes(file.type)) {
-                              return "Only JPG, PNG and GIF images are allowed";
-                            }
-                            return null;
-                          }}
-                        />
+
+            <SizeImageUploader
+              form={size}
+              indexValue={index}
+              onUpdateSize={onUpdateSize}
+              validateImage={(file) => {
+                const maxSize = 5 * 1024 * 1024;
+                if (file.size > maxSize) {
+                  return "Image size should be less than 5MB";
+                }
+                const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+                if (!allowedTypes.includes(file.type)) {
+                  return "Only JPG, PNG and GIF images are allowed";
+                }
+                return null;
+              }}
+            />
           </div>
           <Button
             type="button"

@@ -225,7 +225,7 @@ console.log(invoice)
         shippingInfo,
         profile_id:invoice.profile_id,
         payment_status: invoice.payment_status, // ✅ Extracted correctly
-       
+        created_at:invoice.created_at,
         payment_transication:invoice.payment_transication,
         payment_notes:invoice.payment_notes,
         payment_method:invoice.payment_method,

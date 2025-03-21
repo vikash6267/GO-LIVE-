@@ -9,12 +9,14 @@ import { NotificationSection } from "@/components/settings/NotificationSection";
 import { SecuritySection } from "@/components/settings/SecuritySection";
 import { SettingsFormValues, defaultValues } from "@/components/settings/settingsTypes";
 import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function PharmacySettings() {
   const form = useForm<SettingsFormValues>({ defaultValues });
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [email, setEmail] = useState("")
   const onSubmit = async (data: SettingsFormValues) => {
     setIsSubmitting(true);
     try {
@@ -71,7 +73,8 @@ export default function PharmacySettings() {
         }
 
         if (!data) return;
-
+        setEmail(data.email)
+        console.log(data.email)
         form.setValue("description", data.notes || "");
         form.setValue("business_name", data.company_name || "");
         form.setValue("email_notifications", data.email_notifaction || false);
@@ -96,17 +99,21 @@ export default function PharmacySettings() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid gap-6">
               <BusinessProfileSection form={form} />
+              <div className="flex items-center gap-2 text-blue-600 font-medium hover:underline">
+            <ArrowRight className="w-5 h-5" />
+            <Link to={`/update-profile?email=${email}`}>Go to Update Profile</Link>
+          </div>
               <NotificationSection form={form} />
               <SecuritySection form={form} />
-         <div className=" flex justify-center w-full">
-         <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50 w-max text-center"
-              >
-                {isSubmitting ? "Saving..." : "Submit"}
-              </Button>
-         </div>
+              <div className=" flex justify-center w-full">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50 w-max text-center"
+                >
+                  {isSubmitting ? "Saving..." : "Submit"}
+                </Button>
+              </div>
             </div>
           </form>
         </Form>

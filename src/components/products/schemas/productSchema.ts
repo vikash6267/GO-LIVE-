@@ -101,6 +101,9 @@ export const productFormSchema = z.object({
         rolls_per_case: z.coerce
           .number()
           .min(0, "Rolls per case must be positive"),
+          sizeSquanence: z.coerce
+          .number()
+          .min(0, "sizeSquanence must be positive"),
         shipping_cost: z.coerce
           .number()
           .min(0, "Shipping cost must be positive"),

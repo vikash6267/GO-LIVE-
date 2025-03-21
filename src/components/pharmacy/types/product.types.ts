@@ -20,6 +20,7 @@ export interface ProductSize {
   sku?: any;
   originalPrice?: any;
   rolls_per_case?: any;
+  sizeSquanence?: any;
   size_unit: string;
   price: number;
   quantity_per_case: number;

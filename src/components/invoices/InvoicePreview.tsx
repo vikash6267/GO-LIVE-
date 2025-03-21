@@ -307,7 +307,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
               {/* Balance Due */}
               <div className="flex justify-between font-bold text-base sm:text-lg text-red-600">
                 <span>Balance Due</span>
-                <span>{invoice?.payment_status === "paid" ? "$0" : `${invoice?.total?.toFixed(2) || "0.00"}`}</span>
+                <span>{invoice?.payment_status === "paid" ? "$0" : `$${invoice?.total?.toFixed(2) || "0.00"}`}</span>
               </div>
             </div>
           </div>

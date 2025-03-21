@@ -10,7 +10,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { Navbar } from "./landing/HeroSection"
 import { supabase } from "@/integrations/supabase/client"
-
+import axios from '../../axiosconfig'
 interface PasswordResetFormValues {
   password: string
   confirmPassword: string
@@ -52,6 +52,22 @@ export default function PasswordReset() {
           console.error('Error updating password:', error.message);
         } else {
           console.log('Password updated successfully!', data);
+
+          const userDAta = data.user.user_metadata ;
+          console.log(userDAta)
+          try {
+            const response = await axios.post("/update-profile", {
+              name: `${userDAta.first_name} ${userDAta.last_name}`,
+              email: userDAta.email,
+            
+            });
+          
+            console.log("Verification Successful:", response.data);
+        
+           
+          } catch (error) {
+            console.error("Error in user verification:", error.response?.data || error.message);
+          }
         }
       }
       

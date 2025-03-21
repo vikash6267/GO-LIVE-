@@ -109,8 +109,10 @@ export const updateUserProfile = async (
     }
 
 console.log(data)
-if(profileData.status==="active"){
+if(profileData.status==="active" && sessionStorage.getItem('userType').toLocaleLowerCase() === "admin"){
   try {
+
+    
     const response = await axios.post("/active", {
       name: `${data.first_name} ${data.last_name}`,
       email: data.email,

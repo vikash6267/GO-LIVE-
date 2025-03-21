@@ -6,6 +6,7 @@ const { customizationQueryEmail } = require("../templates/customizationQuaery");
 const orderConfirmationTemplate = require("../templates/orderCreate");
 const orderStatusTemplate = require("../templates/orderTemlate");
 const paymentLink = require("../templates/paymentLink");
+const { passwordResetTemplate, profileUpdateTemplate } = require("../templates/profiles");
 const userVerificationTemplate = require("../templates/userVerificationTemplate");
 const mailSender = require("../utils/mailSender");
 
@@ -285,4 +286,76 @@ console.log(order)
 }
 
 
+exports.passwordConfirmationNotification = async (req, res) => {
+  try {
+    const { name, email, admin = false } = req.body;
 
+
+    // Ensure required fields are present
+    if (!name || !email) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required order details.",
+      });
+    }
+
+    // Generate email content using the template
+    const emailContent = passwordResetTemplate(name);
+
+    // Send email
+    await mailSender(
+      email,
+      "Your Account Active Successfully! ",
+      emailContent
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Account Active",
+    });
+  } catch (error) {
+    console.error("Error in Order Status Controller:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong in Order Status",
+      error: error.message,
+    });
+  }
+};
+
+exports.updateProfileNotification = async (req, res) => {
+  try {
+    const { name, email, admin = false } = req.body;
+
+
+    // Ensure required fields are present
+    if (!name || !email) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required order details.",
+      });
+    }
+
+    // Generate email content using the template
+    const emailContent = profileUpdateTemplate(name,email);
+
+    // Send email
+    await mailSender(
+      email,
+      "Your Account Active Successfully! ",
+      emailContent
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Account Active",
+    });
+  } catch (error) {
+    console.error("Error in Order Status Controller:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong in Order Status",
+      error: error.message,
+    });
+  }
+};

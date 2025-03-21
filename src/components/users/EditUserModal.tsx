@@ -7,6 +7,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
+import axios from '../../../axiosconfig'
+
 
 interface EditUserModalProps {
   user: {
@@ -62,6 +64,22 @@ export function EditUserModal({
       console.log('EditUserModal: Starting form submission with values:', values);
       await onSubmit(values);
       if(self){
+
+        try {
+          const response = await axios.post("/update-profile", {
+            name: values.displayName,
+            email: values.email,
+            admin: true
+          });
+        
+          console.log("Verification Successful:", response.data);
+      
+        
+        } catch (error) {
+          console.error("Error in user verification:", error.response?.data || error.message);
+        }
+        console.log(values.email)
+        console.log(values.displayName)
         Swal.fire({
           title: "Profile Updated",
           text: "Thank you for submitting your information. Your account will be active once we review and approve your information. Thank you once again for choosing 9RX.",

@@ -23,8 +23,8 @@ const PaymentForm = ({
   amountP,
   orderId,
   orders,
-  payNow = false
-
+  payNow = false,
+ 
 }) => {
   const [paymentType, setPaymentType] = useState("credit_card");
   const { toast } = useToast();
@@ -52,7 +52,7 @@ const PaymentForm = ({
   });
 
   useEffect(() => {
-    console.log(orderId);
+    console.log(orders);
     if (customer) {
       setFormData((prevData) => ({
         ...prevData,
@@ -78,7 +78,7 @@ const PaymentForm = ({
     setLoading(true)
 
     if (paymentType === "manaul_payemnt") {
-      const { error: updateError } = await supabase
+      const { data:dateOrder , error: updateError } = await supabase
         .from("orders")
         .update({
           payment_status: "paid", // Use correct column name
@@ -86,10 +86,12 @@ const PaymentForm = ({
 
           updated_at: new Date().toISOString(),
         })
-        .eq("id", orderId);
+        .eq("id", orderId)
+        .select("*")
+        .maybeSingle(); 
+        
 
       if (updateError) throw updateError;
-
 
       const { data, error } = await supabase
         .from("invoices")
@@ -101,7 +103,8 @@ const PaymentForm = ({
 
 
         })
-        .eq("order_id", orderId);
+        .eq("order_id", orderId)
+        .select("*"); 
 
 
       if (error) {
@@ -149,26 +152,58 @@ const PaymentForm = ({
 
     try {
       const response = await axios.post("/pay", paymentData);
-      
+      // const response = {
+      //   status:200,
+      //   data:{
+      //     transactionId:23456789,
+      //     message:"hello"
+      //   }
+      // }
       if (response.status === 200) {
-        const { error: updateError } = await supabase
+
+
+     
+        
+        
+        const { data:dateOrder, error: updateError } = await supabase
           .from("orders")
           .update({
             payment_status: "paid", // Use correct column name
             updated_at: new Date().toISOString(),
          
           })
-          .eq("id", orderId);
+          .eq("id", orderId)
+          .select("*")
+        .maybeSingle(); 
+          
 
         if (updateError) throw updateError;
 
+
+        try {
+        
+            
+          const response2 = await axios.post("/pay-successfull", {
+            name: customer.name || "N/A",
+            email: customer.email,
+            orderNumber:dateOrder.order_number ,
+            transactionId:response?.data.transactionId || "1234"
+            
+          });
+        
+          console.log("Payment Successful:", response2.data);
+      
+         
+        } catch (error) {
+          console.error("Error in user verification:", error.response?.data || error.message);
+        }
 
         const { data, error } = await supabase
           .from("invoices")
           .update({
             payment_status: "paid", // Use correct column name
             updated_at: new Date().toISOString(),
-               payment_transication:response.data.transactionId || "",
+               payment_transication:response?.data?.transactionId || "",
             payment_method: "card"
           })
           .eq("order_id", orderId);

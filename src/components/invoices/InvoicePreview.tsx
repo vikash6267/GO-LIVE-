@@ -160,12 +160,12 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
     month: "2-digit",
     day: "2-digit",
     timeZone: "UTC",
-});
+  });
 
 
-  
+
   console.log(formattedDate); // Example output: 20/03/2025, 10:53:41
-  
+
   return (
     <SheetContent className="w-full sm:max-w-[600px] md:max-w-[800px] lg:max-w-[900px] overflow-y-auto p-2 sm:p-6">
       {/* Visible invoice preview - responsive */}
@@ -174,14 +174,14 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
         <div className="flex flex-col sm:flex-row justify-between  sm:items-center border-b pb-4 gap-4 ">
           <div>
 
-          <div className="mt-3 ml-0 text-xs sm:text-[12px] w-full">
-  <Building className="inline-block mr-1" size={12} /> Tax ID : 99-0540972 <br />
-  <MapPin className="inline-block mr-1" size={12} />936 Broad River Ln, <br />
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Charlotte, NC 28211 <br />
-  <Phone className="inline-block mr-1" size={12} /> +1 800 969 6295 <br />
-  <Mail className="inline-block mr-1" size={12} /> info@9rx.com <br />
-  <Globe className="inline-block mr-1" size={12} /> www.9rx.com <br />
-</div>
+            <div className="mt-3 ml-0 text-xs sm:text-[12px] w-full">
+              <Building className="inline-block mr-1" size={12} /> Tax ID : 99-0540972 <br />
+              <MapPin className="inline-block mr-1" size={12} />936 Broad River Ln, <br />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Charlotte, NC 28211 <br />
+              <Phone className="inline-block mr-1" size={12} /> +1 800 969 6295 <br />
+              <Mail className="inline-block mr-1" size={12} /> info@9rx.com <br />
+              <Globe className="inline-block mr-1" size={12} /> www.9rx.com <br />
+            </div>
           </div>
           <div className="flex  items-center  justify-center  w-">
 
@@ -336,14 +336,14 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
           <div className="flex flex-col sm:flex-row justify-between  sm:items-center border-b pb-4 gap-4 ">
             <div>
 
-            <div className="mt-3 ml-0 text-xs sm:text-[12px] w-full">
-  <Building className="inline-block mr-1" size={12} /> Tax ID : 99-0540972 <br />
-  <MapPin className="inline-block mr-1" size={12} />936 Broad River Ln, <br />
-  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Charlotte, NC 28211 <br />
-  <Phone className="inline-block mr-1" size={12} /> +1 800 969 6295 <br />
-  <Mail className="inline-block mr-1" size={12} /> info@9rx.com <br />
-  <Globe className="inline-block mr-1" size={12} /> www.9rx.com <br />
-</div>
+              <div className="mt-3 ml-0 text-xs sm:text-[12px] w-full">
+                <Building className="inline-block mr-1" size={12} /> Tax ID : 99-0540972 <br />
+                <MapPin className="inline-block mr-1" size={12} />936 Broad River Ln, <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Charlotte, NC 28211 <br />
+                <Phone className="inline-block mr-1" size={12} /> +1 800 969 6295 <br />
+                <Mail className="inline-block mr-1" size={12} /> info@9rx.com <br />
+                <Globe className="inline-block mr-1" size={12} /> www.9rx.com <br />
+              </div>
             </div>
             <div className="flex  items-center  justify-center  w-">
 
@@ -361,7 +361,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
               <SheetTitle className="text-xl sm:text-2xl md:text-3xl">Invoice</SheetTitle>
               <p className="opacity-80 font-bold text-xs sm:text-sm">INVOICE -{invoice.invoice_number}</p>
               <p className="opacity-80 font-bold text-xs sm:text-sm">ORDER - {invoice.order_number}</p>
-            <p className="opacity-80 font-bold text-xs sm:text-sm">Date - {formattedDate}</p>
+              <p className="opacity-80 font-bold text-xs sm:text-sm">Date - {formattedDate}</p>
 
             </div>
           </div>

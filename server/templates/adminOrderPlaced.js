@@ -1,12 +1,13 @@
-const orderStatusTemplate = (order) => { 
-    const { customerInfo, order_number, status, items, estimated_delivery, payment_status, shipping_method, total_amount, tracking_number } = order;
-  
+const adminOrderNotificationTemplate = (order) => { 
+    const { customerInfo, order_number, items, estimated_delivery, payment_status, shipping_method, total_amount } = order;
+
     return `<!DOCTYPE html>
     <html>
     
     <head>
         <meta charset="UTF-8">
-        <title>Order Status Update</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>New Order Notification</title>
         <style>
             body {
                 background-color: #f4f4f4;
@@ -31,17 +32,7 @@ const orderStatusTemplate = (order) => {
             .header {
                 font-size: 24px;
                 font-weight: bold;
-                color: #3498db;
-                margin-bottom: 15px;
-            }
-    
-            .status-badge {
-                display: inline-block;
-                padding: 8px 15px;
-                background-color: ${status === 'shipped' ? '#2ecc71' : '#e74c3c'};
-                color: #ffffff;
-                border-radius: 5px;
-                font-size: 14px;
+                color: #e74c3c;
                 margin-bottom: 15px;
             }
     
@@ -66,7 +57,7 @@ const orderStatusTemplate = (order) => {
             .cta {
                 display: inline-block;
                 padding: 12px 30px;
-                background-color: #3498db;
+                background-color: #e74c3c;
                 color: #ffffff;
                 text-decoration: none;
                 border-radius: 5px;
@@ -76,7 +67,7 @@ const orderStatusTemplate = (order) => {
             }
     
             .cta:hover {
-                background-color: #2980b9;
+                background-color: #c0392b;
             }
     
             .footer {
@@ -101,35 +92,21 @@ const orderStatusTemplate = (order) => {
                 background-color: #f1f1f1;
             }
     
-            .address-box {
-                background-color: #f1f1f1;
-                padding: 10px;
-                border-radius: 8px;
-                text-align: left;
-                font-size: 14px;
-                margin-top: 15px;
-            }
-    
-            .address-box p {
-                margin: 5px 0;
-            }
         </style>
     </head>
     
     <body>
         <div class="container">
-            <div class="header">Order Status Update</div>
-            <div class="status-badge">${status.toUpperCase()}</div>
+            <div class="header">🛒 New Order Received!</div>
+            <p>A new order has been placed by <span class="highlight">${customerInfo.name}</span>.</p>
             <div class="order-info">
-                <p><span class="highlight">Customer Name:</span> ${customerInfo.name}</p>
-                <p><span class="highlight">Order Number:</span> ${order_number}</p>
+                <p><span class="highlight">Order Number:</span> #${order_number}</p>
                 <p><span class="highlight">Estimated Delivery:</span> ${new Date(estimated_delivery).toDateString()}</p>
                 <p><span class="highlight">Payment Status:</span> ${payment_status}</p>
-          { status.toUpperCase() ==="SHIPPED" &&  <p><span class="highlight">Shipping Method:</span> ${shipping_method}</p>}
-
+                <p><span class="highlight">Shipping Method:</span> ${shipping_method}</p>
                 <p><span class="highlight">Total Amount:</span> $${total_amount.toFixed(2)}</p>
     
-                <h3>Ordered Products:</h3>
+                <h3>🛍 Ordered Items:</h3>
                 <table class="product-table">
                     <tr>
                         <th>Product</th>
@@ -144,28 +121,15 @@ const orderStatusTemplate = (order) => {
                         </tr>
                     `).join("")}
                 </table>
-    
-                ${tracking_number ? `<p><span class="highlight">Tracking Number:</span> ${tracking_number}</p>` : ""}
             </div>
     
-            <div class="address-box">
-                <h3>Shipping Address:</h3>
-                <p><span class="highlight">Street:</span> ${customerInfo.address.street}</p>
-                <p><span class="highlight">City:</span> ${customerInfo.address.city}</p>
-                <p><span class="highlight">State:</span> ${customerInfo.address.state}</p>
-                <p><span class="highlight">Zip Code:</span> ${customerInfo.address.zip_code}</p>
-            </div>
+            <a href="https://9rx.com/admin/orders" class="cta">📋 View Order</a>
     
-            <a href="https://9rx.com" class="cta">Visit Website</a>
-    
-            <div class="footer">
-                <p>If you have any questions, contact our support team at <a href="mailto:support@9rx.com">support@9rx.com</a>.</p>
-                <p>Thank you for shopping with us!</p>
-            </div>
+          
         </div>
     </body>
     
     </html>`;
-  };
-  
-module.exports = orderStatusTemplate;
+};
+
+module.exports = adminOrderNotificationTemplate;

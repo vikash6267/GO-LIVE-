@@ -109,7 +109,7 @@ export const updateUserProfile = async (
     }
 
 console.log(data)
-if(profileData.status==="active" && sessionStorage.getItem('userType').toLocaleLowerCase() === "admin" && !data.active_notification){
+if(profileData.status==="active" && sessionStorage.getItem('userType') === "admin" && !data.active_notification){
   try {
 
     console.log("enter the aactive")

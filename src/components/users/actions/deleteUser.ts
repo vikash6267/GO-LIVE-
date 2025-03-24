@@ -29,6 +29,34 @@ export const deleteUser = async (userId: string, userName: string): Promise<bool
       throw new Error('User not found');
     }
 
+
+        // Delete associated locations if any
+        if (userToDelete.locations && userToDelete.locations.length > 0) {
+          const { error: locationDeleteError } = await supabase
+            .from('locations')
+            .delete()
+            .in('id', userToDelete.locations.map((loc: any) => loc.id));
+    
+          if (locationDeleteError) {
+            console.error('Error deleting user locations:', locationDeleteError);
+            throw new Error('Failed to remove user locations.');
+          }
+        }
+    
+        // Delete associated documents if any
+        if (userToDelete.documents && Array.isArray(userToDelete.documents) && userToDelete.documents.length > 0) {
+          const { error: documentsDeleteError } = await supabase
+            .from('documents')
+            .delete()
+            .in('id', userToDelete.documents);
+    
+          if (documentsDeleteError) {
+            console.error('Error deleting user documents:', documentsDeleteError);
+            throw new Error('Failed to remove user documents.');
+          }
+        }
+
+        
     // Check for dependencies
     const hasLocations = userToDelete.locations && userToDelete.locations.length > 0;
     const hasDocuments = userToDelete.documents && Array.isArray(userToDelete.documents) && userToDelete.documents.length > 0;

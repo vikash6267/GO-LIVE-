@@ -115,7 +115,8 @@ const orderConfirmationTemplate = (order) => {
                 <p><span class="highlight">Order Number:</span> ${order_number}</p>
                 <p><span class="highlight">Estimated Delivery:</span> ${new Date(estimated_delivery).toDateString()}</p>
                 <p><span class="highlight">Payment Status:</span> ${payment_status}</p>
-                <p><span class="highlight">Shipping Method:</span> ${shipping_method}</p>
+               { status.toUpperCase() ==="SHIPPED" &&  <p><span class="highlight">Shipping Method:</span> ${shipping_method}</p>}
+
                 <p><span class="highlight">Total Amount:</span> $${total_amount.toFixed(2)}</p>
     
                 <h3>🛍 Ordered Items:</h3>
@@ -155,5 +156,9 @@ const orderConfirmationTemplate = (order) => {
     
     </html>`;
 };
+
+
+
+
 
 module.exports = orderConfirmationTemplate;

@@ -54,12 +54,12 @@ export function CreateOrderForm({
 
   console.log(cartItems);
   const [pId, setPId] = useState(
-    initialData?.customerInfo.cusid || userProfile?.id || ""
+    initialData?.customerInfo.cusid || ""
   );
   const userTypeRole = sessionStorage.getItem('userType');
-
+console.log(initialData)
   useEffect(() => {
-    setPId(initialData?.customerInfo.cusid || userProfile?.id);
+    setPId(initialData?.customerInfo.cusid || initialData?.customer);
   }, [initialData, userProfile]);
 
   const totalShippingCost =
@@ -218,7 +218,7 @@ export function CreateOrderForm({
 
       const orderNumber = await generateOrderId()
 
-      let profileID = null
+      let profileID = userProfile.id
  
   sessionStorage.getItem('userType') === "admin" ? profileID = data.customer :userProfile.id
   console.log(profileID)    

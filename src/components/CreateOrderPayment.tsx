@@ -187,10 +187,14 @@ const CreateOrderPaymentForm = ({
           );
 
           const orderNumber = await generateOrderId()
+          let profileID = userProfile.id
+ 
+          sessionStorage.getItem('userType') === "admin" ? profileID = data.customer :userProfile.id
+          console.log(profileID)    
           // Prepare order data
-          const orderData = {
-            order_number: orderNumber,
-            profile_id: pId || userProfile.id,
+              const orderData = {
+                order_number: orderNumber,
+                profile_id: profileID,
             status: data.status,
             total_amount: calculatedTotal + tax,
             shipping_cost: data.shipping?.cost || 0,

@@ -59,7 +59,7 @@ export const OrderConfirmAction = ({ order, onConfirmOrder }: OrderConfirmAction
       }
 
       setShowConfirmDialog(false);
-      setShowTrackingDialog(true);
+      // setShowTrackingDialog(true);
     } catch (error) {
       console.error('Error confirming order:', error);
       toast({

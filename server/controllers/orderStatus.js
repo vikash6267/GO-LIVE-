@@ -1,6 +1,7 @@
 
 const accountActiveTemplate = require("../templates/accountActiveTemplate");
 const adminAccountActiveTemplate = require("../templates/adminCreateAccount");
+const adminOrderNotificationTemplate = require("../templates/adminOrderPlaced");
 const { contactUsEmail } = require("../templates/contactFormRes");
 const { customizationQueryEmail } = require("../templates/customizationQuaery");
 const orderConfirmationTemplate = require("../templates/orderCreate");
@@ -62,12 +63,18 @@ exports.orderPlacedCtrl = async (req, res) => {
 
     // Generate email content using the template
     const emailContent = orderConfirmationTemplate(order);
+    const emailContentAdmin = adminOrderNotificationTemplate(order);
 
     // Send email
     await mailSender(
       order.customerInfo.email,
       "Order Placed ",
       emailContent
+    );
+    await mailSender(
+      "vikasmaheshwari6267@gmail.com",
+      "New Order Placed ",
+      emailContentAdmin
     );
 
     return res.status(200).json({

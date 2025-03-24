@@ -37,24 +37,24 @@ const Inventory = () => {
               Monitor and manage your inventory levels and stock movements
             </p>
           </div>
-          <StockAdjustmentDialog />
+          {/* <StockAdjustmentDialog /> */}
         </div>
         
         <div className="grid gap-8">
-          <InventoryStatsCards inventoryData={inventory} />
+          {/* <InventoryStatsCards inventoryData={inventory} /> */}
           
-          <div className="grid gap-8 grid-cols-1 lg:grid-cols-4">
+          {/* <div className="grid gap-8 grid-cols-1 lg:grid-cols-4">
             <div className="lg:col-span-3 order-2 lg:order-1">
               <StockMovementChart />
             </div>
             <div className="lg:col-span-1 order-1 lg:order-2">
               <LowStockAlerts inventoryData={inventory} />
             </div>
-          </div>
+          </div> */}
 
-          <div className="grid gap-8 grid-cols-1 xl:grid-cols-2">
+          <div className="">
             <InventoryReports inventoryData={inventory} />
-            <StockAdjustmentHistory />
+            {/* <StockAdjustmentHistory /> */}
           </div>
         </div>
       </div>

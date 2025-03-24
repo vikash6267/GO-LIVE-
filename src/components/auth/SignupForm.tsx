@@ -74,6 +74,7 @@ export const SignupForm = () => {
         display_name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
         mobile_phone: formData.phone,
+        work_phone: formData.phone,
         status: "pending",
         type: "pharmacy", // Set type as pharmacy by default
         role: "user", // Default role

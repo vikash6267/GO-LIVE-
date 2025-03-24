@@ -37,32 +37,36 @@ export function AddProductDialog({
 }: AddProductDialogProps) {
   console.log(initialData)
 const[loading,setLoading] = useState(false)
-  const form = useForm<ProductFormValues>({
-    resolver: zodResolver(productFormSchema),
-    defaultValues: {
-      name: initialData?.name || "",
-      sku: initialData?.sku || "",
-      key_features: initialData?.key_features || "",
-  squanence:initialData?.squanence || "",
-
-      description: initialData?.description || "",
-      category: initialData?.category || "",
-      images: initialData?.images || [],
-      sizes: initialData?.sizes || [],
-      base_price: initialData?.base_price || 0,
-      current_stock: initialData?.current_stock || 0,
-      min_stock: initialData?.min_stock || 0,
-      reorder_point: initialData?.reorder_point || 0,
-      quantityPerCase: initialData?.quantityPerCase || 1,
-      customization: initialData?.customization || {
-        allowed: false,
-        options: [],
-        price: 0,
-      },
-      trackInventory: initialData?.trackInventory ?? true,
-      image_url: initialData?.image_url || "",
+const form = useForm<ProductFormValues>({
+  resolver: zodResolver(productFormSchema),
+  defaultValues: {
+    name: initialData?.name || "",
+    sku: initialData?.sku || "",
+    key_features: initialData?.key_features || "",
+    squanence: initialData?.squanence || "",
+    description: initialData?.description || "",
+    category: initialData?.category || "",
+    images: initialData?.images || [],
+    sizes: initialData?.sizes
+      ? [...initialData.sizes].sort(
+          (a, b) => Number(a.sizeSquanence) - Number(b.sizeSquanence)
+        )
+      : [],
+    base_price: initialData?.base_price || 0,
+    current_stock: initialData?.current_stock || 0,
+    min_stock: initialData?.min_stock || 0,
+    reorder_point: initialData?.reorder_point || 0,
+    quantityPerCase: initialData?.quantityPerCase || 1,
+    customization: initialData?.customization || {
+      allowed: false,
+      options: [],
+      price: 0,
     },
-  });
+    trackInventory: initialData?.trackInventory ?? true,
+    image_url: initialData?.image_url || "",
+  },
+});
+
 
 
   

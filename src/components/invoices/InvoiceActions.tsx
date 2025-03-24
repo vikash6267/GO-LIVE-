@@ -61,10 +61,10 @@ export function InvoiceActions({ invoice, onActionComplete }: InvoiceActionsProp
             <RefreshCcw className="mr-2 h-4 w-4" />
             Process Refund
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => handleAction("cancel")} className="text-red-600">
+          {/* <DropdownMenuItem onClick={() => handleAction("cancel")} className="text-red-600">
             <Ban className="mr-2 h-4 w-4" />
             Cancel Invoice
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
         </DropdownMenuContent>
       </DropdownMenu>
 

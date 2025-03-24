@@ -108,12 +108,12 @@ export function InvoiceRowActions({ invoice, onPreview, onActionComplete }: Invo
             </DropdownMenuItem>
           )}
 
-          {["needs_payment_link", "payment_link_sent", "pending"].includes(invoice.status) && (
+          {/* {["needs_payment_link", "payment_link_sent", "pending"].includes(invoice.status) && (
             <DropdownMenuItem onClick={() => handleAction("cancel")} className="text-red-600">
               <Ban className="mr-2 h-4 w-4" />
               Cancel Invoice
             </DropdownMenuItem>
-          )}
+          )} */}
         </DropdownMenuContent>
       </DropdownMenu>
 

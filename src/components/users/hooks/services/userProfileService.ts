@@ -109,16 +109,29 @@ export const updateUserProfile = async (
     }
 
 console.log(data)
-if(profileData.status==="active" && sessionStorage.getItem('userType').toLocaleLowerCase() === "admin"){
+if(profileData.status==="active" && sessionStorage.getItem('userType').toLocaleLowerCase() === "admin" && !data.active_notification){
   try {
 
-    
+    console.log("enter the aactive")
     const response = await axios.post("/active", {
       name: `${data.first_name} ${data.last_name}`,
       email: data.email,
       admin: true
     });
   
+
+    const { data: update, error } = await supabase
+    .from("profiles")
+    .update({ active_notification: true })
+    .eq("id", userId); // Corrected eq() usage
+  
+  if (error) {
+    console.error("Error updating profile:", error.message);
+ 
+  } else {
+    console.log("Profile updated successfully:", update);
+  
+  }
     console.log("Verification Successful:", response.data);
 
     // async function sendResetPasswordLink(email) {

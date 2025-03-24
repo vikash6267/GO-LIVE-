@@ -231,11 +231,11 @@ export default function GroupOrder() {
           </div>
 
 
-  <div className="flex justify-center items-center min-h-screen">
      
 
       {/* Popup Modal */}
       {isOpen && (
+  <div className="">
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 h-screen z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] md:w-[50%] relative h-[80vh] overflow-y-scroll">
             {/* Close Button */}
@@ -251,8 +251,8 @@ export default function GroupOrder() {
             <ProductShowcase groupShow={true} />
           </div>
         </div>
-      )}
     </div>
+      )}
         
           {orderData.customerInfo  && selectedPharmacy &&   (
             <CreateOrderForm

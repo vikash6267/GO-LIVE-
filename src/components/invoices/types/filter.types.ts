@@ -10,7 +10,9 @@ export const filterValuesSchema = z.object({
     "payment_link_sent",
     "paid",
     "overdue",
-    "cancelled"
+    "cancelled",
+    "unpaid",
+    "all"
   ]).nullable(),
   search: z.string().optional(),
   dateFrom: z.string().optional(),

@@ -218,10 +218,14 @@ export function CreateOrderForm({
 
       const orderNumber = await generateOrderId()
 
-      // Prepare order data
+      let profileID = null
+ 
+  sessionStorage.getItem('userType') === "admin" ? profileID = data.customer :userProfile.id
+  console.log(profileID)    
+  // Prepare order data
       const orderData = {
         order_number: orderNumber,
-        profile_id: data.customer || userProfile.id,
+        profile_id: profileID,
         status: data.status,
         total_amount: calculatedTotal + newtax,
         shipping_cost: data.shipping?.cost || 0,

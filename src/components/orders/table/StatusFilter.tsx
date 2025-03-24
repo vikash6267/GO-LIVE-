@@ -20,8 +20,8 @@ export const StatusFilter = ({ value, onValueChange }: StatusFilterProps) => {
       <SelectContent>
         <SelectItem value="all">All Orders</SelectItem>
         <SelectItem value="paid">Paid</SelectItem>
-        <SelectItem value="fulfilled">Fulfilled</SelectItem>
-        <SelectItem value="shipped">Shipped</SelectItem>
+        <SelectItem value="unpaid">Pending</SelectItem>
+        {/* <SelectItem value="shipped">Shipped</SelectItem> */}
       </SelectContent>
     </Select>
   );

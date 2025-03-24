@@ -88,6 +88,8 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
           </div>
         </div>
 
+    
+
         <div className="space-y-6">
        
 
@@ -123,7 +125,7 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
                     Customization Available
                   </h3>
                 </div>
-                <div className="flex items-center justify-between bg-white/80 p-3 rounded-md backdrop-blur-sm">
+                {/* <div className="flex items-center justify-between bg-white/80 p-3 rounded-md backdrop-blur-sm">
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-amber-500" />
                     <span className="text-gray-700">Custom Design</span>
@@ -134,39 +136,63 @@ export const ProductPreview = ({ product }: ProductPreviewProps) => {
                   >
                     +${formatPrice(product.customization?.price || 0)} per unit
                   </Badge>
-                </div>
+                </div> */}
               </div>
             )}
 
-            {product.sizes && product.sizes.length > 0 && (
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <h3 className="font-semibold mb-2">Available Sizes:</h3>
-                <div className="space-y-2">
-                  {product.sizes.map((size: ProductSize, index: number) => (
-                    <div
-                      key={index}
-                      className="flex justify-between items-center bg-white p-2 rounded-lg shadow-sm"
-                    >
-                      <div className="flex flex-col">
-                        <span className="font-medium uppercase">
-                          {size.size_value} {size.size_unit}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {size.quantity_per_case} {""}
-                          {
-                      product.name === "LIQUID OVAL ADAPTERS" ? "Bottel Per Case" : product.name === "OINTMENT JARS" ? "Jar's And Caps In One Case" : product.name === "RX VIALS" ? "Vials And Caps In One Case" : product.name === "RX LABELS" ? `Labels Per Roll , ${size.rolls_per_case} Roll Per Case` : "Units per case"
+{product.sizes && product.sizes.length > 0 && (
+  <div className="bg-gray-50 p-3 rounded-lg">
+    <h3 className="font-semibold mb-2">Available Sizes:</h3>
+    <div className="space-y-2">
+      {product.sizes.map((size: ProductSize, index: number) => {
+        const isOutOfStock = size.stock <= 0;
+   
+        return (
+          <div
+            key={index}
+            className="flex justify-between items-center bg-white p-2 rounded-lg shadow-sm"
+          >
+            <div className="flex flex-col">
+              <span className="text-lg font-semibold uppercase text-gray-800">
+                {size.size_value} {size.size_unit}
+              </span>
 
-                          }
-                        </span>
-                      </div>
-                      <span className="font-medium text-emerald-600">
-                        ${formatPrice(size.price)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+              {/* Stock Availability Logic */}
+              <span className={`text-sm font-medium ${isOutOfStock ? "text-red-500" : "text-green-600"}`}>
+                {isOutOfStock 
+                  ? "Out of Stock" 
+                  : size.stock < 5 
+                    ? `Only ${size.stock} left in stock` 
+                    : `In Stock (${size.stock} available)`
+                }
+              </span>
+
+              {/* Quantity Per Case Logic */}
+              <span className="text-sm text-gray-500">
+                {size.quantity_per_case}{" "}
+                {product.name === "LIQUID OVALS" ? "bottles and caps in one case"
+                  : product.name.includes("RX PAPER BAGS") ? "bags per case"
+                  : product.name === "THERMAL PAPER RECEIPT ROLLS" ? "Rolls per case"
+                  : product.name === "LIQUID OVAL ADAPTERS" ? "Bottles Per Case"
+                  : product.name === "OINTMENT JARS" ? "jars and caps in one case"
+                  : product.name === "RX VIALS" ? "vials and caps in one case"
+                  : product.name === "RX LABELS" ? `labels per roll, ${size?.rolls_per_case} rolls per case`
+                  : "units per case"
+                }
+              </span>
+            </div>
+
+            {/* Price Display */}
+            <span className="font-medium text-emerald-600">
+              ${formatPrice(size.price)}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+)}
+
 
            
           </div>

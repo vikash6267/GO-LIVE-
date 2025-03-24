@@ -68,7 +68,7 @@ export function GroupUserFields({ form }: GroupUserFieldsProps) {
         </CardContent>
       </Card>
 
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Locations</CardTitle>
         </CardHeader>
@@ -77,7 +77,7 @@ export function GroupUserFields({ form }: GroupUserFieldsProps) {
             <LocationsInput form={form as UseFormReturn<any>} />
           )}
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }

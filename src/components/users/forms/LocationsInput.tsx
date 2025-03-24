@@ -46,7 +46,7 @@ export function LocationsInput({ form }: LocationsInputProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ">
       <div className="flex justify-between items-center">
         <Button onClick={addLocation} className="gap-2">
           <Plus className="h-4 w-4" />

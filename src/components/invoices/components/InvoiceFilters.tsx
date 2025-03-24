@@ -35,7 +35,7 @@ export function InvoiceFilters({ onFilterChange }: InvoiceFiltersProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
         <Input
           type="text"
-          placeholder="Search invoices..."
+          placeholder="Search invoice Number"
           value={filters.search || ''}
           onChange={(e) => handleFilterChange('search', e.target.value)}
           className="lg:col-span-2"

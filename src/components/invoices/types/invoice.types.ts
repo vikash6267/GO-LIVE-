@@ -17,6 +17,8 @@ export interface CustomerInfo {
 
 export const InvoiceStatusEnum = {
   DRAFT: "draft",
+  UNPAID: "unpaid",
+  ALL: "all",
   PENDING: "pending",
   NEEDS_PAYMENT_LINK: "needs_payment_link",
   PAYMENT_LINK_SENT: "payment_link_sent",

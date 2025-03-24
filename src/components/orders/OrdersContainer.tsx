@@ -91,6 +91,7 @@ export const OrdersContainer = ({
   const [selectedPharmacy, setSelectedPharmacy] = useState<string>("");
   const [userData, setUserData] = useState<any[]>([]);
   const [options, setOptions] = useState([])
+ const[orderStatus,setOrderStatus] = useState<string>("");
 
   const {
     orders,
@@ -106,28 +107,6 @@ export const OrdersContainer = ({
     handleShipOrder: shipOrder,
     handleConfirmOrder: confirmOrder,
   } = useOrderManagement();
-
-
-  useEffect(() => {
-    // setIsCreateOrderOpen(location.state?.createOrder) 
-    if (location.state?.createOrder) {
-      setIsCreateOrderOpen(true);
-
-      // 🔹 Location state ko reset karne ke liye navigate ka istemal karein
-      navigate(location.pathname, { replace: true, state: {} });
-    }
-  }, [location, navigate]);
-
-  console.log(orders);
-  const {
-    statusFilter,
-    searchQuery,
-    dateRange,
-    setStatusFilter,
-    setSearchQuery,
-    setDateRange,
-    filteredOrders,
-  } = useOrderFilters(orders);
 
 
   useEffect(() => {
@@ -198,7 +177,31 @@ export const OrdersContainer = ({
 
     fetchUsers();
     fetchOrders();
-  }, []); // Ensure dependencies are correctly placed if needed
+  }, [orderStatus]); // Ensure dependencies are correctly placed if needed
+
+
+
+  useEffect(() => {
+    // setIsCreateOrderOpen(location.state?.createOrder) 
+    if (location.state?.createOrder) {
+      setIsCreateOrderOpen(true);
+
+      // 🔹 Location state ko reset karne ke liye navigate ka istemal karein
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
+
+  console.log(orders);
+  const {
+    statusFilter,
+    searchQuery,
+    dateRange,
+    setStatusFilter,
+    setSearchQuery,
+    setDateRange,
+    filteredOrders,
+  } = useOrderFilters(orders);
+
 
 
   const handlePharmacyChange = async (pharmacyId: string) => {
@@ -365,6 +368,7 @@ export const OrdersContainer = ({
         onShipOrder={shipOrder}
         onConfirmOrder={confirmOrder}
         onDeleteOrder={onDeleteOrder}
+        setOrderStatus={setOrderStatus}
       />
 
       {selectedOrder && (

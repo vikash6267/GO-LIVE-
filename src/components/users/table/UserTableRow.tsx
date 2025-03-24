@@ -55,9 +55,9 @@ if(user.type.toLowerCase() === "group" && user?.id){
       throw new Error("No active session found");
     }
     const { count, error } = await supabase
-    .from("profiles")
+    .from("locations")
     .select("*", { count: "exact" }) // "exact" ko correct format me likha hai
-    .eq("group_id", user?.id);
+    .eq("profile_id", user?.id);
 
     if (error) {
       console.error("Database Error - Failed to fetch profile:", error);

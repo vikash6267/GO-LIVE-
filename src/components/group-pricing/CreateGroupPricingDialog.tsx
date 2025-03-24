@@ -296,7 +296,7 @@ export function CreateGroupPricingDialog({ onSubmit, initialData }: CreateGroupP
             className="bg-gradient-to-r from-[#e6b980] to-[#eacda3] hover:opacity-90 text-gray-800"
             size="sm"
           >
-            <Plus className="h-4 w-4" /> Add Group
+            <Plus className="h-4 w-4" /> Add Group Pricing
           </Button>
         </DialogTrigger>
         <div className=" ">

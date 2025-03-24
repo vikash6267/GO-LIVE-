@@ -83,7 +83,11 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
       if (filters.search) {
         query = query.ilike("invoice_number", `%${filters.search}%`);
       }
-      if (filters.status) {
+      if (filters.status && filters.status !== "all" ) {
+       console.log(filters.status)
+        let payStatus = filters.status
+        payStatus === "pending" ? payStatus = "unpaid" : payStatus = filters.status
+      
         query = query.eq("payment_status", filters.status);
       }
       if (filters.dateFrom) {
@@ -193,7 +197,7 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
   };
 
   const handleFilterChange = (newFilters: FilterValues) => {
-    if (isValidFilterValues(newFilters)) {
+    if (true) {
       setFilters(newFilters);
     } else {
       console.error("Invalid filter values:", newFilters);

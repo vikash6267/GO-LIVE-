@@ -118,7 +118,7 @@ export const OrderConfirmAction = ({ order, onConfirmOrder }: OrderConfirmAction
 
   const getButtonConfig = () => {
     const status = currentStatus.toLowerCase();
-    
+ 
     const configs = {
       new: {
         icon: CirclePlus,

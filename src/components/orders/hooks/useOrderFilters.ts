@@ -14,7 +14,7 @@ export const useOrderFilters = (orders: OrderFormValues[]) => {
 
   const filteredOrders = (orders || [])
     .filter(order => 
-      statusFilter === "all" ? true : order.status === statusFilter
+      statusFilter === "all" ? true : order.payment_status === statusFilter
     )
     .filter(order =>
       searchQuery

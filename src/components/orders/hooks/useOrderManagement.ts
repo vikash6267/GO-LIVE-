@@ -208,6 +208,7 @@ export const useOrderManagement = () => {
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
+      console.log("object")
       // Update order and get the updated order in response
       const { data: updatedOrder, error } = await supabase
         .from("orders")

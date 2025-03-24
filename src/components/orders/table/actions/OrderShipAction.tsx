@@ -6,6 +6,7 @@ import { TrackingDialog } from "../../components/TrackingDialog";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/hooks/use-cart";
+import { supabase } from "@/integrations/supabase/client";
 
 interface OrderShipActionProps {
   order: OrderFormValues;
@@ -35,6 +36,8 @@ export const OrderShipAction = ({
   };
 
   const handleTrackingSubmit = async () => {
+    console.log("tracing")
+    
     if (!trackingNumber.trim()) {
       toast({
         title: "Error",
@@ -74,8 +77,25 @@ export const OrderShipAction = ({
 
       // Then call the onShipOrder callback
       if (onShipOrder && order.id) {
+
         console.log("Calling onShipOrder callback");
         onShipOrder(order.id);
+
+           const { data: updatedOrder, error } = await supabase
+                .from("orders")
+                .update({
+                  tracking_number: trackingNumber,
+                
+                })
+                .eq("id", order.id)
+                .select("*") // Returns the updated order
+                .single(); // Ensures only one order is fetched
+          
+              if (error) throw error;
+          
+              // Log the updated order
+              console.log("Updated Order:", updatedOrder);
+          
       }
 
       setShowTrackingDialog(false);

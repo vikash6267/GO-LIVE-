@@ -38,6 +38,7 @@ interface OrdersListProps {
   userRole?: "admin" | "pharmacy" | "group" | "hospital";
   selectedOrders?: string[];
   onOrderSelect?: (orderId: string) => void;
+  setOrderStatus?: (status: string) => void;
 }
 
 export function OrdersList({
@@ -54,6 +55,7 @@ export function OrdersList({
   userRole = "pharmacy",
   selectedOrders = [],
   onOrderSelect,
+  setOrderStatus,
 }: OrdersListProps) {
   const { toast } = useToast();
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -118,7 +120,7 @@ export function OrdersList({
 
       console.log("shippingMethod", shippingMethod)
       console.log("trackingNumber", trackingNumber)
-      return
+      
       // Add shipping information if provided
       if (trackingNumber && shippingMethod) {
         updateData.tracking_number = trackingNumber;
@@ -325,12 +327,16 @@ export function OrdersList({
                   order={order}
                   onProcessOrder={async (id) => {
                     await handleStatusChange(id, "processing");
+                    setOrderStatus("processing")
                   }}
                   onShipOrder={async (id) => {
                     await handleStatusChange(id, "shipped", order.shipping?.trackingNumber, order.shipping?.method);
+                    setOrderStatus("shipped")
+
                   }}
                   onConfirmOrder={async (id) => {
                     await handleStatusChange(id, "pending");
+                    setOrderStatus("pending")
                   }}
                   onDeleteOrder={onDeleteOrder}
                 />

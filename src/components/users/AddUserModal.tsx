@@ -224,6 +224,19 @@ export function AddUserModal({
             email: userData.email,
             admin: true
           });
+
+          const { data: update, error } = await supabase
+          .from("profiles")
+          .update({ active_notification: true })
+          .eq("id", tempUserData?.id); // Corrected eq() usage
+        
+        if (error) {
+          console.error("Error updating profile:", error.message);
+       
+        } else {
+          console.log("Profile updated successfully:", update);
+        
+        }
         
           console.log("Verification Successful:", response.data);
       

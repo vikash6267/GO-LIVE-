@@ -51,43 +51,14 @@ export function InvoiceFilters({ onFilterChange }: InvoiceFiltersProps) {
           <SelectContent>
             <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="paid">Paid</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="overdue">Overdue</SelectItem>
+            <SelectItem value="unpaid">Pending</SelectItem>
+            {/* <SelectItem value="overdue">Overdue</SelectItem> */}
           </SelectContent>
         </Select>
 
-        {/* <Input
-          type="date"
-          placeholder="From Date"
-          value={filters.dateFrom || ''}
-          onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
-        />
-
-        <Input
-          type="date"
-          placeholder="To Date"
-          value={filters.dateTo || ''}
-          onChange={(e) => handleFilterChange('dateTo', e.target.value)}
-        />
-
-        <Input
-          type="number"
-          placeholder="Min Amount"
-          value={filters.amountMin || ''}
-          onChange={(e) => handleFilterChange('amountMin', e.target.value ? Number(e.target.value) : undefined)}
-        />
-
-        <Input
-          type="number"
-          placeholder="Max Amount"
-          value={filters.amountMax || ''}
-          onChange={(e) => handleFilterChange('amountMax', e.target.value ? Number(e.target.value) : undefined)}
-        /> */}
       </div>
 
-      {/* <Button variant="outline" onClick={clearFilters}>
-        Clear Filters
-      </Button> */}
+   
     </div>
   );
 }

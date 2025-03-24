@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import React from "react";
 import InvoiceExport from "./InvoiceExport"
+import { CSVLink } from "react-csv";
 
 // Extend the jsPDF type to include autoTable
 interface jsPDFWithAutoTable extends jsPDF {
@@ -69,10 +70,13 @@ export const exportToPDF = (invoice?: Invoice) => {
   doc.save(`invoice${invoice ? `-${invoice.id}` : 's'}.pdf`);
 };
 
+
+
+
 export const ExportOptions: React.FC<ExportOptionsProps> = ({ invoices }) => {
   return (
     <div className="flex items-center gap-2">
-    
+    EXport
       <InvoiceExport invoices={invoices} companyName="9RX" logoUrl="/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png" />
     </div>
   );

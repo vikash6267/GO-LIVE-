@@ -7,7 +7,7 @@ import { useOrderFilters } from "./hooks/useOrderFilters";
 import { useOrderManagement } from "./hooks/useOrderManagement";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Package, PlusCircle } from "lucide-react";
+import { Download, Package, PlusCircle } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -31,6 +31,37 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import Select from "react-select";
+import { CSVLink } from "react-csv";
+
+const exportToCSV = (orders: OrderFormValues[]) => {
+  if (!orders || orders.length === 0) {
+    return { data: [], headers: [], filename: "orders.csv" };
+  }
+
+  const headers = [
+    { label: "Order Number", key: "order_number" },
+    { label: "Customer Name", key: "customerInfo.name" },
+    { label: "Email", key: "customerInfo.email" },
+    { label: "Phone", key: "customerInfo.phone" },
+    { label: "Total Amount", key: "total" },
+    { label: "Status", key: "status" },
+    { label: "Payment Status", key: "payment_status" },
+    { label: "Customization", key: "customization" },
+    { label: "Order Date", key: "date" },
+    { label: "Shipping Method", key: "shipping.method" },
+    { label: "Shipping Cost", key: "shipping.cost" },
+    { label: "Tracking Number", key: "shipping.trackingNumber" },
+    { label: "Estimated Delivery", key: "shipping.estimatedDelivery" },
+    { label: "Special Instructions", key: "specialInstructions" },
+    { label: "Shipping Address", key: "shippingAddress.address.street" },
+    { label: "City", key: "shippingAddress.address.city" },
+    { label: "State", key: "shippingAddress.address.state" },
+    { label: "Zip Code", key: "shippingAddress.address.zip_code" },
+  ];
+
+  return { data: orders, headers, filename: "orders.csv" };
+};
+
 
 interface OrdersContainerProps {
   userRole?: "admin" | "pharmacy" | "group" | "hospital";
@@ -232,6 +263,18 @@ export const OrdersContainer = ({
     onDateChange={setDateRange}
     onExport={() => console.log("Export functionality to be implemented")}
   />
+ {filteredOrders.length > 0 ? (
+  <CSVLink {...exportToCSV(filteredOrders)} className="btn btn-primary">
+    <Button variant="outline">
+        <Download className="mr-2 h-4 w-4" />
+        Export Orders
+      </Button>
+  </CSVLink>
+) : (
+  <button className="btn btn-disabled">Export CSV</button>
+)}
+
+
   {userRole === "admin" && (
     <div className="flex flex-wrap justify-center md:justify-end items-center gap-2 w-full md:w-auto">
       <Sheet open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>

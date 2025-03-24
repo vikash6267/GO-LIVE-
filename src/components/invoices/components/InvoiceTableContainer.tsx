@@ -13,6 +13,7 @@ import { sortInvoices } from "../utils/sortUtils";
 import { supabase } from "@/integrations/supabase/client";
 import { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 import { Skeleton } from "@/components/ui/skeleton";
+import { CSVLink } from "react-csv";
 
 interface DataTableProps {
   filterStatus?: InvoiceStatus;
@@ -31,16 +32,16 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
 
   const fetchInvoices = async () => {
     setLoading(true);
-  const role = sessionStorage.getItem('userType');
-   const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        toast({
-          title: "Error",
-          description: "Please log in to view orders",
-          variant: "destructive",
-        });
-        return;
-      }
+    const role = sessionStorage.getItem('userType');
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      toast({
+        title: "Error",
+        description: "Please log in to view orders",
+        variant: "destructive",
+      });
+      return;
+    }
     try {
       let query = supabase
         .from("invoices")
@@ -48,42 +49,42 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
           *,
           payment_status,
           orders (order_number),
-          profiles (first_name, last_name, email)
+          profiles (first_name, last_name, email,company_name)
         `)
-         if (role === "pharmacy") {
-                // If user is not admin, fetch orders for their profile only
-                query.eq('profile_id', session.user.id);
-              }
-        
-              if (role === "group") {
-                const { data, error } = await supabase
-                    .from("profiles")
-                    .select("id")
-                    .eq("group_id", session.user.id);
-            
-                if (error) {
-                    console.error("Failed to fetch customer information:", error);
-                    throw new Error("Failed to fetch customer information: " + error.message);
-                }
-            
-                if (!data || data.length === 0) {
-                    throw new Error("No customer information found.");
-                }
-            
-                console.log("Data", data);
-            
-                // Extract user IDs from the data array
-                const userIds = data.map(user => user.id);
-            
-                // Fetch orders where profile id is in the list of userIds
-                query.in("profile_id", userIds);
-            }
+      if (role === "pharmacy") {
+        // If user is not admin, fetch orders for their profile only
+        query.eq('profile_id', session.user.id);
+      }
+
+      if (role === "group") {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("group_id", session.user.id);
+
+        if (error) {
+          console.error("Failed to fetch customer information:", error);
+          throw new Error("Failed to fetch customer information: " + error.message);
+        }
+
+        if (!data || data.length === 0) {
+          throw new Error("No customer information found.");
+        }
+
+        console.log("Data", data);
+
+        // Extract user IDs from the data array
+        const userIds = data.map(user => user.id);
+
+        // Fetch orders where profile id is in the list of userIds
+        query.in("profile_id", userIds);
+      }
 
       if (filters.search) {
         query = query.ilike("invoice_number", `%${filters.search}%`);
       }
       if (filters.status) {
-        query = query.eq("status", filters.status);
+        query = query.eq("payment_status", filters.status);
       }
       if (filters.dateFrom) {
         query = query.gte("due_date", filters.dateFrom);
@@ -114,7 +115,7 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
       // Validate the response data
       const validInvoices = (data || []).filter(isInvoice);
       if (validInvoices.length !== data?.length) {
-        console.warn("Some invoices failed validation:", 
+        console.warn("Some invoices failed validation:",
           data?.filter((invoice) => !isInvoice(invoice))
         );
       }
@@ -144,20 +145,20 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
         },
         (payload: RealtimePostgresChangesPayload<Invoice>) => {
           console.log('Received real-time update:', payload);
-          
+
           setRefreshTrigger(prev => prev + 1);
-          
+
           const eventMessages = {
             INSERT: 'New invoice created',
             UPDATE: 'Invoice updated',
             DELETE: 'Invoice deleted'
           };
 
-          const invoiceNumber = 
-            (payload.new as Invoice | undefined)?.invoice_number || 
-            (payload.old as Invoice | undefined)?.invoice_number || 
+          const invoiceNumber =
+            (payload.new as Invoice | undefined)?.invoice_number ||
+            (payload.old as Invoice | undefined)?.invoice_number ||
             'Unknown';
-          
+
           toast({
             title: eventMessages[payload.eventType as keyof typeof eventMessages] || 'Invoice Changed',
             description: `Invoice ${invoiceNumber} has been modified.`,
@@ -210,25 +211,25 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
     console.log(invoice)
     try {
       const items = typeof invoice.items === 'string' ? JSON.parse(invoice.items) : invoice.items;
-      const customerInfo = typeof invoice.customer_info === 'string' 
-        ? JSON.parse(invoice.customer_info) 
+      const customerInfo = typeof invoice.customer_info === 'string'
+        ? JSON.parse(invoice.customer_info)
         : invoice.customer_info;
       const shippingInfo = typeof invoice.shipping_info === 'string'
         ? JSON.parse(invoice.shipping_info)
         : invoice.shipping_info;
-console.log(invoice)
+      console.log(invoice)
       return {
-        invoice_number :invoice.invoice_number,
-        order_number :invoice.orders.order_number,
+        invoice_number: invoice.invoice_number,
+        order_number: invoice.orders.order_number,
         id: invoice.id,
         customerInfo,
         shippingInfo,
-        profile_id:invoice.profile_id,
+        profile_id: invoice.profile_id,
         payment_status: invoice.payment_status, // ✅ Extracted correctly
-        created_at:invoice.created_at,
-        payment_transication:invoice.payment_transication,
-        payment_notes:invoice.payment_notes,
-        payment_method:invoice.payment_method,
+        created_at: invoice.created_at,
+        payment_transication: invoice.payment_transication,
+        payment_notes: invoice.payment_notes,
+        payment_method: invoice.payment_method,
 
         items,
         subtotal: invoice.subtotal,
@@ -246,11 +247,41 @@ console.log(invoice)
     }
   };
 
+
+  const exportInvoicesToCSV = () => {
+    const csvData = invoices?.map((invoice) => ({
+      "Invoice Number": invoice.invoice_number,
+      "Order Number": invoice.orders?.order_number || "",
+      "Customer Name": `${invoice.profiles?.first_name || ""} ${invoice.profiles?.last_name || ""}`,
+      "Email": invoice.profiles?.email || "",
+      "Company Name": (invoice.profiles as any)?.company_name || "",
+
+      "Tax": invoice.tax_amount,
+      "Subtotal": invoice.subtotal,
+      "Payment Status": invoice.payment_status,
+      "Created At": invoice.created_at,
+      "Shipping Address": invoice.shipping_info
+        ? `${invoice.shipping_info.street}, ${invoice.shipping_info.city}, ${invoice.shipping_info.state}, ${invoice.shipping_info.zip_code}`
+        : "",
+    }));
+  
+    return csvData;
+  };  
+
+
   return (
     <>
       <div className="flex justify-between items-center mb-4">
         <InvoiceFilters onFilterChange={handleFilterChange} />
         <ExportOptions invoices={invoices} />
+
+    { invoices.length > 0 &&   <CSVLink
+      data={exportInvoicesToCSV()}
+      filename={`invoices_${new Date().toISOString()}.csv`}
+      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+    >
+      Export CSV
+    </CSVLink>}
       </div>
 
       {loading ? (
@@ -271,8 +302,8 @@ console.log(invoice)
 
       <Sheet open={!!selectedInvoice} onOpenChange={() => setSelectedInvoice(null)}>
         {selectedInvoice && (
-          <InvoicePreview 
-            invoice={transformInvoiceForPreview(selectedInvoice) || undefined} 
+          <InvoicePreview
+            invoice={transformInvoiceForPreview(selectedInvoice) || undefined}
           />
         )}
       </Sheet>

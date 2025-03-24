@@ -73,10 +73,10 @@ export function OrderFilters({ onSearch, onDateChange, onExport }: OrderFiltersP
           </PopoverContent>
         </Popover>
       </div>
-      <Button onClick={onExport} variant="outline">
+      {/* <Button onClick={onExport} variant="outline">
         <Download className="mr-2 h-4 w-4" />
         Export Orders
-      </Button>
+      </Button> */}
     </div>
   );
 }

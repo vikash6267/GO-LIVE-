@@ -69,7 +69,7 @@ export const OrdersTable = () => {
         <OrderFilters 
           onSearch={setSearchQuery} 
           onDateChange={() => {}} 
-          onExport={() => {}} 
+          onExport={() => {console.log("object")}} 
         />
         <StatusFilter value={statusFilter} onValueChange={setStatusFilter} />
       </div>

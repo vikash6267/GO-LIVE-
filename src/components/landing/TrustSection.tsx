@@ -10,14 +10,14 @@ const TrustSection = () => {
             Industry-Leading Standards
           </h2>
           <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
-            Join thousands of healthcare providers who trust 9Rx for their pharmaceutical supply needs
+            Join hundreds of healthcare providers who trust 9Rx for their pharmaceutical supply needs
           </p>
         </div>
         
         <div className="grid md:grid-cols-3 gap-8 sm:gap-12">
           <TrustCard
             icon={Building2}
-            title="150+ Partner Pharmacies"
+            title="250+ Partner Pharmacies"
             description="Trusted by leading pharmacy groups across the nation"
           />
           <TrustCard

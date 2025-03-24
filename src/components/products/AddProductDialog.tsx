@@ -15,7 +15,7 @@ import { ImageUploadField } from "./form-fields/ImageUploadField";
 import { SizeOptionsField } from "./form-fields/SizeOptionsField";
 import { InventorySection } from "./form-sections/InventorySection";
 import { Loader2 } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CustomizationSection } from "./form-fields/Customizations";
 
 interface AddProductDialogProps {
@@ -36,7 +36,7 @@ export function AddProductDialog({
   initialData,
 }: AddProductDialogProps) {
   console.log(initialData)
-
+const[loading,setLoading] = useState(false)
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
@@ -68,7 +68,9 @@ export function AddProductDialog({
   
 
   const handleSubmit = async (values: ProductFormValues) => {
+    setLoading(true)
     try {
+     
       await onSubmit(values);
       form.reset();
       onProductAdded();
@@ -76,6 +78,8 @@ export function AddProductDialog({
     } catch (error) {
       console.error("Error submitting product:", error);
     }
+    setLoading(false)
+
   };
 
   return (
@@ -122,7 +126,7 @@ export function AddProductDialog({
                 disabled={isSubmitting}
                 className="w-full md:w-auto"
               >
-                {isSubmitting ? (
+                {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     <span>

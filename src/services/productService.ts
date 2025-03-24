@@ -133,46 +133,143 @@ export const updateProductService = async (
     }
 
     // Delete existing sizes
-    const { error: deleteError } = await supabase
-      .from("product_sizes")
-      .delete()
-      .eq("product_id", productId);
-
-    if (deleteError) {
-      console.error("Error deleting existing sizes:", deleteError);
-      throw deleteError;
-    }
+   
 
     console.log(data.sizes);
 
-    const sizesData = data.sizes.map((size) => ({
-      product_id: productId,
+    
+    for (const size of data.sizes) {
+      const { error: sizeError } = await supabase
+        .from("product_sizes")
+        .update({
+          size_value: size.size_value || "0",
+          size_unit: size.size_unit || "unit",
+          price: Number(size.price) || 0,
+          stock: Number(size.stock) || 0,
+          price_per_case: Number(size.price_per_case) || 0,
+          sku: size.sku || "",
+          image: size.image || "",
+          quantity_per_case: Number(size.quantity_per_case) || 1,
+          rolls_per_case: Number(size.rolls_per_case) || 1,
+          sizeSquanence: Number(size.sizeSquanence) || 0,
+          shipping_cost: size.shipping_cost,
+        })
+        .eq("id", size.id); // ✅ Update directly using size ID
+
+      if (sizeError) {
+        console.error("Error updating size:", sizeError);
+        throw sizeError;
+      }
+    }
+
+ // Loop through each size
+for (const size of data.sizes) {
+  const { error: sizeError } = await supabase
+    .from("product_sizes")
+    .update({
       size_value: size.size_value || "0",
       size_unit: size.size_unit || "unit",
       price: Number(size.price) || 0,
       stock: Number(size.stock) || 0,
       price_per_case: Number(size.price_per_case) || 0,
       sku: size.sku || "",
-      image:size.image|| "" ,
-      quantity_per_case: Number(size.quantity_per_case) || 1, // ✅ Ensure conversion
+      image: size.image || "",
+      quantity_per_case: Number(size.quantity_per_case) || 1,
       rolls_per_case: Number(size.rolls_per_case) || 1,
       sizeSquanence: Number(size.sizeSquanence) || 0,
-      shipping_cost: size.shipping_cost, // ✅ Ensure conversion
-    }));
+      shipping_cost: size.shipping_cost,
+    })
+    .eq("id", size.id); // ✅ Update directly using size ID
 
-    console.log(sizesData);
+  if (sizeError) {
+    console.error("Error updating size:", sizeError);
+    throw sizeError;
+  }
+}
 
-    const { error: sizesError } = await supabase
-      .from("product_sizes")
-      .insert(sizesData)
-      .select(); // Fetch inserted data to confirm
 
-    if (sizesError) {
-      console.error("Error inserting sizes:", sizesError);
-      throw sizesError;
-    } else {
-      console.log("Sizes inserted successfully!");
+
+
+
+
+
+
+
+// 🔹 STEP 1: Group Pricing fetch karna
+const { data: groupPricingData, error: fetchError } = await supabase
+  .from("group_pricing")
+  .select("*");
+
+if (fetchError) {
+  console.error("Error fetching group pricing:", fetchError);
+  throw fetchError;
+}
+
+// 🔹 STEP 2: Update product_arrayjson ke andar actual price
+const updatedGroupPricingData = groupPricingData.map((group) => {
+  if (!Array.isArray(group.product_arrayjson)) return group; // Ensure it's an array
+
+  // Update each product's actual_price where product_id matches
+  const updatedProducts = group.product_arrayjson.map((product) => {
+    const matchingSize = data.sizes.find((size) => size.id === product.product_id);
+    if (matchingSize) {
+      product.actual_price = matchingSize.price; // ✅ New price assign
     }
+    return product;
+  });
+
+  return {
+    id: group.id,
+    updatedJson: updatedProducts, // No need for JSON.stringify()
+  };
+});
+
+// 🔹 STEP 3: Updated JSON ko wapas database mein save karna
+for (const group of updatedGroupPricingData) {
+  const { error: updateError } = await supabase
+    .from("group_pricing")
+    .update({ product_arrayjson: group.updatedJson })
+    .eq("id", group.id);
+
+  if (updateError) {
+    console.error("Error updating group pricing:", updateError);
+    throw updateError;
+  }
+}
+
+
+
+
+
+
+    // const sizesData = data.sizes.map((size) => ({
+    //   product_id: productId,
+    //   size_value: size.size_value || "0",
+    //   size_unit: size.size_unit || "unit",
+    //   price: Number(size.price) || 0,
+    //   stock: Number(size.stock) || 0,
+    //   price_per_case: Number(size.price_per_case) || 0,
+    //   sku: size.sku || "",
+    //   image:size.image|| "" ,
+    //   quantity_per_case: Number(size.quantity_per_case) || 1, // ✅ Ensure conversion
+    //   rolls_per_case: Number(size.rolls_per_case) || 1,
+    //   sizeSquanence: Number(size.sizeSquanence) || 0,
+    //   shipping_cost: size.shipping_cost, // ✅ Ensure conversion
+    // }));
+
+    // console.log(sizesData);
+
+    // const { error: sizesError } = await supabase
+    //   .from("product_sizes")
+    //   .insert(sizesData)
+    //   .select(); // Fetch inserted data to confirm
+
+    // if (sizesError) {
+    //   console.error("Error inserting sizes:", sizesError);
+    //   throw sizesError;
+    // } else {
+    //   console.log("Sizes inserted successfully!");
+    // }
 
     return { success: true };
   } catch (error) {

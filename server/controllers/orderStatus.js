@@ -72,7 +72,7 @@ exports.orderPlacedCtrl = async (req, res) => {
       emailContent
     );
     await mailSender(
-      "vikasmaheshwari6267@gmail.com",
+      "sppatel@9rx.com",
       "New Order Placed ",
       emailContentAdmin
     );

@@ -79,22 +79,23 @@ export const OrderShipAction = ({
       if (onShipOrder && order.id) {
 
         console.log("Calling onShipOrder callback");
-        onShipOrder(order.id);
-
-           const { data: updatedOrder, error } = await supabase
-                .from("orders")
-                .update({
-                  tracking_number: trackingNumber,
-                
-                })
-                .eq("id", order.id)
-                .select("*") // Returns the updated order
-                .single(); // Ensures only one order is fetched
+        
+        const { data: updatedOrder, error } = await supabase
+        .from("orders")
+        .update({
+          tracking_number: trackingNumber,
+          shipping_method: shippingMethod,
           
+        })
+        .eq("id", order.id)
+        .select("*") // Returns the updated order
+        .single(); // Ensures only one order is fetched
+        
               if (error) throw error;
           
               // Log the updated order
               console.log("Updated Order:", updatedOrder);
+              onShipOrder(order.id);
           
       }
 

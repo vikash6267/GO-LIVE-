@@ -218,9 +218,10 @@ console.log(initialData)
 
       const orderNumber = await generateOrderId()
 
-      let profileID = userProfile.id
+      if(!userProfile?.id) return
+      let profileID = userProfile?.id
  
-  sessionStorage.getItem('userType') === "admin" ? profileID = data.customer :userProfile.id
+  sessionStorage.getItem('userType') === "admin" ? profileID = data.customer :userProfile?.id
   console.log(profileID)    
   // Prepare order data
       const orderData = {
@@ -244,6 +245,7 @@ console.log(initialData)
       };
 
       console.log(orderData);
+
 
       // Save order to Supabase
       const { data: orderResponse, error: orderError } = await supabase

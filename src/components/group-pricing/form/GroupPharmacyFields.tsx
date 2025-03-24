@@ -25,7 +25,7 @@ export function GroupPharmacyFields({ form, groups, pharmacies }: GroupPharmacyF
                 options={groups.map((group) => ({ value: group.id, label: group.name }))}
                 value={groups.filter((group) => field.value?.includes(group.id)).map((group) => ({ value: group.id, label: group.name }))}
                 onChange={(selectedOptions) => field.onChange(selectedOptions.map((option) => option.value))}
-                placeholder="Select groups"
+                placeholder="Select Pharmacy"
               />
             </FormControl>
             <FormMessage />

@@ -16,7 +16,7 @@ const validationSchema = yup.object().shape({
   ),
 });
 
-const CustomProductForm = ({ isOpen, onClose }) => {
+const CustomProductForm = ({ isOpen, onClose,isEditing,form }) => {
   const { addToCart } = useCart();
     
   const {
@@ -71,7 +71,13 @@ const CustomProductForm = ({ isOpen, onClose }) => {
 
       console.log("Cart Item:", cartItem);
       
-      await addToCart(cartItem); // ✅ Cart me add hoga
+      if (isEditing) {
+        form.setValue("items", [...form.getValues("items"), cartItem]); 
+
+        }else{
+            
+            await addToCart(cartItem); // ✅ Cart me add hoga
+      }
       onClose(); // ✅ Form close hoga
     } catch (error) {
       console.error("Error adding to cart:", error);

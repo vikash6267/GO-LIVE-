@@ -21,12 +21,17 @@ interface OrderPreviewProps {
   orderData: any; // Adjust type if needed
   setIsCus?: React.Dispatch<React.SetStateAction<boolean>>; // ✅ Accept as prop
   isCus?: boolean;
+  isEditing?: boolean;
+  form: any;
+
 }
 
 export function OrderPreview({
   orderData,
   setIsCus,
   isCus,
+  isEditing,
+  form
 }: OrderPreviewProps) {
   // Ensure we have default values for all potentially undefined properties
   const { cartItems, clearCart } = useCart();
@@ -122,7 +127,9 @@ export function OrderPreview({
             specialInstructions={safeOrderData.specialInstructions}
           />
           <OrderTotals
-            items={safeOrderData.items}
+          isEditing={isEditing}
+            items={orderData.items}
+            orderData={orderData}
             paymentMethod={safeOrderData.payment.method}
             setIsCus={setIsCus}
             isCus={isCus}

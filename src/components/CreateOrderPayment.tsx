@@ -153,32 +153,32 @@ const CreateOrderPaymentForm = ({
           }
 
           // Check stock availability
-          for (const item of data.items) {
-            const { data: product, error: stockError } = await supabase
-              .from("products")
-              .select("current_stock")
-              .eq("id", item.productId)
-              .single();
+          // for (const item of data.items) {
+          //   const { data: product, error: stockError } = await supabase
+          //     .from("products")
+          //     .select("current_stock")
+          //     .eq("id", item.productId)
+          //     .single();
 
-            if (stockError || !product) {
-              throw new Error(
-                `Could not check stock for product ID: ${item.productId}`
-              );
-            }
+          //   if (stockError || !product) {
+          //     throw new Error(
+          //       `Could not check stock for product ID: ${item.productId}`
+          //     );
+          //   }
 
-            if (product.current_stock < item.quantity) {
-              toast({
-                title: "Insufficient Stock",
-                description: `Product ID: ${item.productId} has only ${product.current_stock} units available.`,
-                variant: "destructive",
-              });
-              console.error(
-                "Insufficient stock for product ID:",
-                item.productId
-              );
-              return;
-            }
-          }
+          //   if (product.current_stock < item.quantity) {
+          //     toast({
+          //       title: "Insufficient Stock",
+          //       description: `Product ID: ${item.productId} has only ${product.current_stock} units available.`,
+          //       variant: "destructive",
+          //     });
+          //     console.error(
+          //       "Insufficient stock for product ID:",
+          //       item.productId
+          //     );
+          //     return;
+          //   }
+          // }
 
           // Calculate default estimated delivery date (10 days from today)
           const defaultEstimatedDelivery = new Date();

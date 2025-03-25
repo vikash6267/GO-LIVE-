@@ -105,7 +105,7 @@ export function CreateOrderForm({
       },
 
       order_number: "",
-      items: cartItems,
+      items: initialData.items || cartItems,
       shipping: {
         method: "FedEx",
         cost: totalShippingCost,
@@ -470,22 +470,24 @@ export function CreateOrderForm({
                 {isPriceChange ? "Close Edit Price" : "Edit Price"}
               </p>
            
-            </div>}
-
-            <div>
+              <div>
               <p onClick={() => setIsCustom(true)} className="p-2 bg-blue-600 text-white rounded">
                 Add Items 
               </p>
 
-              <CustomProductForm isOpen={isCustom} onClose={() => setIsCustom(false)} />
+              <CustomProductForm isOpen={isCustom} onClose={() => setIsCustom(false)} isEditing={isEditing} form={form} />
             </div>
+            
+            </div>}
+
+         
            
             {
               isPriceChange && <CartItemsPricing />
             }
 
             <OrderItemsSection
-              orderItems={cartItems}
+              orderItems={form.getValues('items') || cartItems}
               form={form}
               setIsCus={setIsCus}
               isCus={isCus}

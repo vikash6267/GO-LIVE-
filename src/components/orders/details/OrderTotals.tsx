@@ -7,6 +7,9 @@ interface OrderTotalsProps {
   paymentMethod: OrderFormValues["payment"]["method"];
   setIsCus?: React.Dispatch<React.SetStateAction<boolean>>; // ✅ Accept as prop
   isCus?: boolean;
+  isEditing?: boolean;
+  orderData?: any; // Adjust type if needed
+
 }
 
 export function OrderTotals({
@@ -14,6 +17,8 @@ export function OrderTotals({
   paymentMethod,
   setIsCus,
   isCus,
+  isEditing,
+  orderData,
 }: OrderTotalsProps) {
   const { cartItems, clearCart } = useCart();
   const [subtotal, setSubtotal] = useState(0);
@@ -21,15 +26,15 @@ export function OrderTotals({
   const [customizePrice, setCustomizePrice] = useState(0);
   const [total, setTotal] = useState(0);
   const [tax, settax] = useState(0);
-const taxper = sessionStorage.getItem("taxper")
-
+  const taxper = sessionStorage.getItem("taxper")
+  console.log(orderData)
   useEffect(() => {
     // Calculate subtotal
-   
+
     const calculateSubtotal = (items: any[]) => {
       return items.reduce((total, item) => {
         const itemPrice = parseFloat(item.price) || 0;
-        return total + itemPrice ;
+        return total + itemPrice;
       }, 0);
     };
 
@@ -49,13 +54,13 @@ const taxper = sessionStorage.getItem("taxper")
       }, 0);
     };
 
-    const newSubtotal = calculateSubtotal(cartItems);
-    const newShippingCost = calculateShipping(cartItems);
-    const newCustomizePrice = calculateCustomizationCost(cartItems);
+    const newSubtotal = calculateSubtotal(items || cartItems);
+    const newShippingCost = calculateShipping(items || cartItems);
+    const newCustomizePrice = calculateCustomizationCost(items || cartItems);
     const newtax = (newSubtotal * Number(taxper)) / 100;
-   
+
     settax(newtax);
-   
+
     setSubtotal(newSubtotal);
     setShippingCost(newShippingCost);
     setCustomizePrice(newCustomizePrice);
@@ -82,15 +87,15 @@ const taxper = sessionStorage.getItem("taxper")
           ${shippingCost.toFixed(2)}
         </span>
       </div>
-      <div className="flex justify-between text-base font-bold">
+   { !isEditing &&  <div className="flex justify-between text-base font-bold">
         <span>Customizations Fee:</span>
         <span>${customizePrice.toFixed(2)}</span>
-      </div>
-      <div className="flex justify-between text-base font-bold">
+      </div> }
+    { !isEditing &&  <div className="flex justify-between text-base font-bold">
         <span>Tax({`${taxper}%`})</span>
         <span>${tax.toFixed(2)}</span>
 
-      </div>
+      </div>}
       <div className="flex justify-between text-base font-bold">
         <span>Total:</span>
         <span>${total.toFixed(2)}</span>

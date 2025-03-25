@@ -5,6 +5,7 @@ import { OrderPreview } from "../OrderPreview";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
+import { calculateOrderTotal } from "../utils/orderUtils";
 
 interface OrderFormActionsProps {
   orderData: OrderFormValues;
@@ -32,7 +33,35 @@ export function OrderFormActions({
   const userRole = sessionStorage.getItem('userType');
 
   const onSubmit = async () => {
-    console.log(orderData);
+    console.log(orderData)
+
+    const calculatedTotal = calculateOrderTotal(
+      orderData.items,
+      orderData.shipping.cost
+    );
+
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("taxPercantage")
+      .eq("id", orderData.customer)
+      .maybeSingle();
+
+    if (error) {
+      console.error("🚨 Supabase Fetch Error:", error);
+      return;
+    }
+
+    if (!data) {
+      console.warn("⚠️ No user found for this email.");
+      return;
+    }
+
+    console.log(orderData)
+
+    const newtax = (calculatedTotal * Number(data.taxPercantage)) / 100;
+    console.log(newtax)
+
+
     const updatedData = orderData;
     const orderId = orderData.id;
     try {
@@ -43,6 +72,9 @@ export function OrderFormActions({
           customerInfo: updatedData.customerInfo || null,
           updated_at: new Date().toISOString(),
           items: updatedData.items || [], // Ensure it's a valid JSON array
+          total_amount: calculatedTotal + newtax || 0,
+          tax_amount: newtax || 0,
+
         })
         .eq("id", orderId);
 
@@ -50,6 +82,28 @@ export function OrderFormActions({
         console.error("Error updating order:", error);
         throw error;
       }
+
+
+
+      const { error:Inerror } = await supabase
+      .from("invoices")
+      .update({
+        profile_id: updatedData.customer || null, // Ensure profile_id is valid
+        customer_info: updatedData.customerInfo || null,
+        updated_at: new Date().toISOString(),
+        items: updatedData.items || [], // Ensure it's a valid JSON array
+        amount: calculatedTotal + newtax || 0,
+        subtotal: calculatedTotal + newtax || 0,
+        total_amount: calculatedTotal + newtax || 0,
+        tax_amount: newtax || 0,
+
+      })
+      .eq("order_id", orderId);
+
+    if (Inerror) {
+      console.error("Error updating order:", Inerror);
+      throw error;
+    }
 
       console.log("Order updated successfully!");
       toast({
@@ -74,8 +128,8 @@ export function OrderFormActions({
 
   return (
     <div className="flex flex-col md:flex-row justify-end gap-2">
-      <OrderPreview orderData={orderData} setIsCus={setIsCus} isCus={isCus} />
-  
+      <OrderPreview form={form} orderData={orderData} setIsCus={setIsCus} isCus={isCus} isEditing={isEditing} />
+
       {!isEditing && (
         <>
           {(userType === "true" || userType === null || userRole.toLocaleLowerCase() === "admin") ? (<Button

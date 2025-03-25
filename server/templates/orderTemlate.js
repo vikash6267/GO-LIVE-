@@ -159,7 +159,7 @@ const orderStatusTemplate = (order) => {
             <a href="https://9rx.com" class="cta">Visit Website</a>
     
             <div class="footer">
-                <p>If you have any questions, contact our support team at <a href="mailto:support@9rx.com">support@9rx.com</a>.</p>
+                <p>If you have any questions, contact our support team at <a href="mailto:info@9rx.com">info@9rx.com</a>.</p>
                 <p>Thank you for shopping with us!</p>
             </div>
         </div>

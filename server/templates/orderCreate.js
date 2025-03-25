@@ -147,7 +147,7 @@ const orderConfirmationTemplate = (order) => {
             <a href="https://9rx.com/orders/${order_number}" class="cta">🔍 Visit Website</a>
     
             <div class="footer">
-                <p>Need help? Contact our support team at <a href="mailto:support@9rx.com">support@9rx.com</a></p>
+                <p>Need help? Contact our support team at <a href="mailto:info@9rx.com">info@9rx.com</a></p>
                 <p>We appreciate your business! 💖</p>
             </div>
         </div>

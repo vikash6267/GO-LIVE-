@@ -19,7 +19,7 @@ const passwordResetTemplate = (name) => {
             <div class="icon">🔑</div>
             <div class="header">Your Password Has Been Reset Successfully</div>
             <p class="message">Hello ${name}, your password has been successfully reset. If you did not request this change, please contact our support team immediately.</p>
-            <div class="footer">For any assistance, reach out to <a href="mailto:support@9rx.com">support@9rx.com</a></div>
+            <div class="footer">For any assistance, reach out to <a href="mailto:info@9rx.com">info@9rx.com</a></div>
         </div>
     </body>
     </html>`;
@@ -46,8 +46,8 @@ const profileUpdateTemplate = (name, email) => {
             <div class="icon">✅</div>
             <div class="header">Thank You for Updating Your Profile</div>
             <p class="message">Hello ${name}, your profile has been successfully updated.</p>
-            <p>If you did not make this update, please contact us at <a href="mailto:support@9rx.com">support@9rx.com</a> immediately.</p>
-            <div class="footer">For any assistance, reach out to <a href="mailto:support@9rx.com">support@9rx.com</a></div>
+            <p>If you did not make this update, please contact us at <a href="mailto:info@9rx.com">info@9rx.com</a> immediately.</p>
+            <div class="footer">For any assistance, reach out to <a href="mailto:info@9rx.com">info@9rx.com</a></div>
         </div>
     </body>
     </html>`;
@@ -79,7 +79,7 @@ const paymentSuccessTemplate = (name, orderNumber, transactionId) => {
             <p><strong>Order Number:</strong> ${orderNumber}</p>
             <p><strong>Transaction ID:</strong> ${transactionId}</p>
             <p>Thank you for your purchase!</p>
-            <div class="footer">For any queries, reach out to <a href="mailto:support@9rx.com">support@9rx.com</a></div>
+            <div class="footer">For any queries, reach out to <a href="mailto:info@9rx.com">info@9rx.com</a></div>
         </div>
     </body>
     </html>`;

@@ -27,7 +27,7 @@ export const OrderItemRow = ({ index, form, products }: OrderItemRowProps) => {
       <div>
         <FormLabel className="text-gray-700 font-semibold">Product</FormLabel>
         <p className="text-gray-900 font-medium">
-          {selectedProduct?.name || "N/A"}
+          {selectedProduct?.name || "Custom"}
         </p>
       </div>
 
@@ -48,7 +48,7 @@ export const OrderItemRow = ({ index, form, products }: OrderItemRowProps) => {
             ? form.getValues(`items.${index}.sizes`).map((size, i) => (
                 <span key={i}>
                   {size.size_value}
-                  {size.size_unit.toUpperCase()} ({size.quantity}),
+                  {size.size_unit?.toUpperCase()} ({size.quantity}),
                   <br />
                 </span>
               ))

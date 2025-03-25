@@ -24,6 +24,7 @@ import { InvoiceStatus, PaymentMethod } from "../invoices/types/invoice.types";
 import CreateOrderPaymentForm from "../CreateOrderPayment";
 import { pid } from "process";
 import CartItemsPricing from "../CartItemsPricing";
+import CustomProductForm from "./Customitems";
 
 export interface CreateOrderFormProps {
   initialData?: Partial<OrderFormValues>;
@@ -31,7 +32,7 @@ export interface CreateOrderFormProps {
   isEditing?: boolean;
   use?: string;
   locationId?: any;
-  
+
 }
 
 export function CreateOrderForm({
@@ -47,7 +48,7 @@ export function CreateOrderForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const userProfile = useSelector(selectUserProfile);
-  const { cartItems, clearCart } = useCart();
+  const { cartItems, clearCart, addToCart } = useCart();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [isCus, setIsCus] = useState<boolean>(false);
   const [isPriceChange, setIsPriceChange] = useState<boolean>(false);
@@ -57,7 +58,7 @@ export function CreateOrderForm({
     initialData?.customerInfo.cusid || ""
   );
   const userTypeRole = sessionStorage.getItem('userType');
-console.log(initialData)
+  console.log(initialData)
   useEffect(() => {
     setPId(initialData?.customerInfo.cusid || initialData?.customer);
   }, [initialData, userProfile]);
@@ -67,68 +68,68 @@ console.log(initialData)
       ? 0
       : Math.max(...cartItems.map((item) => item.shipping_cost || 0));
 
-    const form  = useForm<OrderFormValues>({
-        resolver: zodResolver(orderFormSchema),
-        defaultValues: {
-          id: "", // ✅ Initialize as empty
-          customer: pId || userProfile?.id || "",
-          date: new Date().toISOString(),
-          total: "0",
-          status: "new",
-          payment_status: "unpaid",
-          customization: isCus,
-    
-          customerInfo: {
-            name: initialData?.customerInfo?.name || `${initialData?.customerInfo?.name || ""} ${userProfile?.last_name || ""}`,
-            email: initialData?.customerInfo?.email || "",
-            phone: userProfile?.mobile_phone || "",
-            type: "Pharmacy",
-            address: {
-              street: initialData?.customerInfo?.address?.street || userProfile?.company_name || "",
-              city: initialData?.customerInfo?.address?.city || userProfile?.city || "",
-              state: initialData?.customerInfo?.address?.state || userProfile?.state || "",
-              zip_code: initialData?.customerInfo?.address?.zip_code || userProfile?.zip_code || "",
-            },
-          },
-    
-          shippingAddress: {
-            fullName: initialData?.customerInfo?.name || `${userProfile?.first_name || ""} ${userProfile?.last_name || ""}`,
-            email: initialData?.customerInfo?.email || "",
-            phone: userProfile?.mobile_phone || "",
-            address: {
-              street: userProfile?.company_name || "",
-              city: userProfile?.city || "",
-              state: userProfile?.state || "",
-              zip_code: userProfile?.zip_code || "",
-            },
-          },
-    
-          order_number: "",
-          items: cartItems,
-          shipping: {
-            method: "FedEx",
-            cost: totalShippingCost,
-            trackingNumber: "",
-            estimatedDelivery: "",
-          },
-          payment: {
-            method: "card",
-            notes: "",
-          },
-          specialInstructions: "",
-          ...initialData,
+  const form = useForm<OrderFormValues>({
+    resolver: zodResolver(orderFormSchema),
+    defaultValues: {
+      id: "", // ✅ Initialize as empty
+      customer: pId || userProfile?.id || "",
+      date: new Date().toISOString(),
+      total: "0",
+      status: "new",
+      payment_status: "unpaid",
+      customization: isCus,
+
+      customerInfo: {
+        name: initialData?.customerInfo?.name || `${initialData?.customerInfo?.name || ""} ${userProfile?.last_name || ""}`,
+        email: initialData?.customerInfo?.email || "",
+        phone: userProfile?.mobile_phone || "",
+        type: "Pharmacy",
+        address: {
+          street: initialData?.customerInfo?.address?.street || userProfile?.company_name || "",
+          city: initialData?.customerInfo?.address?.city || userProfile?.city || "",
+          state: initialData?.customerInfo?.address?.state || userProfile?.state || "",
+          zip_code: initialData?.customerInfo?.address?.zip_code || userProfile?.zip_code || "",
         },
-      });
-    
-      // ✅ Fetch and update order ID asynchronously after form initialization
-      // useEffect(() => {
-      //   const fetchOrderId = async () => {
-      //     const orderId = await generateOrderId();
-      //     form.setValue("id", orderId); // ✅ Set order ID in form
-      //   };
-    
-      //   fetchOrderId();
-      // }, [form.setValue]);
+      },
+
+      shippingAddress: {
+        fullName: initialData?.customerInfo?.name || `${userProfile?.first_name || ""} ${userProfile?.last_name || ""}`,
+        email: initialData?.customerInfo?.email || "",
+        phone: userProfile?.mobile_phone || "",
+        address: {
+          street: userProfile?.company_name || "",
+          city: userProfile?.city || "",
+          state: userProfile?.state || "",
+          zip_code: userProfile?.zip_code || "",
+        },
+      },
+
+      order_number: "",
+      items: cartItems,
+      shipping: {
+        method: "FedEx",
+        cost: totalShippingCost,
+        trackingNumber: "",
+        estimatedDelivery: "",
+      },
+      payment: {
+        method: "card",
+        notes: "",
+      },
+      specialInstructions: "",
+      ...initialData,
+    },
+  });
+
+  // ✅ Fetch and update order ID asynchronously after form initialization
+  // useEffect(() => {
+  //   const fetchOrderId = async () => {
+  //     const orderId = await generateOrderId();
+  //     form.setValue("id", orderId); // ✅ Set order ID in form
+  //   };
+
+  //   fetchOrderId();
+  // }, [form.setValue]);
 
   // Load pending order items from localStorage if they exist
   useEffect(() => {
@@ -155,8 +156,8 @@ console.log(initialData)
   const onSubmit = async (data: OrderFormValues) => {
     console.log("first");
 
-  
-  
+
+
     try {
       setIsSubmitting(true);
       console.log("Starting order submission:", data);
@@ -186,29 +187,29 @@ console.log(initialData)
       }
 
       // Check stock availability
-      for (const item of data.items) {
-        const { data: product, error: stockError } = await supabase
-          .from("products")
-          .select("current_stock")
-          .eq("id", item.productId)
-          .single();
+      // for (const item of data.items) {
+      //   const { data: product, error: stockError } = await supabase
+      //     .from("products")
+      //     .select("current_stock")
+      //     .eq("id", item.productId)
+      //     .single();
 
-        if (stockError || !product) {
-          throw new Error(
-            `Could not check stock for product ID: ${item.productId}`
-          );
-        }
+      //   if (stockError || !product) {
+      //     throw new Error(
+      //       `Could not check stock for product ID: ${item.productId}`
+      //     );
+      //   }
 
-        if (product.current_stock < item.quantity) {
-          toast({
-            title: "Insufficient Stock",
-            description: `Product ID: ${item.productId} has only ${product.current_stock} units available.`,
-            variant: "destructive",
-          });
-          console.error("Insufficient stock for product ID:", item.productId);
-          return;
-        }
-      }
+      //   if (product.current_stock < item.quantity) {
+      //     toast({
+      //       title: "Insufficient Stock",
+      //       description: `Product ID: ${item.productId} has only ${product.current_stock} units available.`,
+      //       variant: "destructive",
+      //     });
+      //     console.error("Insufficient stock for product ID:", item.productId);
+      //     return;
+      //   }
+      // }
 
       // Calculate default estimated delivery date (10 days from today)
       const defaultEstimatedDelivery = new Date();
@@ -218,12 +219,12 @@ console.log(initialData)
 
       const orderNumber = await generateOrderId()
 
-      if(!userProfile?.id) return
+      if (!userProfile?.id) return
       let profileID = userProfile?.id
- 
-  sessionStorage.getItem('userType') === "admin" ? profileID = data.customer :userProfile?.id
-  console.log(profileID)    
-  // Prepare order data
+
+      sessionStorage.getItem('userType') === "admin" ? profileID = data.customer : userProfile?.id
+      console.log(profileID)
+      // Prepare order data
       const orderData = {
         order_number: orderNumber,
         profile_id: profileID,
@@ -265,41 +266,41 @@ console.log(initialData)
       const year = new Date().getFullYear(); // Get current year (e.g., 2025)
 
 
-      const { data:inData, error:erroIn } = await supabase
-      .from("centerize_data")
-      .select("id, invoice_no, invoice_start") 
-      .order("id", { ascending: false }) // Get latest order
-      .limit(1);
-  
-    if (erroIn) {
-      console.error("🚨 Supabase Fetch Error:", erroIn);
-      return null;
-    }
-  
-    let newInvNo = 1; // Default to 1 if no previous order exists
-    let invoiceStart = "INV"; // Default order prefix
-  
+      const { data: inData, error: erroIn } = await supabase
+        .from("centerize_data")
+        .select("id, invoice_no, invoice_start")
+        .order("id", { ascending: false }) // Get latest order
+        .limit(1);
 
-    if (inData && inData.length > 0) {
-      newInvNo = (inData[0].invoice_no || 0) + 1; // Increment last order number
-      invoiceStart = inData[0].invoice_start || "INV"; // Use existing order_start
-    }
+      if (erroIn) {
+        console.error("🚨 Supabase Fetch Error:", erroIn);
+        return null;
+      }
+
+      let newInvNo = 1; // Default to 1 if no previous order exists
+      let invoiceStart = "INV"; // Default order prefix
 
 
-const invoiceNumber = `${invoiceStart}-${year}${newInvNo.toString().padStart(6, "0")}`;
+      if (inData && inData.length > 0) {
+        newInvNo = (inData[0].invoice_no || 0) + 1; // Increment last order number
+        invoiceStart = inData[0].invoice_start || "INV"; // Use existing order_start
+      }
+
+
+      const invoiceNumber = `${invoiceStart}-${year}${newInvNo.toString().padStart(6, "0")}`;
 
 
 
-const { error: updateError } = await supabase
-  .from("centerize_data")
-  .update({ invoice_no: newInvNo }) // Correct update syntax
-  .eq("id", inData[0]?.id); // Update only the latest record
+      const { error: updateError } = await supabase
+        .from("centerize_data")
+        .update({ invoice_no: newInvNo }) // Correct update syntax
+        .eq("id", inData[0]?.id); // Update only the latest record
 
-if (updateError) {
-  console.error("🚨 Supabase Update Error:", updateError);
-} else {
-  console.log("✅ Order No Updated to:", newInvNo);
-}
+      if (updateError) {
+        console.error("🚨 Supabase Update Error:", updateError);
+      } else {
+        console.log("✅ Order No Updated to:", newInvNo);
+      }
 
       const estimatedDeliveryDate = new Date(newOrder.estimated_delivery);
 
@@ -440,6 +441,9 @@ if (updateError) {
     console.log(VVV);
   }, []);
 
+
+
+  const [isCustom, setIsCustom] = useState(false)
   return (
     <>
 
@@ -455,7 +459,7 @@ if (updateError) {
 
           <div className="">
 
-           { userTypeRole === "admin" &&  <div className="flex justify-end w-full">
+            {userTypeRole === "admin" && <div className="flex justify-end w-full">
               <p
                 onClick={(e) => {
                   e.preventDefault(); // Form submit hone se rokne ke liye
@@ -465,10 +469,17 @@ if (updateError) {
               >
                 {isPriceChange ? "Close Edit Price" : "Edit Price"}
               </p>
+           
             </div>}
 
+            <div>
+              <p onClick={() => setIsCustom(true)} className="p-2 bg-blue-600 text-white rounded">
+                Add Items 
+              </p>
 
-
+              <CustomProductForm isOpen={isCustom} onClose={() => setIsCustom(false)} />
+            </div>
+           
             {
               isPriceChange && <CartItemsPricing />
             }

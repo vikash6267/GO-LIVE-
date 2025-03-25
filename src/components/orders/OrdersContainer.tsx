@@ -148,7 +148,7 @@ export const OrdersContainer = ({
       try {
         const { data, error } = await supabase
           .from("profiles")
-          .select("id, display_name, type");
+          .select("id, display_name, type,email");
 
         if (error) {
           console.error("Failed to fetch customer information:", error);
@@ -158,15 +158,41 @@ export const OrdersContainer = ({
         console.log("Fetched pharmacies:", data);
         setUserData(data);
 
-        // Custom ko sabse upar laane ke liye sort karein
-        const sortedOptions = data
+        const userEmail = sessionStorage.getItem("userEmail")?.toLowerCase(); // Convert session email to lowercase
+
+        console.log("User Email from Session:", userEmail);
+        console.log("Original Data:", data);
+        
+        // Logged-in admin ko find karein
+        const loggedInAdmin = data.find(pharmacy => pharmacy.email.toLowerCase() === userEmail && pharmacy.type === "admin");
+        
+        console.log("Logged-in Admin:", loggedInAdmin);
+        
+        // Admin aur Non-Admin dono ko filter karein
+        const filteredData = data.filter(pharmacy => {
+          // Agar yeh logged-in admin hai toh isko rakho
+          if (loggedInAdmin && pharmacy.email.toLowerCase() === userEmail && pharmacy.type === "admin") {
+            return true;
+          }
+          // Non-admin ko allow karo
+          return pharmacy.type !== "admin";
+        });
+        
+        console.log("Filtered Data (After Removing Unwanted Admins):", filteredData);
+        
+        // Sorting aur mapping
+        const sortedOptions = filteredData
           .map((pharmacy) => ({
             value: pharmacy.id,
-            label: pharmacy.type === "admin" ? "Custom" : pharmacy.display_name,
-            isCustom: pharmacy.type === "admin" ? 0 : 1, // Custom ko 0 aur baki ko 1
+            label: pharmacy.type === "admin" ? "Custom" : pharmacy.display_name, // Sirf logged-in admin ke liye "Custom"
+            isCustom: pharmacy.type === "admin" ? 0 : 1, // Admin (Custom) ko 0, baki sab 1
           }))
-          .sort((a, b) => a.isCustom - b.isCustom); // Sort logic: Custom sabse upar
-
+          .sort((a, b) => a.isCustom - b.isCustom); // "Custom" sabse upar
+        
+        console.log("Final Sorted Options:", sortedOptions);
+        
+        console.log(sortedOptions);
+        
         setOptions(sortedOptions);
       } catch (error) {
         console.error("Error fetching users:", error);

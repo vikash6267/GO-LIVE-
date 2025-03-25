@@ -22,6 +22,8 @@ import PaymentForm from "@/components/PaymentModal";
 import axios from "../../../../axiosconfig"
 import { Link } from "react-router-dom";
 
+import { useCart } from "@/hooks/use-cart";
+
 
 interface OrderDetailsSheetProps {
   order: OrderFormValues;
@@ -150,6 +152,22 @@ export const OrderDetailsSheet = ({
     fetchUser()
   },[currentOrder])
 
+
+    const { clearCart } = useCart();
+  
+  useEffect(() => {
+    console.log(isEditing);
+  
+    const clearCartIfEditing = async () => {
+      if(isEditing) {
+        console.log("object")
+        await clearCart();
+      }
+    };
+  
+    clearCartIfEditing();
+  }, [isEditing]);
+  
 
   if (!currentOrder) return null;
 

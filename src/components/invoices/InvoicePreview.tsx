@@ -368,18 +368,23 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
 
           {/* Customer & Shipping Details */}
           <div className="grid grid-cols-2 gap-8 border-b pb-4">
-            <div>
-              <h3 className="font-semibold">Bill To</h3>
-              <p>{invoice.customerInfo?.name || "N/A"}</p>
-              <p>{invoice.customerInfo?.phone || "N/A"}</p>
-              <p>{invoice.customerInfo?.email || "N/A"}</p>
-            </div>
-            <div>
-              <h3 className="font-semibold">Ship To</h3>
-              <p>{invoice.shippingInfo?.fullName || "N/A"}</p>
-              <p>{invoice.shippingInfo?.phone || "N/A"}</p>
-              <p>{invoice.shippingInfo?.email || "N/A"}</p>
-            </div>
+          <div>
+            <h3 className="font-semibold text-sm sm:text-base">Bill To</h3>
+            <p className="text-xs sm:text-sm">{componyName}</p>
+            <p className="text-xs sm:text-sm">{invoice.customerInfo?.name || "N/A"}</p>
+            <p className="text-xs sm:text-sm">{invoice.customerInfo?.phone || "N/A"}</p>
+            <p className="text-xs sm:text-sm">{invoice.customerInfo?.email || "N/A"}</p>
+            <p className="text-xs sm:text-sm">{invoice.customerInfo.address?.street || "N/A"}, {invoice.customerInfo.address?.city || "N/A"}, {invoice.customerInfo.address?.state || "N/A"} {invoice.customerInfo.address?.zip_code || "N/A"}</p>
+          </div>
+          <div className="mt-4 sm:mt-0">
+            <h3 className="font-semibold text-sm sm:text-base">Ship To</h3>
+            <p className="text-xs sm:text-sm">{componyName}</p>
+            <p className="text-xs sm:text-sm">{invoice.shippingInfo?.fullName || "N/A"}</p>
+            <p className="text-xs sm:text-sm">{invoice.shippingInfo?.phone || "N/A"}</p>
+            <p className="text-xs sm:text-sm">{invoice.shippingInfo?.email || "N/A"}</p>
+            <p className="text-xs sm:text-sm">{invoice.shippingInfo.address?.street || "N/A"}, {invoice.shippingInfo.address?.city || "N/A"}, {invoice.shippingInfo.address?.state || "N/A"} {invoice.shippingInfo.address?.zip_code || "N/A"}</p>
+
+          </div>
           </div>
 
           {/* Items Table - Fixed width for PDF */}
@@ -402,7 +407,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
                   </td>
                   <td className="border p-2 text-right">{item.quantity}</td>
                   <td className="border p-2 text-right">${item.price}</td>
-                  <td className="border p-2 text-right">${item.price}</td>
+               
                 </tr>
               ))}
             </tbody>

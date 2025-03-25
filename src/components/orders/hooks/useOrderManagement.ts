@@ -174,9 +174,16 @@ export const useOrderManagement = () => {
 
   const handleDeleteOrder = async (orderId: string): Promise<void> => {
     try {
+      const { error:invoiceDeleteError } = await supabase
+        .from("invoices")
+        .delete()
+        .eq("order_id", orderId);
+
+      if (invoiceDeleteError) throw invoiceDeleteError;
+
       const { error } = await supabase
         .from("orders")
-        .update({ deleted_at: new Date().toISOString() })
+        .delete()
         .eq("id", orderId);
 
       if (error) throw error;

@@ -80,46 +80,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
     )
   }
 
-  const handleDownloadPDF = async () => {
-    setIsGeneratingPDF(true)
-
-    try {
-      if (!pdfTemplateRef.current) return
-
-      // Wait for any rendering to complete
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      const canvas = await html2canvas(pdfTemplateRef.current, {
-        scale: 2, // Higher scale for better quality
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-      })
-
-      const imgData = canvas.toDataURL("image/png")
-      const pdf = new jsPDF("p", "mm", "a4")
-      const imgWidth = 210 // A4 width in mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width
-
-      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight)
-      pdf.save(`Invoice_${invoice.id}.pdf`)
-
-      toast({
-        title: "Success",
-        description: "Invoice downloaded successfully",
-      })
-    } catch (error) {
-      console.error("Error generating PDF:", error)
-      toast({
-        title: "Error",
-        description: "Failed to generate PDF. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsGeneratingPDF(false)
-    }
-  }
-
+ 
   const fetchUser = async () => {
 
     try {
@@ -164,8 +125,296 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
 
 
 
-  console.log(formattedDate); // Example output: 20/03/2025, 10:53:41
+   const handleDownloadPDF = async () => {
+    setIsGeneratingPDF(true)
 
+    try {
+      // Create a new PDF document
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      })
+
+      // Set font
+      doc.setFont("helvetica")
+
+      // Page dimensions
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const pageHeight = doc.internal.pageSize.getHeight()
+      const margin = 10
+      const contentWidth = pageWidth - margin * 2
+
+      // Add company logo
+      if (true) {
+        const img = new Image()
+        img.crossOrigin = "anonymous"
+        img.src = "/logo.png"
+
+        await new Promise((resolve) => {
+          img.onload = resolve
+        })
+
+        // Calculate logo dimensions (max height 20mm)
+        const logoHeight = 20
+        const logoWidth = (img.width / img.height) * logoHeight
+
+        // Position logo at top center
+        doc.addImage(img, "PNG", pageWidth / 2 - logoWidth / 2, margin, logoWidth, logoHeight)
+      }
+
+      // Add invoice title and details
+      doc.setFontSize(20)
+      doc.text("INVOICE", pageWidth - margin - 40, margin + 10)
+
+      doc.setFontSize(10)
+      doc.text(`INVOICE - ${invoice.invoice_number}`, pageWidth - margin - 40, margin + 15)
+      doc.text(`ORDER - ${invoice.order_number}`, pageWidth - margin - 40, margin + 20)
+      doc.text(`Date - ${formattedDate}`, pageWidth - margin - 40, margin + 25)
+
+      // Company details
+      doc.setFontSize(9)
+      doc.text("Tax ID : 99-0540972", margin, margin + 10)
+      doc.text("936 Broad River Ln,", margin, margin + 15)
+      doc.text("Charlotte, NC 28211", margin, margin + 20)
+      doc.text("+1 800 969 6295", margin, margin + 25)
+      doc.text("info@9rx.com", margin, margin + 30)
+      doc.text("www.9rx.com", margin, margin + 35)
+
+      // Horizontal line
+      doc.setDrawColor(200, 200, 200)
+      doc.line(margin, margin + 40, pageWidth - margin, margin + 40)
+
+      // Customer and shipping info
+      const infoStartY = margin + 50
+
+      // Bill To
+      doc.setFontSize(11)
+      doc.setFont("helvetica", "bold")
+      doc.text("Bill To", margin, infoStartY)
+
+      doc.setFont("helvetica", "normal")
+      doc.setFontSize(9)
+      doc.text(componyName, margin, infoStartY + 5)
+      doc.text(invoice.customerInfo?.name || "N/A", margin, infoStartY + 10)
+      doc.text(invoice.customerInfo?.phone || "N/A", margin, infoStartY + 15)
+      doc.text(invoice.customerInfo?.email || "N/A", margin, infoStartY + 20)
+      doc.text(
+        `${invoice.customerInfo.address?.street || "N/A"}, ${invoice.customerInfo.address?.city || "N/A"}, ${invoice.customerInfo.address?.state || "N/A"} ${invoice.customerInfo.address?.zip_code || "N/A"}`,
+        margin,
+        infoStartY + 25,
+        { maxWidth: contentWidth / 2 - 5 },
+      )
+
+      // Ship To
+      doc.setFontSize(11)
+      doc.setFont("helvetica", "bold")
+      doc.text("Ship To", pageWidth / 2, infoStartY)
+
+      doc.setFont("helvetica", "normal")
+      doc.setFontSize(9)
+      doc.text(componyName, pageWidth / 2, infoStartY + 5)
+      doc.text(invoice.shippingInfo?.fullName || "N/A", pageWidth / 2, infoStartY + 10)
+      doc.text(invoice.shippingInfo?.phone || "N/A", pageWidth / 2, infoStartY + 15)
+      doc.text(invoice.shippingInfo?.email || "N/A", pageWidth / 2, infoStartY + 20)
+      doc.text(
+        `${invoice.shippingInfo.address?.street || "N/A"}, ${invoice.shippingInfo.address?.city || "N/A"}, ${invoice.shippingInfo.address?.state || "N/A"} ${invoice.shippingInfo.address?.zip_code || "N/A"}`,
+        pageWidth / 2,
+        infoStartY + 25,
+        { maxWidth: contentWidth / 2 - 5 },
+      )
+
+      // Horizontal line
+      doc.line(margin, infoStartY + 35, pageWidth - margin, infoStartY + 35)
+
+      // Items table
+      const tableStartY = infoStartY + 45
+
+      // Prepare table data
+      const tableHead = [["Description", "Sizes", "Qty", "Amount"]]
+      const tableBody =
+        invoice?.items?.map((item) => [
+          item.name,
+          item.sizes?.map((size) => `${size.size_value} ${size.size_unit}`).join(", "),
+          item.quantity.toString(),
+          `$${item.price}`,
+        ]) || []
+
+      // Add table
+      ;(doc as any).autoTable({
+        head: tableHead,
+        body: tableBody,
+        startY: tableStartY,
+        margin: { left: margin, right: margin },
+        styles: { fontSize: 9, cellPadding: 3 },
+        headStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0], fontStyle: "bold" },
+        columnStyles: {
+          0: { cellWidth: "auto" },
+          1: { cellWidth: "auto" },
+          2: { cellWidth: 20, halign: "right" },
+          3: { cellWidth: 30, halign: "right" },
+        },
+        theme: "grid",
+      })
+
+      // Get the final Y position after the table
+      const finalY = (doc as any).lastAutoTable.finalY + 10
+
+      // Payment status and summary section
+      const paymentStatusX = margin
+      const paymentStatusWidth = contentWidth / 3
+      const summaryX = margin + paymentStatusWidth + 10
+      const summaryWidth = contentWidth - paymentStatusWidth - 10
+
+      // Payment status box
+      doc.setFillColor(240, 240, 240)
+      doc.rect(paymentStatusX, finalY, paymentStatusWidth, 40, "F")
+      doc.setDrawColor(200, 200, 200)
+      doc.rect(paymentStatusX, finalY, paymentStatusWidth, 40, "S")
+
+      // Payment status label
+      if (invoice?.payment_status === "paid") {
+        doc.setFillColor(39, 174, 96)
+        doc.setTextColor(255, 255, 255)
+      } else {
+        doc.setFillColor(231, 76, 60)
+        doc.setTextColor(255, 255, 255)
+      }
+
+      doc.roundedRect(paymentStatusX + 5, finalY + 5, 50, 10, 5, 5, "F")
+      doc.setFontSize(8)
+      doc.setFont("helvetica", "bold")
+      doc.text(invoice?.payment_status === "paid" ? "Paid" : "Unpaid", paymentStatusX + 10, finalY + 11)
+
+      // Payment details if paid
+      if (invoice?.payment_status === "paid") {
+        doc.setTextColor(0, 0, 0)
+        doc.setFontSize(8)
+        doc.setFont("helvetica", "bold")
+        doc.text(
+          invoice.payment_method === "card" ? "Transaction ID:" : "Payment Notes:",
+          paymentStatusX + 5,
+          finalY + 25,
+        )
+
+        doc.setFont("helvetica", "normal")
+        doc.text(
+          invoice.payment_method === "card" ? invoice?.payment_transication : invoice?.payment_notes,
+          paymentStatusX + 5,
+          finalY + 30,
+          { maxWidth: paymentStatusWidth - 10 },
+        )
+      }
+
+      // Summary box
+      doc.setFillColor(255, 255, 255)
+      doc.setTextColor(0, 0, 0)
+      doc.rect(summaryX, finalY, summaryWidth, 40, "F")
+      doc.setDrawColor(200, 200, 200)
+      doc.rect(summaryX, finalY, summaryWidth, 40, "S")
+
+      // Summary content
+      const summaryLeftX = summaryX + 5
+      const summaryRightX = summaryX + summaryWidth - 5
+      let summaryY = finalY + 10
+
+      // Sub Total
+      doc.setFontSize(9)
+      doc.setFont("helvetica", "normal")
+      doc.text("Sub Total", summaryLeftX, summaryY)
+      doc.text(`$${(invoice?.subtotal - invoice?.tax)?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, {
+        align: "right",
+      })
+
+      // Tax
+      summaryY += 5
+      doc.text(
+        `Tax (${invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)`,
+        summaryLeftX,
+        summaryY,
+      )
+      doc.text(`$${invoice?.tax?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, { align: "right" })
+
+      // Divider
+      summaryY += 3
+      doc.line(summaryLeftX, summaryY, summaryRightX, summaryY)
+
+      // Total
+      summaryY += 5
+      doc.setFont("helvetica", "bold")
+      doc.text("Total", summaryLeftX, summaryY)
+      doc.text(`$${invoice?.total?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, { align: "right" })
+
+      // Balance Due
+      summaryY += 5
+      doc.setTextColor(231, 76, 60)
+      doc.text("Balance Due", summaryLeftX, summaryY)
+      doc.text(
+        invoice?.payment_status === "paid" ? "$0" : `$${invoice?.total?.toFixed(2) || "0.00"}`,
+        summaryRightX,
+        summaryY,
+        { align: "right" },
+      )
+
+      // Save the PDF
+      doc.save(`Invoice_${invoice.id}.pdf`)
+
+      toast({
+        title: "Success",
+        description: "Invoice downloaded successfully",
+      })
+    } catch (error) {
+      console.error("Error generating PDF:", error)
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsGeneratingPDF(false)
+    }
+  }
+
+
+  // const handleDownloadPDF = async () => {
+  //   setIsGeneratingPDF(true)
+
+  //   try {
+  //     if (!pdfTemplateRef.current) return
+
+  //     // Wait for any rendering to complete
+  //     await new Promise((resolve) => setTimeout(resolve, 500))
+
+  //     const canvas = await html2canvas(pdfTemplateRef.current, {
+  //       scale: 2, // Higher scale for better quality
+  //       logging: false,
+  //       useCORS: true,
+  //       allowTaint: true,
+  //     })
+
+  //     const imgData = canvas.toDataURL("image/png")
+  //     const pdf = new jsPDF("p", "mm", "a4")
+  //     const imgWidth = 210 // A4 width in mm
+  //     const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+  //     pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight)
+  //     pdf.save(`Invoice_${invoice.id}.pdf`)
+
+  //     toast({
+  //       title: "Success",
+  //       description: "Invoice downloaded successfully",
+  //     })
+  //   } catch (error) {
+  //     console.error("Error generating PDF:", error)
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to generate PDF. Please try again.",
+  //       variant: "destructive",
+  //     })
+  //   } finally {
+  //     setIsGeneratingPDF(false)
+  //   }
+  // }
   return (
     <SheetContent className="w-full sm:max-w-[600px] md:max-w-[800px] lg:max-w-[900px] overflow-y-auto p-2 sm:p-6">
       {/* Visible invoice preview - responsive */}

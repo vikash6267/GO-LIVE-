@@ -149,14 +149,14 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
       if (true) {
         const img = new Image()
         img.crossOrigin = "anonymous"
-        img.src = "/logo.png"
+        img.src = "/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png"
 
         await new Promise((resolve) => {
           img.onload = resolve
         })
 
         // Calculate logo dimensions (max height 20mm)
-        const logoHeight = 20
+        const logoHeight = 25
         const logoWidth = (img.width / img.height) * logoHeight
 
         // Position logo at top center
@@ -174,12 +174,12 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
 
       // Company details
       doc.setFontSize(9)
-      doc.text("Tax ID : 99-0540972", margin, margin + 10)
-      doc.text("936 Broad River Ln,", margin, margin + 15)
-      doc.text("Charlotte, NC 28211", margin, margin + 20)
-      doc.text("+1 800 969 6295", margin, margin + 25)
-      doc.text("info@9rx.com", margin, margin + 30)
-      doc.text("www.9rx.com", margin, margin + 35)
+      doc.text("Tax ID : 99-0540972", margin, margin + 5)
+      doc.text("936 Broad River Ln,", margin, margin + 10)
+      doc.text("Charlotte, NC 28211", margin, margin + 15)
+      doc.text("+1 800 969 6295", margin, margin + 20)
+      doc.text("info@9rx.com", margin, margin + 25)
+      doc.text("www.9rx.com", margin, margin + 30)
 
       // Horizontal line
       doc.setDrawColor(200, 200, 200)
@@ -436,7 +436,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
 
             <div className=" ">
               <img
-                src={settings.logo || "/logo.png" || "/placeholder.svg"}
+                src={settings.logo || "/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png" || "/placeholder.svg"}
                 alt="Company Logo"
                 className="h-16 sm:h-16 md:h-[6rem] relative z-10 contrast-200"
               />
@@ -598,7 +598,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
 
               <div className=" ">
                 <img
-                  src={settings.logo || "/logo.png" || "/placeholder.svg"}
+                  src={settings.logo || "/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png" || "/placeholder.svg"}
                   alt="Company Logo"
                   className="h-16 sm:h-16 md:h-[6rem] relative z-10 contrast-200"
                 />

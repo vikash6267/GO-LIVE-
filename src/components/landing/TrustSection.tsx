@@ -10,7 +10,7 @@ const TrustSection = () => {
             Industry-Leading Standards
           </h2>
           <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
-            Join hundreds of healthcare providers who trust 9Rx for their pharmaceutical supply needs
+          Join hundreds of pharmacies that rely on 9Rx for their trusted and high-quality packaging supply needs.
           </p>
         </div>
         

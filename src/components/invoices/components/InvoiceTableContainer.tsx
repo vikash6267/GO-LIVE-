@@ -275,18 +275,26 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
 
   return (
     <>
-      <div className="flex justify-between items-center mb-4">
-        <InvoiceFilters onFilterChange={handleFilterChange} />
-        <ExportOptions invoices={invoices} />
+  <div className="flex flex-col p-4 sm:flex-row justify-between items-center bg-white  border border-gray-200 rounded-lg ">
+  <div className="w-full sm:w-auto  sm:mb-0">
+    <InvoiceFilters onFilterChange={handleFilterChange} exportInvoicesToCSV={exportInvoicesToCSV} />
+  </div>
 
-    { invoices.length > 0 &&   <CSVLink
-      data={exportInvoicesToCSV()}
-      filename={`invoices_${new Date().toISOString()}.csv`}
-      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-    >
-      Export CSV
-    </CSVLink>}
-      </div>
+  <div className="flex gap-3">
+    <ExportOptions invoices={invoices} />
+
+    {/* {invoices.length > 0 && (
+      <CSVLink
+        data={exportInvoicesToCSV()}
+        filename={`invoices_${new Date().toISOString()}.csv`}
+        className="px- py-2 w-full bg-blue-600 text-white rounded-lg shadow-md transition-all hover:bg-blue-700 hover:scale-105"
+      >
+        Export CSV
+      </CSVLink>
+    )} */}
+  </div>
+</div>
+
 
       {loading ? (
         <div className="space-y-4">

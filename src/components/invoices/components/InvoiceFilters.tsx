@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Download } from "lucide-react";
 import { useState } from "react";
 import { CSVLink } from "react-csv";
 
@@ -61,13 +62,16 @@ export function InvoiceFilters({ onFilterChange,exportInvoicesToCSV }: InvoiceFi
         </Select>
 
 
-<div className=" flex items-center justify-center"> <CSVLink
-        data={exportInvoicesToCSV()}
-        filename={`invoices_${new Date().toISOString()}.csv`}
-        className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md transition-all hover:bg-blue-700 hover:scale-105"
-      >
-        Export CSV
-      </CSVLink></div>
+<div className=" flex items-center justify-center"> 
+
+        <CSVLink  data={exportInvoicesToCSV()}     filename={`invoices_${new Date().toISOString()}.csv`} className="btn btn-primary">
+          <Button variant="outline">
+              <Download className="mr-2 h-4 w-4" />
+              Export Invoices
+            </Button>
+        </CSVLink>
+      
+      </div>
       </div>
 
    

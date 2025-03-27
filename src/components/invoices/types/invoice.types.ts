@@ -154,6 +154,7 @@ export interface Invoice {
   payment_status: string | null;
   created_at?: string;
   updated_at?: string;
+  shippin_cost?: string;
   paid_at?: string | null;
   items: InvoiceItem[] | Json;
   customer_info: CustomerInfo | Json;

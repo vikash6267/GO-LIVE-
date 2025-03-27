@@ -16,7 +16,7 @@ export function OrderCustomerInfo({ customerInfo, shippingAddress,componyName }:
   return (
     <div className="space-y-4 p-4 border rounded-lg shadow-md bg-white">
       {/* Billing Information */}
-      <h3 className="font-semibold text-lg">Billing Information</h3>
+      <h3 className="font-semibold text-lg">Billing Address</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
         <p><span className="font-medium">Name:</span> {customerInfo?.name || "N/A"}</p>
         <p><span className="font-medium">Email:</span> {customerInfo?.email || "N/A"}</p>

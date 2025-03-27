@@ -91,7 +91,7 @@ console.log(form.getValues())
           <div className="flex items-center space-x-2">
             <Switch id="same-as-customer" checked={sameAsCustomer} onCheckedChange={handleToggle} />
             <Label htmlFor="same-as-customer" className="cursor-pointer">
-              Same as Customer Info
+              Same as Billing Address
             </Label>
           </div>
         </div> 

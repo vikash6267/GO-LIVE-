@@ -21,6 +21,7 @@ export interface ProductSize {
   originalPrice?: any;
   rolls_per_case?: any;
   sizeSquanence?: any;
+  shipping_cost?: Number;
   size_unit: string;
   price: number;
   quantity_per_case: number;

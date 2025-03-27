@@ -234,7 +234,7 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
         payment_transication: invoice.payment_transication,
         payment_notes: invoice.payment_notes,
         payment_method: invoice.payment_method,
-
+        shippin_cost:invoice.shippin_cost,
         items,
         subtotal: invoice.subtotal,
         tax: invoice.tax_amount,

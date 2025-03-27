@@ -10,6 +10,7 @@ import { ProductDetails } from "./types/product.types";
 import { selectUserProfile } from "@/store/selectors/userSelectors";
 import { useSelector } from "react-redux";
 import { Loader2 } from "lucide-react";
+import { number } from "zod";
 
 export interface ProductShowcaseProps {
 
@@ -128,6 +129,8 @@ const ProductShowcase = ({ groupShow }: ProductShowcaseProps) => {
                 price_per_case: size.price_per_case,
                 stock: size.stock,
                 image: size.image || "",
+                shipping_cost:Number(size.shipping_cost)
+                
               };
             })
             .sort((a, b) => a.sizeSquanence - b.sizeSquanence) || [], // Sorting by sizeSquanence

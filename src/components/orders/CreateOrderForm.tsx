@@ -173,7 +173,9 @@ export function CreateOrderForm({
         totalShippingCost || 0
       );
 
-      const newtax = (calculatedTotal * Number(taxper)) / 100;
+      
+
+      const newtax = ((calculatedTotal - totalShippingCost ) * Number(taxper)) / 100;
 
 
       if (userProfile?.id == null) {
@@ -330,6 +332,7 @@ export function CreateOrderForm({
           phone: newOrder.customerInfo?.phone || "",
         },
         shipping_info: orderData.shippingAddress || {},
+        shippin_cost:totalShippingCost ,
         subtotal:
           calculatedTotal + newtax + (isCus ? 0.5 : 0) ||
           parseFloat(calculatedTotal + newtax + (isCus ? 0.5 : 0)),

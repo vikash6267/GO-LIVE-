@@ -85,17 +85,24 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         }))
         .filter((size) => size.quantity > 0);
 
+        console.log(updatedSizes)
       const totalPrice = updatedSizes.reduce(
         (sum, size) => sum + size.price * size.quantity,
         0
       );
-
+     
+      const highestShippingCost = updatedSizes.reduce(
+        (max, size) => (size.shipping_cost > max ? size.shipping_cost : max),
+        0
+      );
+      
+      console.log(highestShippingCost)
       const cartItem = {
         productId: product.id.toString(),
         name: product.name,
         price: totalPrice,
         image: imageUrl,
-        shipping_cost: product.shipping_cost || 0,
+        shipping_cost: Number(highestShippingCost) || 0,
         sizes: updatedSizes,
         quantity: updatedSizes.reduce(
           (total, size) => total + size.quantity,
@@ -107,6 +114,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
       console.log("Cart Item:", cartItem);
 
+      
       const success = await addToCart(cartItem);
 
       if (success) {

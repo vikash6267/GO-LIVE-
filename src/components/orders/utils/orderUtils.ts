@@ -49,8 +49,8 @@ export const calculateOrderTotal = (items: any[], shippingCost: number = 0) => {
   const itemsTotal = items.reduce((total, item) => {
     const itemPrice = parseFloat(item.price) || 0;
     const quantity = parseInt(item.quantity) || 1;
-    const customizationPrice = parseFloat(item?.customizations?.totalPrice)  * quantity || 0;
-    return total + (itemPrice + customizationPrice);
+    
+    return total + (itemPrice);
   }, 0);
   return itemsTotal + shippingCost;
 };

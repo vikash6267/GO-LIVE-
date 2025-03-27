@@ -45,6 +45,7 @@ interface InvoicePreviewProps {
       amount: number
     }>
     subtotal?: number
+    shippin_cost?: string
     tax?: number
     total?: number
     payment_status: string,
@@ -80,7 +81,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
     )
   }
 
- 
+
   const fetchUser = async () => {
 
     try {
@@ -125,7 +126,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
 
 
 
-   const handleDownloadPDF = async () => {
+  const handleDownloadPDF = async () => {
     setIsGeneratingPDF(true)
 
     try {
@@ -240,22 +241,22 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
           `$${item.price}`,
         ]) || []
 
-      // Add table
-      ;(doc as any).autoTable({
-        head: tableHead,
-        body: tableBody,
-        startY: tableStartY,
-        margin: { left: margin, right: margin },
-        styles: { fontSize: 9, cellPadding: 3 },
-        headStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0], fontStyle: "bold" },
-        columnStyles: {
-          0: { cellWidth: "auto" },
-          1: { cellWidth: "auto" },
-          2: { cellWidth: 20, halign: "right" },
-          3: { cellWidth: 30, halign: "right" },
-        },
-        theme: "grid",
-      })
+        // Add table
+        ; (doc as any).autoTable({
+          head: tableHead,
+          body: tableBody,
+          startY: tableStartY,
+          margin: { left: margin, right: margin },
+          styles: { fontSize: 9, cellPadding: 3 },
+          headStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0], fontStyle: "bold" },
+          columnStyles: {
+            0: { cellWidth: "auto" },
+            1: { cellWidth: "auto" },
+            2: { cellWidth: 20, halign: "right" },
+            3: { cellWidth: 30, halign: "right" },
+          },
+          theme: "grid",
+        })
 
       // Get the final Y position after the table
       const finalY = (doc as any).lastAutoTable.finalY + 10
@@ -322,18 +323,25 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
       doc.setFontSize(9)
       doc.setFont("helvetica", "normal")
       doc.text("Sub Total", summaryLeftX, summaryY)
-      doc.text(`$${(invoice?.subtotal - invoice?.tax)?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, {
+      doc.text(`$${(invoice?.subtotal - invoice?.tax - Number(invoice.shippin_cost))?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, {
         align: "right",
       })
 
       // Tax
       summaryY += 5
       doc.text(
-        `Tax (${invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)`,
+        `Tax `,
         summaryLeftX,
         summaryY,
       )
       doc.text(`$${invoice?.tax?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, { align: "right" })
+      summaryY += 5
+      doc.text(
+        `Shipping `,
+        summaryLeftX,
+        summaryY,
+      )
+      doc.text(`$${Number(invoice?.shippin_cost)?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, { align: "right" })
 
       // Divider
       summaryY += 3
@@ -534,13 +542,18 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
               {/* Sub Total */}
               <div className="flex justify-between text-sm sm:text-base">
                 <span>Sub Total</span>
-                <span>${(invoice?.subtotal - invoice?.tax)?.toFixed(2) || "0.00"}</span>
+                <span>${(invoice?.subtotal - invoice?.tax - Number(invoice?.shippin_cost))?.toFixed(2) || "0.00"}</span>
               </div>
 
               {/* Tax */}
+              {/* ({invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%) */}
               <div className="flex justify-between text-sm sm:text-base">
-                <span>Tax ({invoice?.subtotal ? ((invoice.tax / invoice.subtotal) * 100).toFixed(2) : "0"}%)</span>
+                <span>Tax </span>
                 <span>${invoice?.tax?.toFixed(2) || "0.00"}</span>
+              </div>
+              <div className="flex justify-between text-sm sm:text-base">
+                <span>Shipping Cost </span>
+                <span>${Number(invoice?.shippin_cost).toFixed(2) || "0.00"}</span>
               </div>
 
               <Separator />
@@ -617,23 +630,23 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
 
           {/* Customer & Shipping Details */}
           <div className="grid grid-cols-2 gap-8 border-b pb-4">
-          <div>
-            <h3 className="font-semibold text-sm sm:text-base">Bill To</h3>
-            <p className="text-xs sm:text-sm">{componyName}</p>
-            <p className="text-xs sm:text-sm">{invoice.customerInfo?.name || "N/A"}</p>
-            <p className="text-xs sm:text-sm">{invoice.customerInfo?.phone || "N/A"}</p>
-            <p className="text-xs sm:text-sm">{invoice.customerInfo?.email || "N/A"}</p>
-            <p className="text-xs sm:text-sm">{invoice.customerInfo.address?.street || "N/A"}, {invoice.customerInfo.address?.city || "N/A"}, {invoice.customerInfo.address?.state || "N/A"} {invoice.customerInfo.address?.zip_code || "N/A"}</p>
-          </div>
-          <div className="mt-4 sm:mt-0">
-            <h3 className="font-semibold text-sm sm:text-base">Ship To</h3>
-            <p className="text-xs sm:text-sm">{componyName}</p>
-            <p className="text-xs sm:text-sm">{invoice.shippingInfo?.fullName || "N/A"}</p>
-            <p className="text-xs sm:text-sm">{invoice.shippingInfo?.phone || "N/A"}</p>
-            <p className="text-xs sm:text-sm">{invoice.shippingInfo?.email || "N/A"}</p>
-            <p className="text-xs sm:text-sm">{invoice.shippingInfo.address?.street || "N/A"}, {invoice.shippingInfo.address?.city || "N/A"}, {invoice.shippingInfo.address?.state || "N/A"} {invoice.shippingInfo.address?.zip_code || "N/A"}</p>
+            <div>
+              <h3 className="font-semibold text-sm sm:text-base">Bill To</h3>
+              <p className="text-xs sm:text-sm">{componyName}</p>
+              <p className="text-xs sm:text-sm">{invoice.customerInfo?.name || "N/A"}</p>
+              <p className="text-xs sm:text-sm">{invoice.customerInfo?.phone || "N/A"}</p>
+              <p className="text-xs sm:text-sm">{invoice.customerInfo?.email || "N/A"}</p>
+              <p className="text-xs sm:text-sm">{invoice.customerInfo.address?.street || "N/A"}, {invoice.customerInfo.address?.city || "N/A"}, {invoice.customerInfo.address?.state || "N/A"} {invoice.customerInfo.address?.zip_code || "N/A"}</p>
+            </div>
+            <div className="mt-4 sm:mt-0">
+              <h3 className="font-semibold text-sm sm:text-base">Ship To</h3>
+              <p className="text-xs sm:text-sm">{componyName}</p>
+              <p className="text-xs sm:text-sm">{invoice.shippingInfo?.fullName || "N/A"}</p>
+              <p className="text-xs sm:text-sm">{invoice.shippingInfo?.phone || "N/A"}</p>
+              <p className="text-xs sm:text-sm">{invoice.shippingInfo?.email || "N/A"}</p>
+              <p className="text-xs sm:text-sm">{invoice.shippingInfo.address?.street || "N/A"}, {invoice.shippingInfo.address?.city || "N/A"}, {invoice.shippingInfo.address?.state || "N/A"} {invoice.shippingInfo.address?.zip_code || "N/A"}</p>
 
-          </div>
+            </div>
           </div>
 
           {/* Items Table - Fixed width for PDF */}
@@ -656,7 +669,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
                   </td>
                   <td className="border p-2 text-right">{item.quantity}</td>
                   <td className="border p-2 text-right">${item.price}</td>
-               
+
                 </tr>
               ))}
             </tbody>

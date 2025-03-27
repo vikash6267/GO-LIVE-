@@ -187,7 +187,7 @@ export function CustomerSelectionField({ form ,initialData,locationId}: Customer
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold">Billing Information</h2>
+        <h2 className="text-xl font-semibold">Billing Address</h2>
         {isValidating ? (
           <div className="text-sm text-muted-foreground">
             Validating customer information...

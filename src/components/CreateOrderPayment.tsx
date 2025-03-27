@@ -71,7 +71,7 @@ const CreateOrderPaymentForm = ({
 
     if (formDataa) {
       const totalAmount = calculateOrderTotal(formDataa.items, totalShippingCost || 0)
-      const newtax = (totalAmount * Number(taxper)) / 100;
+      const newtax = ((totalAmount-totalShippingCost) * Number(taxper)) / 100;
       settax(newtax)
       setFormData((prevData) => ({
         ...prevData,
@@ -137,11 +137,14 @@ const CreateOrderPaymentForm = ({
           validateOrderItems(data.items);
 
           // Calculate order total
-          const calculatedTotal = calculateOrderTotal(
-            data.items,
-            isCus ? totalShippingCost + 0.5 || 0 : totalShippingCost || 0
-          );
-
+          // const calculatedTotal = calculateOrderTotal(
+          //   data.items,
+          //   isCus ? totalShippingCost + 0.5 || 0 : totalShippingCost || 0
+          // );
+  const calculatedTotal = calculateOrderTotal(
+        cartItems,
+        totalShippingCost || 0
+      );
           if (userProfile?.id == null) {
             toast({
               title: "User profile not found",
@@ -289,6 +292,7 @@ const CreateOrderPaymentForm = ({
             payment_status: "paid", // Use correct column name
             payment_transication: response.data.transactionId || "",
             payment_method: "card",
+            shippin_cost:totalShippingCost || 0 ,
 
             payment_notes: newOrder.notes || null,
             items: newOrder.items || [],
@@ -430,7 +434,7 @@ const CreateOrderPaymentForm = ({
               name="amount"
               placeholder="Amount"
               onChange={handleChange}
-              value={formData.amount + (isCus ? 0.5 : 0)}
+              value={(formData.amount).toFixed(2)}
               required
               className="border p-2 w-full rounded pl-10 cursor-not-allowed"
             />

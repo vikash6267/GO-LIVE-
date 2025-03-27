@@ -19,24 +19,24 @@ interface Notification {
 
 export const TopBar = () => {
   const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: "1",
-      message: "New order received",
-      time: "5 minutes ago",
-      read: false,
-    },
-    {
-      id: "2",
-      message: "Stock alert: Product XYZ running low",
-      time: "10 minutes ago",
-      read: false,
-    },
-    {
-      id: "3",
-      message: "Payment received from Customer ABC",
-      time: "1 hour ago",
-      read: false,
-    },
+    // {
+    //   id: "1",
+    //   message: "New order received",
+    //   time: "5 minutes ago",
+    //   read: false,
+    // },
+    // {
+    //   id: "2",
+    //   message: "Stock alert: Product XYZ running low",
+    //   time: "10 minutes ago",
+    //   read: false,
+    // },
+    // {
+    //   id: "3",
+    //   message: "Payment received from Customer ABC",
+    //   time: "1 hour ago",
+    //   read: false,
+    // },
   ]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
@@ -54,7 +54,7 @@ export const TopBar = () => {
       <SidebarTrigger />
       <div className="flex items-center gap-4">
         <CartDrawer />
-        <DropdownMenu>
+     { sessionStorage.getItem('userType') === 'admin' &&  <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
@@ -96,7 +96,7 @@ export const TopBar = () => {
               </div>
             )}
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu>}
       </div>
     </div>
   );

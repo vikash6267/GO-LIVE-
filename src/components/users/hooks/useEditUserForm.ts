@@ -63,6 +63,7 @@ export const useEditUserForm = ({
       paymentTerms: "DueOnReceipt",
       enablePortal: false,
       portalLanguage: "English",
+      email_notifaction:true
     },
   });
 
@@ -111,6 +112,7 @@ export const useEditUserForm = ({
           paymentTerms: data.payment_terms || "DueOnReceipt",
           enablePortal: data.enable_portal || false,
           portalLanguage: data.portal_language || "English",
+          email_notifaction:data.email_notifaction
         });
       }
     } catch (error: any) {
@@ -148,6 +150,8 @@ export const useEditUserForm = ({
 
       setFormState((prev) => ({ ...prev, isSaving: true, error: null }));
 
+
+      
       // Ensure all required fields are properly formatted
       const formattedValues = {
         ...values,
@@ -156,6 +160,7 @@ export const useEditUserForm = ({
         email: values.email.trim(),
         billingAddress: values.billingAddress || {},
         shippingAddress: values.shippingAddress || {},
+        email_notifaction:values.email_notifaction
       };
 
       console.log("Submitting formatted values:", formattedValues);

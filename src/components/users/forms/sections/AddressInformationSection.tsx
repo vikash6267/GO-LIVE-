@@ -7,7 +7,7 @@ import {
   FormLabel,
   FormControl,
 } from "@/components/ui/form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { AddressFields } from "../AddressFields";
 
@@ -29,6 +29,7 @@ export function AddressInformationSection({
       form.setValue("shippingAddress", billingAddress);
       console.log(form.getValues());
     }
+    console.log(form.getValues("email_notifaction"))
   }, [sameAsShipping, billingAddress, form]);
 
   return (
@@ -113,6 +114,27 @@ export function AddressInformationSection({
                       checked={field.value ?? false} // Ensure it's always a boolean
                       onCheckedChange={field.onChange}
                       aria-label="Enable free shipping"
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="email_notifaction"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                  <div className="space-y-0.5">
+                    <FormLabel className="text-base">Email Notifications</FormLabel>
+                    <CardDescription>
+                      Receive notifications about your account via email
+                    </CardDescription>
+                  </div>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
                 </FormItem>

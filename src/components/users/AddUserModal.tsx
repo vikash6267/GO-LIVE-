@@ -210,6 +210,8 @@ export function AddUserModal({
         credit_limit: values.creditLimit || null,
         payment_method: values.paymentMethod || null,
         account_status: "active",
+        email_notifaction:values.email_notifaction,
+
       };
 
       // console.log('Attempting to insert user with data:', userData);

@@ -60,6 +60,7 @@ export const baseUserSchema = z.object({
   paymentMethod: z.string().optional(),
   groupType: z.string().optional(),
   parentGroup: z.string().optional(),
+  email_notifaction: z.boolean().optional(),
   locations: z.array(locationSchema).default([]).optional(),
 });
 

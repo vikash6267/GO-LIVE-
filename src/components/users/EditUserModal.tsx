@@ -63,6 +63,8 @@ export function EditUserModal({
     try {
       console.log('EditUserModal: Starting form submission with values:', values);
       await onSubmit(values);
+
+      
       if(self){
 
         try {

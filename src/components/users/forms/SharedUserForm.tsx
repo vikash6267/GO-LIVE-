@@ -29,6 +29,8 @@ export function SharedUserForm({
       "SharedUserForm: Starting form submission with values:",
       values
     );
+
+    
     try {
       console.log(
         "SharedUserForm: Starting form submission with values:",
@@ -105,6 +107,7 @@ export function SharedUserForm({
         languagePreference: values.languagePreference || "English",
         creditLimit: values.creditLimit,
         paymentMethod: values.paymentMethod,
+        email_notifaction: values.email_notifaction,
       };
 
       console.log("SharedUserForm: Formatted values:", formattedValues);

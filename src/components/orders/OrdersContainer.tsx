@@ -292,16 +292,14 @@ export const OrdersContainer = ({
     onDateChange={setDateRange}
     onExport={() => console.log("Export functionality to be implemented")}
   />
- {filteredOrders.length > 0 ? (
+
   <CSVLink {...exportToCSV(filteredOrders)} className="btn btn-primary">
     <Button variant="outline">
         <Download className="mr-2 h-4 w-4" />
         Export Orders
       </Button>
   </CSVLink>
-) : (
-  <button className="btn btn-disabled">Export CSV</button>
-)}
+
 
 
   {userRole === "admin" && (

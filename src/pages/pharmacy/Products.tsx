@@ -9,7 +9,7 @@ const PharmacyProducts = () => {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Products Catalog</h1>
           <p className="text-muted-foreground">
-            Browse our complete catalog of high-quality packaging supply and equipment
+            Browse our complete catalog of high-quality pharmacies supply
           </p>
         </div>
 

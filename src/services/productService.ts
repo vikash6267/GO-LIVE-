@@ -137,9 +137,39 @@ export const updateProductService = async (
 
     console.log(data.sizes);
 
+    console.log("Sizes data:", data.sizes);
+
+    const sizesToInsert = data.sizes.filter((size) => !size.id); // New sizes
+    const sizesToUpdate = data.sizes.filter((size) => size.id); // Existing sizes
     
-    for (const size of data.sizes) {
-      const { error: sizeError } = await supabase
+    // First, insert new sizes
+    if (sizesToInsert.length > 0) {
+      const { error: insertError } = await supabase
+        .from("product_sizes")
+        .insert(sizesToInsert.map((size) => ({
+          product_id:productId,
+          size_value: size.size_value || "0",
+          size_unit: size.size_unit || "unit",
+          price: Number(size.price) || 0,
+          stock: Number(size.stock) || 0,
+          price_per_case: Number(size.price_per_case) || 0,
+          sku: size.sku || "",
+          image: size.image || "",
+          quantity_per_case: Number(size.quantity_per_case) || 1,
+          rolls_per_case: Number(size.rolls_per_case) || 1,
+          sizeSquanence: Number(size.sizeSquanence) || 0,
+          shipping_cost: size.shipping_cost,
+        })));
+    
+      if (insertError) {
+        console.error("Error inserting new sizes:", insertError);
+        throw insertError;
+      }
+    }
+    
+    // Then, update existing sizes
+    for (const size of sizesToUpdate) {
+      const { error: updateError } = await supabase
         .from("product_sizes")
         .update({
           size_value: size.size_value || "0",
@@ -154,38 +184,14 @@ export const updateProductService = async (
           sizeSquanence: Number(size.sizeSquanence) || 0,
           shipping_cost: size.shipping_cost,
         })
-        .eq("id", size.id); // ✅ Update directly using size ID
-
-      if (sizeError) {
-        console.error("Error updating size:", sizeError);
-        throw sizeError;
+        .eq("id", size.id);
+    
+      if (updateError) {
+        console.error("Error updating size:", updateError);
+        throw updateError;
       }
     }
-
- // Loop through each size
-for (const size of data.sizes) {
-  const { error: sizeError } = await supabase
-    .from("product_sizes")
-    .update({
-      size_value: size.size_value || "0",
-      size_unit: size.size_unit || "unit",
-      price: Number(size.price) || 0,
-      stock: Number(size.stock) || 0,
-      price_per_case: Number(size.price_per_case) || 0,
-      sku: size.sku || "",
-      image: size.image || "",
-      quantity_per_case: Number(size.quantity_per_case) || 1,
-      rolls_per_case: Number(size.rolls_per_case) || 1,
-      sizeSquanence: Number(size.sizeSquanence) || 0,
-      shipping_cost: size.shipping_cost,
-    })
-    .eq("id", size.id); // ✅ Update directly using size ID
-
-  if (sizeError) {
-    console.error("Error updating size:", sizeError);
-    throw sizeError;
-  }
-}
+    
 
 
 

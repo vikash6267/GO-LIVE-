@@ -43,3 +43,8 @@ body {
 .read-the-docs {
   color: #888;
 }
+
+
+.swal-custom-zindex {
+  z-index: 99999999 !important; /* Ensures it is above everything */
+}

@@ -121,7 +121,7 @@ const form = useForm<ProductFormValues>({
                 return null;
               }}
             />
-            <SizeOptionsField form={form} />
+            <SizeOptionsField form={form} isEditing={initialData ? true : false} />
             <CustomizationSection form={form} />
             <InventorySection form={form} />
             <DialogFooter>

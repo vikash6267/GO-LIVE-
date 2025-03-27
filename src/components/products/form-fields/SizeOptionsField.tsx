@@ -10,8 +10,10 @@ import { toast } from "@/hooks/use-toast";
 import { AddSizeForm } from "./components/AddSizeForm";
 import { SizeList } from "./components/SizeList";
 import { SizeOptionsFieldProps, NewSizeState } from "../types/size.types";
+import { supabase } from "@/integrations/supabase/client";
+import Swal from "sweetalert2";
 
-export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
+export const SizeOptionsField = ({ form,isEditing }: SizeOptionsFieldProps) => {
   const category = form.watch("category");
   const categoryConfig = CATEGORY_CONFIGS[category as keyof typeof CATEGORY_CONFIGS] || CATEGORY_CONFIGS.OTHER;
 
@@ -93,20 +95,44 @@ export const SizeOptionsField = ({ form }: SizeOptionsFieldProps) => {
     });
   };
 
-  const handleRemoveSize = (index: number) => {
+  const handleRemoveSize = async (index: number) => {
     const currentSizes = form.getValues("sizes") || [];
     const newSizes = [...currentSizes];
+  
+    // Extract the size being removed
+    const removedSize = newSizes[index];
+  
+    // Remove the size from the array
     newSizes.splice(index, 1);
     form.setValue("sizes", newSizes, { 
       shouldValidate: true,
       shouldDirty: true 
     });
-    
+ 
+    if (isEditing && removedSize?.id) {
+      // Delete from Supabase only if the size has an ID
+      const { error: deleteError } = await supabase
+        .from("product_sizes")
+        .delete()
+        .eq("id", removedSize.id);
+  
+      if (deleteError) {
+        console.error("Error removing size:", deleteError);
+        toast({
+          title: "Error",
+          description: "Failed to remove size.",
+         
+        });
+        return;
+      }
+    }
+  
     toast({
       title: "Size Removed",
       description: "Size variation has been removed."
     });
   };
+  
 
   const handleUpdateSize = (index: number, field: string, value: string | number) => {
     const currentSizes = form.getValues("sizes") || [];

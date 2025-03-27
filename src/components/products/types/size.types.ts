@@ -4,6 +4,7 @@ import { ProductFormValues } from "../schemas/productSchema";
 
 export interface SizeOptionsFieldProps {
   form: UseFormReturn<ProductFormValues>;
+  isEditing?:boolean
 }
 
 export interface NewSizeState {

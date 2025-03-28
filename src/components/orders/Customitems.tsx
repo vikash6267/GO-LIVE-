@@ -50,7 +50,7 @@ const CustomProductForm = ({ isOpen, onClose,isEditing,form }) => {
     try {
       const cartItem = {
         productId: uuidv4(),
-        name: "Custom",
+        name: data.sizes[0].size,
         price: Number(totalPrice),
         image: "https://via.placeholder.com/150",
         shipping_cost: 0,
@@ -60,8 +60,8 @@ const CustomProductForm = ({ isOpen, onClose,isEditing,form }) => {
             id: uuidv4(),
             price: Number(size.price),
             quantity: Number(size.quantity),
-            size_value:size.size,
-            size_unit:".",
+            size_value:" ",
+            size_unit:" ",
           };
         }),
         quantity: data.sizes.reduce((total, size) => total + Number(size.quantity), 0),
@@ -139,13 +139,13 @@ const CustomProductForm = ({ isOpen, onClose,isEditing,form }) => {
               </div>
             ))}
             {/* Add Size Button */}
-            <button
+            {/* <button
               type="button"
               onClick={() => append({ size: "", price: 0, quantity: 0 })}
               className="mt-2 p-2 bg-blue-500 text-white rounded"
             >
               Add Size
-            </button>
+            </button> */}
           </div>
 
           {/* Submit and Close Buttons */}

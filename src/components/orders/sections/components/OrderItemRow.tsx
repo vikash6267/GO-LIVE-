@@ -16,8 +16,8 @@ interface OrderItemRowProps {
 
 export const OrderItemRow = ({ index, form, products }: OrderItemRowProps) => {
   const allValues = form.getValues();
-  const selectedProductId = form.getValues(`items.${index}.productId`);
-  const selectedProduct = products.find((p) => p.id === selectedProductId);
+  const selectedProductId = form.getValues(`items.${index}`);
+  const selectedProduct = products.find((p) => p.id === selectedProductId.productId);
 
   console.log(selectedProduct);
 
@@ -27,7 +27,7 @@ export const OrderItemRow = ({ index, form, products }: OrderItemRowProps) => {
       <div>
         <FormLabel className="text-gray-700 font-semibold">Product</FormLabel>
         <p className="text-gray-900 font-medium">
-          {selectedProduct?.name || "Custom"}
+          {selectedProduct?.name || selectedProductId?.name || "Custom"}
         </p>
       </div>
 

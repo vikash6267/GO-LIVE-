@@ -147,7 +147,7 @@ const paymentLink = (order) => {
                 </table>
             </div>
 
-            <a href="http://localhost:3000/pay-now?orderid=${id}" class="pay-now">Pay Now</a>
+            <a href="https://9rx.com/pay-now?orderid=${id}" class="pay-now">Pay Now</a>
             <a href="https://9rx.com" class="cta">Visit Website</a>
 
             <div class="footer">

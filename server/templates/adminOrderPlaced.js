@@ -1,4 +1,4 @@
-const adminOrderNotificationTemplate = (order) => { 
+const adminOrderNotificationTemplate = (order) => {
     const { customerInfo, order_number, items, estimated_delivery, payment_status, shipping_method, total_amount } = order;
 
     return `<!DOCTYPE html>
@@ -109,16 +109,20 @@ const adminOrderNotificationTemplate = (order) => {
                 <table class="product-table">
                     <tr>
                         <th>Product</th>
+                        <th>Size</th>
                         <th>Quantity</th>
                         <th>Price</th>
                     </tr>
-                    ${items.map(item => `
-                        <tr>
-                            <td>${item.name}</td>
-                            <td>${item.quantity}</td>
-                            <td>$${item.price.toFixed(2)}</td>
-                        </tr>
-                    `).join("")}
+                       ${items.map(item => `
+      <tr>
+        <td>${item.name}</td>
+        <td>
+          ${item.sizes.map(size => `${size.size_value} ${size.size_unit}`).join(", ")}
+        </td>
+        <td>${item.quantity}</td>
+        <td>$${item.price.toFixed(2)}</td>
+      </tr>
+    `).join("")}
                 </table>
             </div>
     

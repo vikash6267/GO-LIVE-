@@ -52,6 +52,7 @@ exports.orderPlacedCtrl = async (req, res) => {
   try {
     const order = req.body;
 
+    console.log(order)
 
     // Ensure required fields are present
     if (!order || !order.customerInfo || !order.customerInfo.email) {

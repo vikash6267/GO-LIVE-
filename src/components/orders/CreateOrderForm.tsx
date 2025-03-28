@@ -158,6 +158,8 @@ export function CreateOrderForm({
 
 
 
+
+
     try {
       setIsSubmitting(true);
       console.log("Starting order submission:", data);
@@ -353,12 +355,7 @@ export function CreateOrderForm({
 
       console.log("Invoice created successfully:", invoicedata2);
 
-      try {
-        await axios.post("/order-place", newOrder);
-        console.log("Order status sent successfully to backend.");
-      } catch (apiError) {
-        console.error("Failed to send order status to backend:", apiError);
-      }
+   
       // Prepare and save order items
       const orderItemsData = data.items.map((item) => ({
         order_id: newOrder.id,
@@ -396,6 +393,29 @@ export function CreateOrderForm({
 
       console.log("Stock updated successfully");
 
+
+
+
+
+      const { data: orderResponse2, error: orderError2 } = await supabase
+      .from("orders")
+      .select()
+      .eq("id",newOrder.id);
+
+    if (orderError2) {
+      console.error("Order creation error:", orderError2);
+      throw new Error(orderError2.message);
+    }
+
+
+      try {
+        await axios.post("/order-place", newOrder);
+        console.log("Order status sent successfully to backend.");
+      } catch (apiError) {
+        console.error("Failed to send order status to backend:", apiError);
+      }
+
+
       // Reset form and local state
       // localStorage.removeItem("cart");
 
@@ -404,6 +424,7 @@ export function CreateOrderForm({
         description: `Order ID: ${newOrder.id} has been created.`,
       });
 
+      
       form.reset();
       // setOrderItems([{ id: 1 }]);
 

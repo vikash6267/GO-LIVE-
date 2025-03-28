@@ -278,7 +278,7 @@ const PaymentForm = ({
         >
           <option value="credit_card">Credit Card</option>
           {
-  sessionStorage.getItem('userType').toLocaleLowerCase() === "admin" &&
+  sessionStorage.getItem('userType')?.toLocaleLowerCase() === "admin" &&
 
             <option value="manaul_payemnt">Manual Payment</option>
           }

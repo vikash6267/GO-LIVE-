@@ -111,29 +111,33 @@ const orderConfirmationTemplate = (order) => {
         <div class="container">
             <div class="header">🎉 Your Order is Confirmed!</div>
             <p>Thank you for shopping with us. Your order has been successfully placed.</p>
-            <div class="order-info">
-                <p><span class="highlight">Order Number:</span> ${order_number}</p>
-                <p><span class="highlight">Estimated Delivery:</span> ${new Date(estimated_delivery).toDateString()}</p>
-                <p><span class="highlight">Payment Status:</span> ${payment_status}</p>
+          <div class="order-info">
+  <p><span class="highlight">Order Number:</span> ${order_number}</p>
+  <p><span class="highlight">Estimated Delivery:</span> ${new Date(estimated_delivery).toDateString()}</p>
+  <p><span class="highlight">Payment Status:</span> ${payment_status}</p>
+  <p><span class="highlight">Total Amount:</span> $${total_amount.toFixed(2)}</p>
 
-                <p><span class="highlight">Total Amount:</span> $${total_amount.toFixed(2)}</p>
-    
-                <h3>🛍 Ordered Items:</h3>
-                <table class="product-table">
-                    <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                    </tr>
-                    ${items.map(item => `
-                        <tr>
-                            <td>${item.name}</td>
-                            <td>${item.quantity}</td>
-                            <td>$${item.price.toFixed(2)}</td>
-                        </tr>
-                    `).join("")}
-                </table>
-            </div>
+  <h3>🛍 Ordered Items:</h3>
+  <table class="product-table">
+    <tr>
+      <th>Product</th>
+      <th>Sizes</th>
+      <th>Quantity</th>
+      <th>Price</th>
+    </tr>
+    ${items.map(item => `
+      <tr>
+        <td>${item.name}</td>
+        <td>
+          ${item.sizes.map(size => `${size.size_value} ${size.size_unit}`).join(", ")}
+        </td>
+        <td>${item.quantity}</td>
+        <td>$${item.price.toFixed(2)}</td>
+      </tr>
+    `).join("")}
+  </table>
+</div>
+
     
             <div class="address-box">
                 <h3>📦 Shipping Address:</h3>

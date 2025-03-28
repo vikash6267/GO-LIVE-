@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 import { useCart } from "@/hooks/use-cart";
 
 const validationSchema = yup.object().shape({
+  name: yup.string().required("Name is required"),
+
   price: yup.number().required("Price is required").positive("Price must be positive"),
   sizes: yup.array().of(
     yup.object().shape({
@@ -16,14 +18,14 @@ const validationSchema = yup.object().shape({
   ),
 });
 
-const CustomProductForm = ({ isOpen, onClose,isEditing,form }) => {
+const CustomProductForm = ({ isOpen, onClose, isEditing, form }) => {
   const { addToCart } = useCart();
-    
+
   const {
     register,
     handleSubmit,
     control,
-    getValues ,
+    getValues,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(validationSchema),
@@ -43,25 +45,25 @@ const CustomProductForm = ({ isOpen, onClose,isEditing,form }) => {
 
 
 
-      const totalPrice = data.sizes.reduce(
-        (sum, size) => sum + Number(size.price) * Number(size.quantity),
-        0
-      );
+    const totalPrice = data.sizes.reduce(
+      (sum, size) => sum + Number(size.price) * Number(size.quantity),
+      0
+    );
     try {
       const cartItem = {
         productId: uuidv4(),
-        name: data.sizes[0].size,
+        name: data.name,
         price: Number(totalPrice),
         image: "https://via.placeholder.com/150",
         shipping_cost: 0,
         sizes: data.sizes.map((size) => {
-        
+
           return {
             id: uuidv4(),
             price: Number(size.price),
             quantity: Number(size.quantity),
-            size_value:" ",
-            size_unit:" ",
+            size_value: size.size,
+            size_unit: " ",
           };
         }),
         quantity: data.sizes.reduce((total, size) => total + Number(size.quantity), 0),
@@ -70,13 +72,13 @@ const CustomProductForm = ({ isOpen, onClose,isEditing,form }) => {
       };
 
       console.log("Cart Item:", cartItem);
-      
-      if (isEditing) {
-        form.setValue("items", [...form.getValues("items"), cartItem]); 
 
-        }else{
-            
-            await addToCart(cartItem); // ✅ Cart me add hoga
+      if (isEditing) {
+        form.setValue("items", [...form.getValues("items"), cartItem]);
+
+      } else {
+
+        await addToCart(cartItem); // ✅ Cart me add hoga
       }
       onClose(); // ✅ Form close hoga
     } catch (error) {
@@ -90,22 +92,24 @@ const CustomProductForm = ({ isOpen, onClose,isEditing,form }) => {
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="max-w-lg w-full mx-auto p-6 bg-white shadow-md rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Add Custom Product</h2>
-        
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Price Input */}
-          {/* <div>
-            <label className="block text-sm font-medium">Price</label>
-            <input
-              type="number"
-              {...register("price")}
-              className="w-full p-2 border border-gray-300 rounded"
-            />
-            {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
-          </div> */}
 
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
+          <div>
+            <label className="block font-medium"> Name</label>
+            <input
+              type="text"
+              {...register("name")}
+              className="w-full p-2 border rounded"
+              placeholder="Enter custom name"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-sm">{errors.name.message}</p>
+            )}
+          </div>
           {/* Dynamic Sizes Input */}
           <div>
-            <h3 className="text-lg font-medium">Custom</h3>
+            <h3 className="text-lg font-medium">Size</h3>
             {fields.map((field, index) => (
               <div key={field.id} className="flex space-x-2 items-center">
                 {/* Size */}

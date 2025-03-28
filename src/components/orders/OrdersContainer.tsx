@@ -32,6 +32,10 @@ import {
 import { Label } from "@/components/ui/label";
 import Select from "react-select";
 import { CSVLink } from "react-csv";
+import { useCart } from "@/hooks/use-cart";
+import { useDispatch } from "react-redux";
+import { updateCartPrice } from "@/store/actions/cartActions";
+
 
 const exportToCSV = (orders: OrderFormValues[]) => {
   if (!orders || orders.length === 0) {
@@ -108,6 +112,8 @@ export const OrdersContainer = ({
     handleConfirmOrder: confirmOrder,
   } = useOrderManagement();
 
+  const { cartItems } = useCart();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -251,6 +257,78 @@ export const OrdersContainer = ({
       }
 
       console.log("Successfully fetched profile:", data);
+      const { data: groupData, error: fetchError } = await supabase
+      .from("group_pricing")
+      .select("*");
+
+    if (fetchError) {
+      console.error("Error fetching group pricing:", fetchError.message);
+      return;
+    }
+
+    console.log("Fetched Group Data:", groupData);
+
+    let ID = data.id;
+
+      const handlePriceChange = (productId: string, sizeId: string, newPrice: number) => {
+        dispatch(updateCartPrice(productId, sizeId, newPrice));
+      };
+    
+
+      
+
+      const mappedCart = await Promise.all(
+        cartItems.map(async (item) => {
+          const updatedSizes = await Promise.all(
+            (item.sizes || []).map(async (size) => {
+              // Fetch fresh size info from Supabase
+              const { data: sizeFetch, error: fetchSizeError } = await supabase
+                .from("product_sizes")
+                .select("size_value, price")
+                .eq("id", size.id);
+      
+              if (fetchSizeError) throw fetchSizeError;
+      
+              let newPrice = sizeFetch?.[0]?.price || size.price;
+      
+              await handlePriceChange(item.productId, size.id, newPrice);
+      
+              // Check for applicable group pricing
+              const applicableGroup = groupData.find(
+                (group) =>
+                  group.group_ids.includes(ID) &&
+                  group.product_arrayjson.some((product) => product.product_id === size.id)
+              );
+      
+              if (applicableGroup) {
+                const groupProduct = applicableGroup.product_arrayjson.find(
+                  (product) => product.product_id === size.id
+                );
+      
+                if (groupProduct && groupProduct.new_price) {
+                  newPrice = parseFloat(groupProduct.new_price) || newPrice;
+                  await handlePriceChange(item.productId, size.id, newPrice);
+                }
+              }
+      
+              return {
+                ...size,
+                price: newPrice,
+                originalPrice: size.price === newPrice ? 0 : size.price,
+              };
+            })
+          );
+      
+          return {
+            ...item,
+            sizes: updatedSizes,
+          };
+        })
+      );
+      
+
+
+      console.log(mappedCart)
 
       sessionStorage.setItem("taxper", data.taxPercantage);
 
@@ -281,6 +359,12 @@ export const OrdersContainer = ({
   const handleFormChange = (data: Partial<OrderFormValues>) => {
     setOrderData(data);
   };
+
+  useEffect(()=>{
+    setSelectedPharmacy("")
+    setOrderData(null)
+
+  },[isCreateOrderOpen])
 
   return (
     <div className="space-y-4">

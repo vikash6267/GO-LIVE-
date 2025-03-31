@@ -50,7 +50,7 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
           payment_status,
           orders (order_number),
           profiles (first_name, last_name, email,company_name)
-        `)
+        `).order("created_at", { ascending: false });
       if (role === "pharmacy") {
         // If user is not admin, fetch orders for their profile only
         query.eq('profile_id', session.user.id);

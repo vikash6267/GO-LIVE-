@@ -55,7 +55,27 @@ export function InvoiceTableContent({
         <InvoiceStatusBadge status={invoice.payment_status} />
       </TableCell>
       <TableCell className="text-center">
-        {new Date(invoice.due_date).toLocaleDateString()}
+        {/* {new Date(invoice.created_at).toLocaleDateString()}  */}
+
+        {(() => {
+                const dateObj = new Date(invoice.created_at);
+                const formattedDate = dateObj.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "2-digit",
+                  year: "numeric",
+                });
+                const formattedTime = dateObj.toLocaleTimeString("en-US", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                });
+                return (
+                  <>
+                    {formattedDate} <br />
+                   
+                  </>
+                );
+              })()}
       </TableCell>
       <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
         <InvoiceRowActions invoice={invoice} onPreview={onPreview} onActionComplete={onActionComplete} />

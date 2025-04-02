@@ -207,6 +207,7 @@ export function OrdersList({
     );
   }
 
+  console.log(orders)
   return (
     <Table className=" border-gray-300">
     <TableHeader className="bg-gray-100">
@@ -304,7 +305,7 @@ export function OrdersList({
               </div>
             </TableCell>
             <TableCell className="text-center border-gray-300">
-              {order.shipping?.trackingNumber && (
+              {order.shipping?.trackingNumber && order?.shipping.method !== "custom"  ? (
                 <Button
                   variant="link"
                   className="p-0 h-auto font-normal"
@@ -319,6 +320,16 @@ export function OrdersList({
                   {order.shipping.trackingNumber}
                   <ExternalLink className="ml-1 h-3 w-3" />
                 </Button>
+              ):(
+
+                <Button
+                variant="secondary"
+                className="p-0 h-auto font-normal"
+              
+              >
+               Manually
+              
+              </Button>
               )}
             </TableCell>
             {userRole === "admin" && (

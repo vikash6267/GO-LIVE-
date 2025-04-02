@@ -127,6 +127,7 @@ const CreateOrderPaymentForm = ({
 
     try {
       const response = await axios.post("/pay", paymentData);
+      console.log(response)
       if (response.status === 200) {
         try {
           const data = formDataa;
@@ -388,23 +389,36 @@ const CreateOrderPaymentForm = ({
         }
       }
     } catch (error) {
+      setLoading(false);
       console.log(error);
-      toast({
-        title: "Payment failed",
-        description: error.data.message,
-      });
+
+      // Check if it's an AVS mismatch error
+      if (error.response?.data?.errors?.error?.[0]?.errorCode === "27") {
+          toast({
+              title: "Payment Declined",
+              description: "Your billing address does not match your card's registered address. Please verify and try again.",
+              variant: "destructive",
+              duration: 5000,
+          });
+      } else {
+          toast({
+              title: "Payment failed",
+              description: error.response?.data?.message || "Something went wrong. Please try again.",
+              variant: "destructive",
+              duration: 5000,
+          });
+      }
     }
-    setLoading(false);
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen z-[99999]">
+    <div className="flex justify-center items-center min-h-screen z-[99]">
       <Modal
         isOpen={modalIsOpen}
         shouldCloseOnOverlayClick={false} // ✅ Yahan false karein
         onRequestClose={() => setModalIsOpen(false)}
-        className="bg-white p-6 rounded-lg shadow-lg w-96 mx-auto mt-20 z-[999999] max-h-[80vh] overflow-y-scroll "
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[99999] pointer-events-auto" // <-- Yaha change karein
+        className="bg-white p-6 rounded-lg shadow-lg w-96 mx-auto mt-20 z-[9] max-h-[80vh] overflow-y-scroll "
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[99] pointer-events-auto" // <-- Yaha change karein
       >
         <button
           onClick={() => setModalIsOpen(false)}

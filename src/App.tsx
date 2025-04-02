@@ -39,6 +39,7 @@ import PayNowOrder from "./components/PayNowOrder";
 import CartItemsPricing from "./components/CartItemsPricing";
 import { supabase } from "./integrations/supabase/client";
 import ResetPasswordPage from "./components/ResetPassowrdPage";
+import Expenses from "./pages/admin/Expenses";
 
 
 // Protected route wrapper component
@@ -115,6 +116,11 @@ function App() {
       <Route path="/admin/inventory" element={
         <ProtectedRoute allowedRoles={['admin']}>
           <AdminInventory />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/expenses" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <Expenses />
         </ProtectedRoute>
       } />
       <Route path="/admin/orders" element={

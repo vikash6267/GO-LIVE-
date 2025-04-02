@@ -44,6 +44,7 @@ export function DashboardLayout({
       { icon: Users, label: "Users", path: "/admin/users" },
       { icon: Package, label: "Products", path: "/admin/products" },
       { icon: BoxIcon, label: "Inventory", path: "/admin/inventory" },
+      { icon: DollarSign, label: "Expenses", path: "/admin/expenses" },
       { icon: FileText, label: "Orders", path: "/admin/orders" },
       { icon: Receipt, label: "Invoices", path: "/admin/invoices" },
       {

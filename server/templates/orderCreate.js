@@ -1,5 +1,5 @@
 const orderConfirmationTemplate = (order) => { 
-    const { customerInfo, order_number, items, estimated_delivery, payment_status, shipping_method, total_amount } = order;
+    const { customerInfo, shippingAddress, order_number, items, estimated_delivery, payment_status, shipping_method, total_amount } = order;
 
     return `<!DOCTYPE html>
     <html>
@@ -141,11 +141,11 @@ const orderConfirmationTemplate = (order) => {
     
             <div class="address-box">
                 <h3>📦 Shipping Address:</h3>
-                <p><span class="highlight">Name:</span> ${customerInfo.name}</p>
-                <p><span class="highlight">Street:</span> ${customerInfo.address.street}</p>
-                <p><span class="highlight">City:</span> ${customerInfo.address.city}</p>
-                <p><span class="highlight">State:</span> ${customerInfo.address.state}</p>
-                <p><span class="highlight">Zip Code:</span> ${customerInfo.address.zip_code}</p>
+                <p><span class="highlight">Name:</span> ${shippingAddress?.fullName}</p>
+                <p><span class="highlight">Street:</span> ${shippingAddress?.address?.street}</p>
+                <p><span class="highlight">City:</span> ${shippingAddress?.address?.city}</p>
+                <p><span class="highlight">State:</span> ${shippingAddress?.address?.state}</p>
+                <p><span class="highlight">Zip Code:</span> ${shippingAddress?.address?.zip_code}</p>
             </div>
     
             <a href="https://9rx.com/orders/${order_number}" class="cta">🔍 Visit Website</a>

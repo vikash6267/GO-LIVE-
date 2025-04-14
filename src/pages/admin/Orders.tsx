@@ -29,9 +29,9 @@ export default function Orders() {
       <div className="space-y-6">
         <div>
           <h3 className="text-3xl font-bold tracking-tight">{poIs ? "Purchase Orders":"Orders Management"}</h3>
-          <p className="text-muted-foreground">
+{     !poIs &&     <p className="text-muted-foreground">
             Process and manage customer orders
-          </p>
+          </p>}
         </div>
 
         <OrdersContainer

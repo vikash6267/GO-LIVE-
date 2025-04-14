@@ -468,7 +468,7 @@ export const OrdersContainer = ({
         </div>
       )}
 
-      <StatusFilter value={statusFilter} onValueChange={setStatusFilter} />
+ {!poIs &&     <StatusFilter value={statusFilter} onValueChange={setStatusFilter} />}
 
       <OrdersList
         orders={filteredOrders}

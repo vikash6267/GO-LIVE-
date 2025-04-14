@@ -30,6 +30,7 @@ export interface CreateOrderFormProps {
   initialData?: Partial<OrderFormValues>;
   onFormChange?: (data: Partial<OrderFormValues>) => void;
   isEditing?: boolean;
+  poIs?: boolean;
   use?: string;
   locationId?: any;
 
@@ -41,6 +42,7 @@ export function CreateOrderForm({
   isEditing,
   use,
   locationId,
+  poIs=false
 }: CreateOrderFormProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -78,6 +80,7 @@ export function CreateOrderForm({
       status: "new",
       payment_status: "unpaid",
       customization: isCus,
+      poAccept: !poIs,
 
       customerInfo: {
         name: initialData?.customerInfo?.name || `${initialData?.customerInfo?.name || ""} ${userProfile?.last_name || ""}`,
@@ -154,7 +157,7 @@ export function CreateOrderForm({
   }, [form, validateForm]);
 
   const onSubmit = async (data: OrderFormValues) => {
-    console.log("first");
+    console.log(poIs);
 
 
 
@@ -190,38 +193,15 @@ export function CreateOrderForm({
         return;
       }
 
-      // Check stock availability
-      // for (const item of data.items) {
-      //   const { data: product, error: stockError } = await supabase
-      //     .from("products")
-      //     .select("current_stock")
-      //     .eq("id", item.productId)
-      //     .single();
-
-      //   if (stockError || !product) {
-      //     throw new Error(
-      //       `Could not check stock for product ID: ${item.productId}`
-      //     );
-      //   }
-
-      //   if (product.current_stock < item.quantity) {
-      //     toast({
-      //       title: "Insufficient Stock",
-      //       description: `Product ID: ${item.productId} has only ${product.current_stock} units available.`,
-      //       variant: "destructive",
-      //     });
-      //     console.error("Insufficient stock for product ID:", item.productId);
-      //     return;
-      //   }
-      // }
-
-      // Calculate default estimated delivery date (10 days from today)
+     
       const defaultEstimatedDelivery = new Date();
       defaultEstimatedDelivery.setDate(defaultEstimatedDelivery.getDate() + 10);
 
       console.log(pId)
 
-      const orderNumber = await generateOrderId()
+  const orderNumber = poIs
+  ? `PO-${Date.now()}` // e.g., PO-1713096284741
+  : await generateOrderId();
 
       if (!userProfile?.id) return
       let profileID = userProfile?.id
@@ -246,7 +226,8 @@ export function CreateOrderForm({
         estimated_delivery:
           data.shipping?.estimatedDelivery ||
           defaultEstimatedDelivery.toISOString(),
-        location_id: pId
+        location_id: pId,
+        poAccept:!poIs
       };
 
       console.log(orderData);
@@ -267,155 +248,157 @@ export function CreateOrderForm({
       const newOrder = orderResponse[0];
       console.log("Order saved:", newOrder);
 
-      const year = new Date().getFullYear(); // Get current year (e.g., 2025)
+if(!poIs){
+  const year = new Date().getFullYear(); // Get current year (e.g., 2025)
 
 
-      const { data: inData, error: erroIn } = await supabase
-        .from("centerize_data")
-        .select("id, invoice_no, invoice_start")
-        .order("id", { ascending: false }) // Get latest order
-        .limit(1);
+  const { data: inData, error: erroIn } = await supabase
+    .from("centerize_data")
+    .select("id, invoice_no, invoice_start")
+    .order("id", { ascending: false }) // Get latest order
+    .limit(1);
 
-      if (erroIn) {
-        console.error("🚨 Supabase Fetch Error:", erroIn);
-        return null;
-      }
+  if (erroIn) {
+    console.error("🚨 Supabase Fetch Error:", erroIn);
+    return null;
+  }
 
-      let newInvNo = 1; // Default to 1 if no previous order exists
-      let invoiceStart = "INV"; // Default order prefix
-
-
-      if (inData && inData.length > 0) {
-        newInvNo = (inData[0].invoice_no || 0) + 1; // Increment last order number
-        invoiceStart = inData[0].invoice_start || "INV"; // Use existing order_start
-      }
+  let newInvNo = 1; // Default to 1 if no previous order exists
+  let invoiceStart = "INV"; // Default order prefix
 
 
-      const invoiceNumber = `${invoiceStart}-${year}${newInvNo.toString().padStart(6, "0")}`;
+  if (inData && inData.length > 0) {
+    newInvNo = (inData[0].invoice_no || 0) + 1; // Increment last order number
+    invoiceStart = inData[0].invoice_start || "INV"; // Use existing order_start
+  }
 
 
-
-      const { error: updateError } = await supabase
-        .from("centerize_data")
-        .update({ invoice_no: newInvNo }) // Correct update syntax
-        .eq("id", inData[0]?.id); // Update only the latest record
-
-      if (updateError) {
-        console.error("🚨 Supabase Update Error:", updateError);
-      } else {
-        console.log("✅ Order No Updated to:", newInvNo);
-      }
-
-      const estimatedDeliveryDate = new Date(newOrder.estimated_delivery);
-
-      // Calculate the due_date by adding 30 days to the estimated delivery
-      const dueDate = new Date(estimatedDeliveryDate);
-      dueDate.setDate(dueDate.getDate() + 30); // Add 30 days
-
-      // Format the due_date as a string in ISO 8601 format with time zone (UTC in this case)
-      const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00.000Z"
-
-      const invoiceData = {
-        invoice_number: invoiceNumber,
-        order_id: newOrder.id,
-        due_date: formattedDueDate,
-        profile_id: newOrder.profile_id,
-        status: "pending" as InvoiceStatus,
-        amount: parseFloat(calculatedTotal + newtax) || 0,
-        tax_amount: orderData.tax_amount || 0,
-        total_amount: parseFloat(calculatedTotal + newtax),
-        payment_status: newOrder.payment_status,
-        payment_method: newOrder.paymentMethod as PaymentMethod,
-        payment_notes: newOrder.notes || null,
-        items: newOrder.items || [],
-        customer_info: newOrder.customerInfo || {
-          name: newOrder.customerInfo?.name,
-          email: newOrder.customerInfo?.email || "",
-          phone: newOrder.customerInfo?.phone || "",
-        },
-        shipping_info: orderData.shippingAddress || {},
-        shippin_cost:totalShippingCost ,
-        subtotal:
-          calculatedTotal + newtax + (isCus ? 0.5 : 0) ||
-          parseFloat(calculatedTotal + newtax + (isCus ? 0.5 : 0)),
-      };
-
-      console.log("Creating invoice with data:", invoiceData);
-
-      const { invoicedata2, error } = await supabase
-        .from("invoices")
-        .insert(invoiceData)
-        .select()
-        .single();
-
-      if (error) {
-        console.error("Error creating invoice:", error);
-        throw error;
-      }
-
-      console.log("Invoice created successfully:", invoicedata2);
-
-   
-      // Prepare and save order items
-      const orderItemsData = data.items.map((item) => ({
-        order_id: newOrder.id,
-        product_id: item.productId,
-        quantity: item.quantity,
-        unit_price: item.price,
-        total_price: item.quantity * item.price,
-        notes: item.notes,
-      }));
-
-      const { error: itemsError } = await supabase
-        .from("order_items")
-        .insert(orderItemsData);
-
-      if (itemsError) {
-        throw new Error(itemsError.message);
-      }
-
-      // console.log("Order items saved:", orderItemsData);
-
-      
-      // Update product stock
-      for (const item of data.items) {
-        // console.log("Updating stock for quantity ID:", item.quantity);
-        const { error: stockUpdateError } = await supabase.rpc(
-          "decrement_stock",
-          { product_id: item.productId, quantity: item.quantity }
-        );
-        // console.log("stockUpdateError", stockUpdateError);
-        if (stockUpdateError) {
-          throw new Error(
-            `Failed to update stock for product ID: ${item.productId}`
-          );
-        }
-      }
-
-      console.log("Stock updated successfully");
+  const invoiceNumber = `${invoiceStart}-${year}${newInvNo.toString().padStart(6, "0")}`;
 
 
 
+  const { error: updateError } = await supabase
+    .from("centerize_data")
+    .update({ invoice_no: newInvNo }) // Correct update syntax
+    .eq("id", inData[0]?.id); // Update only the latest record
+
+  if (updateError) {
+    console.error("🚨 Supabase Update Error:", updateError);
+  } else {
+    console.log("✅ Order No Updated to:", newInvNo);
+  }
+
+  const estimatedDeliveryDate = new Date(newOrder.estimated_delivery);
+
+  // Calculate the due_date by adding 30 days to the estimated delivery
+  const dueDate = new Date(estimatedDeliveryDate);
+  dueDate.setDate(dueDate.getDate() + 30); // Add 30 days
+
+  // Format the due_date as a string in ISO 8601 format with time zone (UTC in this case)
+  const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00.000Z"
+
+  const invoiceData = {
+    invoice_number: invoiceNumber,
+    order_id: newOrder.id,
+    due_date: formattedDueDate,
+    profile_id: newOrder.profile_id,
+    status: "pending" as InvoiceStatus,
+    amount: parseFloat(calculatedTotal + newtax) || 0,
+    tax_amount: orderData.tax_amount || 0,
+    total_amount: parseFloat(calculatedTotal + newtax),
+    payment_status: newOrder.payment_status,
+    payment_method: newOrder.paymentMethod as PaymentMethod,
+    payment_notes: newOrder.notes || null,
+    items: newOrder.items || [],
+    customer_info: newOrder.customerInfo || {
+      name: newOrder.customerInfo?.name,
+      email: newOrder.customerInfo?.email || "",
+      phone: newOrder.customerInfo?.phone || "",
+    },
+    shipping_info: orderData.shippingAddress || {},
+    shippin_cost:totalShippingCost ,
+    subtotal:
+      calculatedTotal + newtax + (isCus ? 0.5 : 0) ||
+      parseFloat(calculatedTotal + newtax + (isCus ? 0.5 : 0)),
+  };
+
+  console.log("Creating invoice with data:", invoiceData);
+
+  const { invoicedata2, error } = await supabase
+    .from("invoices")
+    .insert(invoiceData)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error creating invoice:", error);
+    throw error;
+  }
+
+  console.log("Invoice created successfully:", invoicedata2);
 
 
-      const { data: orderResponse2, error: orderError2 } = await supabase
-      .from("orders")
-      .select()
-      .eq("id",newOrder.id);
+  // Prepare and save order items
+  const orderItemsData = data.items.map((item) => ({
+    order_id: newOrder.id,
+    product_id: item.productId,
+    quantity: item.quantity,
+    unit_price: item.price,
+    total_price: item.quantity * item.price,
+    notes: item.notes,
+  }));
 
-    if (orderError2) {
-      console.error("Order creation error:", orderError2);
-      throw new Error(orderError2.message);
+  const { error: itemsError } = await supabase
+    .from("order_items")
+    .insert(orderItemsData);
+
+  if (itemsError) {
+    throw new Error(itemsError.message);
+  }
+
+  // console.log("Order items saved:", orderItemsData);
+
+  
+  // Update product stock
+  for (const item of data.items) {
+    // console.log("Updating stock for quantity ID:", item.quantity);
+    const { error: stockUpdateError } = await supabase.rpc(
+      "decrement_stock",
+      { product_id: item.productId, quantity: item.quantity }
+    );
+    // console.log("stockUpdateError", stockUpdateError);
+    if (stockUpdateError) {
+      throw new Error(
+        `Failed to update stock for product ID: ${item.productId}`
+      );
     }
+  }
+
+  console.log("Stock updated successfully");
 
 
-      try {
-        await axios.post("/order-place", newOrder);
-        console.log("Order status sent successfully to backend.");
-      } catch (apiError) {
-        console.error("Failed to send order status to backend:", apiError);
-      }
 
+
+
+  const { data: orderResponse2, error: orderError2 } = await supabase
+  .from("orders")
+  .select()
+  .eq("id",newOrder.id);
+
+if (orderError2) {
+  console.error("Order creation error:", orderError2);
+  throw new Error(orderError2.message);
+}
+
+
+  try {
+    await axios.post("/order-place", newOrder);
+    console.log("Order status sent successfully to backend.");
+  } catch (apiError) {
+    console.error("Failed to send order status to backend:", apiError);
+  }
+
+}
 
       // Reset form and local state
       // localStorage.removeItem("cart");
@@ -440,10 +423,13 @@ export function CreateOrderForm({
 
       }
       if (userType.toLocaleLowerCase() === 'admin') {
-        navigate("/admin/orders", { state: { createOrder: false } });
-
-
+        if (poIs) {
+          navigate("/admin/po", { state: { createOrder: false } });
+        } else {
+          navigate("/admin/orders", { state: { createOrder: false } });
+        }
       }
+      
 
       await clearCart();
     } catch (error) {
@@ -532,6 +518,7 @@ export function CreateOrderForm({
             setIsCus={setIsCus}
             isCus={isCus}
             form={form}
+            poIs={poIs}
           />
         </form>
       </Form>

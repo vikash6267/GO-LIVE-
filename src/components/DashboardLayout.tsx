@@ -46,6 +46,7 @@ export function DashboardLayout({
       { icon: BoxIcon, label: "Inventory", path: "/admin/inventory" },
       { icon: DollarSign, label: "Expenses", path: "/admin/expenses" },
       { icon: FileText, label: "Orders", path: "/admin/orders" },
+      { icon: FileText, label: "Purchase Order", path: "/admin/po" },
       { icon: Receipt, label: "Invoices", path: "/admin/invoices" },
       {
         icon: DollarSign,
@@ -59,6 +60,8 @@ export function DashboardLayout({
       { icon: Package, label: "Products", path: "/pharmacy/products" },
       { icon: ShoppingCart, label: "Your Cart", path: "/pharmacy/order" },
       { icon: FileText, label: "My Orders", path: "/pharmacy/orders" },
+      // { icon: FileText, label: "Purchase Order", path: "/pharmacy/po" },
+
       { icon: Receipt, label: "Invoices", path: "/pharmacy/invoices" },
       { icon: Settings, label: "Settings", path: "/pharmacy/settings" },
 

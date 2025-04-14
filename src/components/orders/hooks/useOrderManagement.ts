@@ -55,35 +55,12 @@ export const useOrderManagement = () => {
         query.eq('profile_id', session.user.id);
       }
 
-    //   if (role === "group") {
-    //     const { data, error } = await supabase
-    //         .from("profiles")
-    //         .select("id")
-    //         .eq("group_id", session.user.id);
-    
-    //     if (error) {
-    //         console.error("Failed to fetch customer information:", error);
-    //         throw new Error("Failed to fetch customer information: " + error.message);
-    //     }
-    
-    //     if (!data || data.length === 0) {
-    //         throw new Error("No customer information found.");
-    //     }
-    
-    //     console.log("Data", data);
-    
-    //     // Extract user IDs from the data array
-    //     const userIds = data.map(user => user.id);
-    
-    //     // Fetch orders where profile id is in the list of userIds
-    //     query.in("profile_id", userIds);
-    // }
-    
+
   
       const { data, error } = await query;
       if (error) throw error;
   
-      console.log(data);
+console.log(data)
   
       const formattedOrders: OrderFormValues[] = (data as any[]).map((order) => {
         const profileData = order.profiles || {};
@@ -96,6 +73,7 @@ export const useOrderManagement = () => {
           status: order.status || "pending",
           payment_status: order.payment_status || "unpaid",
           customization: order.customization || false,
+          poAccept:order.poAccept,
           customerInfo: order.customerInfo ||  {
             name:
               profileData.first_name && profileData.last_name

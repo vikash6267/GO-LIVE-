@@ -73,6 +73,7 @@ interface OrdersContainerProps {
   onShipOrder?: (orderId: string) => void;
   onConfirmOrder?: (orderId: string) => void;
   onDeleteOrder?: (orderId: string) => Promise<void>;
+  poIs?:boolean
 }
 
 export const OrdersContainer = ({
@@ -81,6 +82,7 @@ export const OrdersContainer = ({
   onShipOrder,
   onConfirmOrder,
   onDeleteOrder,
+  poIs=false,
 }: OrdersContainerProps) => {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
@@ -224,7 +226,8 @@ export const OrdersContainer = ({
     }
   }, [location, navigate]);
 
-  console.log(orders);
+  console.log(orders)
+
   const {
     statusFilter,
     searchQuery,
@@ -233,7 +236,7 @@ export const OrdersContainer = ({
     setSearchQuery,
     setDateRange,
     filteredOrders,
-  } = useOrderFilters(orders);
+  } = useOrderFilters(orders,poIs);
 
 
 
@@ -378,12 +381,12 @@ export const OrdersContainer = ({
     onExport={() => console.log("Export functionality to be implemented")}
   />
 
-  <CSVLink {...exportToCSV(filteredOrders)} className="btn btn-primary">
+{ !poIs && <CSVLink {...exportToCSV(filteredOrders)} className="btn btn-primary">
     <Button variant="outline">
         <Download className="mr-2 h-4 w-4" />
         Export Orders
       </Button>
-  </CSVLink>
+  </CSVLink>}
 
 
 
@@ -393,12 +396,21 @@ export const OrdersContainer = ({
         <SheetTrigger asChild>
           <Button className="w-auto min-w-fit px-3 py-2 text-sm">
             <PlusCircle className="mr-1 h-4 w-4" />
-            Create Order
+          
+            {
+              poIs ? "Purchase Orders" : "  Create Order"
+            }
           </Button>
         </SheetTrigger>
         <SheetContent side="right" className="w-[90vw] sm:max-w-[640px] overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Create New Order</SheetTitle>
+            <SheetTitle>
+
+
+            {
+              poIs ? " Create Purchase Orders" : "  Create New Order"
+            }
+            </SheetTitle>
           </SheetHeader>
 
           <div className="mb-4 mt-2">
@@ -415,7 +427,7 @@ export const OrdersContainer = ({
           </div>
           {orderData?.customerInfo && (
             <div className="mt-2">
-              <CreateOrderForm isEditing={false} initialData={orderData} onFormChange={handleFormChange} />
+              <CreateOrderForm isEditing={false} initialData={orderData} onFormChange={handleFormChange} poIs={poIs} />
             </div>
           )}
         </SheetContent>
@@ -478,6 +490,7 @@ export const OrdersContainer = ({
         onConfirmOrder={confirmOrder}
         onDeleteOrder={onDeleteOrder}
         setOrderStatus={setOrderStatus}
+        poIs={poIs}
       />
 
       {selectedOrder && (

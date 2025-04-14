@@ -59,6 +59,7 @@ export interface ProductDetails {
     basePrice?: number;
   };
   sizes?: ProductSize[];
+  poAccept?: boolean;
   quantityPerCase?: number;
   tierPricing?: {
     tier1: { quantity: string; price: number };

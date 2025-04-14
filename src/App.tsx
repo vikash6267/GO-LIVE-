@@ -128,6 +128,13 @@ function App() {
           <AdminOrders />
         </ProtectedRoute>
       } />
+
+      
+      <Route path="/admin/po" element={
+        <ProtectedRoute allowedRoles={['admin']}>
+          <AdminOrders />
+        </ProtectedRoute>
+      } />
  
       <Route path="/admin/invoices" element={
         <ProtectedRoute allowedRoles={['admin']}>
@@ -166,6 +173,11 @@ function App() {
           <PharmacyOrders />
         </ProtectedRoute>
       } />
+      {/* <Route path="/pharmacy/po" element={
+        <ProtectedRoute allowedRoles={['pharmacy']}>
+          <PharmacyOrders />
+        </ProtectedRoute>
+      } /> */}
       <Route path="/pharmacy/settings" element={
         <ProtectedRoute allowedRoles={['pharmacy']}>
           <PharmacySettings />

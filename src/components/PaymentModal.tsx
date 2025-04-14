@@ -13,6 +13,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import { useOrderManagement } from "./orders/hooks/useOrderManagement";
 
 Modal.setAppElement(document.getElementById("body"));
 
@@ -24,6 +25,7 @@ const PaymentForm = ({
   orderId,
   orders,
   payNow = false,
+  
  
 }) => {
   const [paymentType, setPaymentType] = useState("credit_card");
@@ -31,7 +33,10 @@ const PaymentForm = ({
   const [loading, setLoading] = useState(false); // Loading state
   const navigate = useNavigate();
   const [notes, setNotes] = useState("")
+  const {
 
+    loadOrders
+  } = useOrderManagement();
 
   const [formData, setFormData] = useState({
     amount: 0,
@@ -118,6 +123,7 @@ const PaymentForm = ({
         title: "Payment Successfull",
         description: "",
       });
+      window.location.reload();
 
       return
     }
@@ -227,6 +233,7 @@ const PaymentForm = ({
           title: "Payment Successfull",
           description: response.data.message,
         });
+        window.location.reload();
 
         setTimeout(() => {
           if (payNow) {

@@ -110,6 +110,7 @@ export const OrdersContainer = ({
     handleProcessOrder: processOrder,
     handleShipOrder: shipOrder,
     handleConfirmOrder: confirmOrder,
+    loadOrders
   } = useOrderManagement();
 
   const { cartItems } = useCart();

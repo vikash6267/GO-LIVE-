@@ -286,5 +286,6 @@ export const useOrderManagement = () => {
     handleShipOrder,
     handleConfirmOrder,
     handleDeleteOrder,
+    loadOrders
   };
 };

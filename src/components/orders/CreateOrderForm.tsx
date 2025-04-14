@@ -376,6 +376,7 @@ export function CreateOrderForm({
 
       // console.log("Order items saved:", orderItemsData);
 
+      
       // Update product stock
       for (const item of data.items) {
         // console.log("Updating stock for quantity ID:", item.quantity);

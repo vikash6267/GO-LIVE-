@@ -36,6 +36,7 @@ export interface Expense {
   date: string;
   created_at: string;
 }
+import { CSVLink } from "react-csv";
 
 // Get all expenses
 export const getAllExpenses = async (): Promise<Expense[]> => {
@@ -129,12 +130,20 @@ const Expenses = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-
+  const headers = [
+    { label: "ID", key: "id" },
+    { label: "Name", key: "name" },
+    { label: "Amount", key: "amount" },
+    { label: "Description", key: "description" },
+    { label: "Date", key: "date" },
+    { label: "Created At", key: "created_at" },
+  ];
 
   const fetchExpenses = async () => {
     try {
       setLoading(true);
       const allExpenses = await getAllExpenses();
+      console.log(allExpenses)
       // Map to properly typed expenses
       const typedExpenses = mapToExpenses(allExpenses);
       setExpenses(typedExpenses);
@@ -454,17 +463,38 @@ const Expenses = () => {
                     </div>
                   )}
 
-                  <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-between items-center">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {filteredExpenses.length} {filteredExpenses.length === 1 ? 'expense' : 'expenses'} found
-                    </span>
-                    <div className="flex items-center">
-                      <span className="text-sm font-medium mr-2">Total:</span>
-                      <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                        ${totalFilteredExpenses.toLocaleString()}
-                      </span>
-                    </div>
-                  </div>
+<div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+  {/* Expense Count */}
+  <span className="text-sm text-gray-600 dark:text-gray-400">
+    {filteredExpenses.length}{" "}
+    {filteredExpenses.length === 1 ? "expense" : "expenses"} found
+  </span>
+
+  {/* Right Side Controls */}
+  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 w-full sm:w-auto">
+    
+    {/* CSV Download Button */}
+    <CSVLink
+      data={expenses}
+      headers={headers}
+      filename="expenses.csv"
+      className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium text-sm px-4 py-2 rounded shadow transition duration-200"
+    >
+      ⬇️ Download CSV
+    </CSVLink>
+
+    {/* Total Display */}
+    <div className="flex items-center gap-1">
+      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        Total:
+      </span>
+      <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+        ${totalFilteredExpenses.toLocaleString()}
+      </span>
+    </div>
+  </div>
+</div>
+
                 </>
               )}
             </div>

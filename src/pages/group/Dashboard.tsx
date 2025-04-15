@@ -176,7 +176,7 @@ const GroupDashboard = () => {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {/* <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, index) => (
             <EnhancedStatsCard
               key={index}
@@ -184,7 +184,7 @@ const GroupDashboard = () => {
               icon={getIconComponent(stat.iconType)}
             />
           ))}
-        </div>
+        </div> */}
 
         <div className="grid gap-6 ">
           {/* <Card className="lg:col-span-2">

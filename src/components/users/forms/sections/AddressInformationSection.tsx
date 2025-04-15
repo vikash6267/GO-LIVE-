@@ -11,6 +11,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Switch } from "@/components/ui/switch";
 import { AddressFields } from "../AddressFields";
 
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
 interface AddressInformationSectionProps {
   form: UseFormReturn<BaseUserFormData>;
   self?: boolean;
@@ -23,6 +29,11 @@ export function AddressInformationSection({
   const sameAsShipping = form.watch("sameAsShipping");
   const billingAddress = form.watch("billingAddress");
   const freeShipping = form.watch("freeShipping") || false; // Ensure boolean value
+
+
+
+ 
+
 
   useEffect(() => {
     if (sameAsShipping) {
@@ -39,6 +50,8 @@ export function AddressInformationSection({
       </CardHeader>
       <CardContent className="space-y-4">
         <AddressFields form={form} type="billing" />
+
+
 
 
         <div className="flex items-center justify-between gap-4 ">

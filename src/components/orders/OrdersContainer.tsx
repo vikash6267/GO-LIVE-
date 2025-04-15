@@ -157,62 +157,73 @@ export const OrdersContainer = ({
       try {
         const { data, error } = await supabase
           .from("profiles")
-          .select("id, display_name, type,email");
-
+          .select("id, display_name, type, email");
+    
         if (error) {
           console.error("Failed to fetch customer information:", error);
           throw new Error(`Failed to fetch customer information: ${error.message}`);
         }
-
-        console.log("Fetched pharmacies:", data);
-        setUserData(data);
-
-        const userEmail = sessionStorage.getItem("userEmail")?.toLowerCase(); // Convert session email to lowercase
-
+    
+        const userEmail = sessionStorage.getItem("userEmail")?.toLowerCase();
         console.log("User Email from Session:", userEmail);
-        console.log("Original Data:", data);
-        
-        // Logged-in admin ko find karein
-        const loggedInAdmin = data.find(pharmacy => pharmacy.email.toLowerCase() === userEmail && pharmacy.type === "admin");
-        
-        console.log("Logged-in Admin:", loggedInAdmin);
-        
-        // Admin aur Non-Admin dono ko filter karein
-        const filteredData = data.filter(pharmacy => {
-          // Agar yeh logged-in admin hai toh isko rakho
-          if (loggedInAdmin && pharmacy.email.toLowerCase() === userEmail && pharmacy.type === "admin") {
+    
+        // ✅ poIs is true: show only the logged-in admin
+        if (poIs) {
+          const onlyLoggedInAdmin = data.find(
+            (user) => user.email.toLowerCase() === userEmail && user.type === "admin"
+          );
+    
+          if (onlyLoggedInAdmin) {
+            setOptions([
+              {
+                value: onlyLoggedInAdmin.id,
+                label: "Custom", // You can change label if needed
+              },
+            ]);
+          } else {
+            // If not found or not admin, set empty list
+            setOptions([]);
+          }
+    
+          return; // ✅ return early
+        }
+    
+        // ✅ poIs is false: apply original logic
+        const loggedInAdmin = data.find(
+          (user) => user.email.toLowerCase() === userEmail && user.type === "admin"
+        );
+    
+        const filteredData = data.filter((user) => {
+          if (
+            loggedInAdmin &&
+            user.email.toLowerCase() === userEmail &&
+            user.type === "admin"
+          ) {
             return true;
           }
-          // Non-admin ko allow karo
-          return pharmacy.type !== "admin";
+          return user.type !== "admin";
         });
-        
-        console.log("Filtered Data (After Removing Unwanted Admins):", filteredData);
-        
-        // Sorting aur mapping
+    
         const sortedOptions = filteredData
-          .map((pharmacy) => ({
-            value: pharmacy.id,
-            label: pharmacy.type === "admin" ? "Custom" : pharmacy.display_name, // Sirf logged-in admin ke liye "Custom"
-            isCustom: pharmacy.type === "admin" ? 0 : 1, // Admin (Custom) ko 0, baki sab 1
+          .map((user) => ({
+            value: user.id,
+            label: user.type === "admin" ? "Custom" : user.display_name,
+            isCustom: user.type === "admin" ? 0 : 1,
           }))
-          .sort((a, b) => a.isCustom - b.isCustom); // "Custom" sabse upar
-        
-        console.log("Final Sorted Options:", sortedOptions);
-        
-        console.log(sortedOptions);
-        
+          .sort((a, b) => a.isCustom - b.isCustom);
+    
         setOptions(sortedOptions);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
+    
 
 
 
     fetchUsers();
     fetchOrders();
-  }, [orderStatus]); // Ensure dependencies are correctly placed if needed
+  }, [orderStatus,poIs]); // Ensure dependencies are correctly placed if needed
 
 
 

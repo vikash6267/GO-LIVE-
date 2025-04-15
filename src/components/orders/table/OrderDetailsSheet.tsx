@@ -218,7 +218,7 @@ export const OrderDetailsSheet = ({
 <div>
 <div className="flex gap-3 justify-center items-center min-w-full">
   <Link to={`/pay-now?orderid=${currentOrder.id}`}
-    onClick={sendMail}
+   
     className="px-4 py-2 bg-red-600 text-white font-semibold text-sm md:text-base rounded-lg hover:bg-red-700 transition duration-300"
   >
     Create Payment Link

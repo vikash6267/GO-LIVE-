@@ -192,8 +192,9 @@ console.log(data)
   };
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    console.log(newStatus)
     try {
-      console.log("object")
+      
       // Update order and get the updated order in response
       const { data: updatedOrder, error } = await supabase
         .from("orders")
@@ -211,12 +212,15 @@ console.log(data)
       console.log("Updated Order:", updatedOrder);
   
      // Send the updated order to the backend
-    try {
-      await axios.post("/order-status", updatedOrder);
-      console.log("Order status sent successfully to backend.");
-    } catch (apiError) {
-      console.error("Failed to send order status to backend:", apiError);
-    }
+     if(newStatus !== "processing"){
+      try {
+        await axios.post("/order-status", updatedOrder);
+        console.log("Order status sent successfully to backend.");
+      } catch (apiError) {
+        console.error("Failed to send order status to backend:", apiError);
+      }
+     }
+
       // Reload orders to sync state
       await loadOrders();
   

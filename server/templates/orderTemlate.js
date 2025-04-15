@@ -123,7 +123,7 @@ const orderStatusTemplate = (order) => {
             <div class="order-info">
                 <p><span class="highlight">Customer Name:</span> ${customerInfo.name}</p>
                 <p><span class="highlight">Order Number:</span> ${order_number}</p>
-                <p><span class="highlight">Estimated Delivery:</span> ${new Date(estimated_delivery).toDateString()}</p>
+            
                 <p><span class="highlight">Payment Status:</span> ${payment_status}</p>
           ${status.toUpperCase() === "SHIPPED" ? `<p><span class="highlight">Shipping Method:</span> ${shipping_method}</p>` : ""}
 

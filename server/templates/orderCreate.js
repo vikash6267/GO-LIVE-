@@ -113,7 +113,7 @@ const orderConfirmationTemplate = (order) => {
             <p>Thank you for shopping with us. Your order has been successfully placed.</p>
           <div class="order-info">
   <p><span class="highlight">Order Number:</span> ${order_number}</p>
-  <p><span class="highlight">Estimated Delivery:</span> ${new Date(estimated_delivery).toDateString()}</p>
+  
   <p><span class="highlight">Payment Status:</span> ${payment_status}</p>
   <p><span class="highlight">Total Amount:</span> $${total_amount.toFixed(2)}</p>
 

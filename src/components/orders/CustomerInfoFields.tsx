@@ -38,7 +38,7 @@ export function CustomerInfoFields({ form, readOnly = false }: CustomerInfoField
     let state = ""
     let zipCode = ""
     let street = place.formatted_address?.split(",")[0] || ""
-    let companyName = place.name || "" // If company name is part of the place data
+    let companyName = place.name || ""
 
     place.address_components.forEach((component: any) => {
       const types = component.types
@@ -52,7 +52,7 @@ export function CustomerInfoFields({ form, readOnly = false }: CustomerInfoField
     form.setValue(`${addressField}.address.city`, city, { shouldValidate: true })
     form.setValue(`${addressField}.address.state`, state, { shouldValidate: true })
     form.setValue(`${addressField}.address.zip_code`, zipCode, { shouldValidate: true })
-    form.setValue(`${addressField}.address.companyName`, companyName, { shouldValidate: true }) // Set company name if available
+    form.setValue(`${addressField}.address.companyName`, companyName, { shouldValidate: true })
   }
 
   const syncShippingWithCustomer = useCallback(() => {
@@ -83,9 +83,13 @@ export function CustomerInfoFields({ form, readOnly = false }: CustomerInfoField
     }
   }, [sameAsCustomer, syncShippingWithCustomer, form])
 
-  const handleCustomerAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAddressChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    addressType: "customer" | "shipping"
+  ) => {
     const value = e.target.value
-    form.setValue("customerInfo.address.street", value, { shouldValidate: true })
+    const field = addressType === "customer" ? "customerInfo" : "shippingAddress"
+    form.setValue(`${field}.address.street`, value, { shouldValidate: true })
 
     if (value.length > 2 && window.google) {
       const service = new window.google.maps.places.AutocompleteService()
@@ -93,35 +97,20 @@ export function CustomerInfoFields({ form, readOnly = false }: CustomerInfoField
         {
           input: value,
           componentRestrictions: { country: "in" },
-          types: ["geocode", "establishment"], // Include establishments (companies)
+          types: ["geocode", "establishment"]
         },
         (predictions: any[]) => {
-          setCustomerSuggestions(predictions || [])
+          if (addressType === "customer") {
+            setCustomerSuggestions(predictions || [])
+          } else {
+            setShippingSuggestions(predictions || [])
+          }
         }
       )
     } else {
-      setCustomerSuggestions([]) // Hide suggestions if input is empty or too short
-    }
-  }
-
-  const handleShippingAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    form.setValue("shippingAddress.address.street", value, { shouldValidate: true })
-
-    if (value.length > 2 && window.google) {
-      const service = new window.google.maps.places.AutocompleteService()
-      service.getPlacePredictions(
-        {
-          input: value,
-          componentRestrictions: { country: "in" },
-          types: ["geocode", "establishment"], // Include establishments (companies)
-        },
-        (predictions: any[]) => {
-          setShippingSuggestions(predictions || [])
-        }
-      )
-    } else {
-      setShippingSuggestions([]) // Hide suggestions if input is empty or too short
+      addressType === "customer"
+        ? setCustomerSuggestions([])
+        : setShippingSuggestions([])
     }
   }
 
@@ -132,46 +121,43 @@ export function CustomerInfoFields({ form, readOnly = false }: CustomerInfoField
     })
 
     if (addressType === "customer") {
-      setCustomerSuggestions([]) // Clear suggestions for customer
+      setCustomerSuggestions([])
     } else {
-      setShippingSuggestions([]) // Clear suggestions for shipping address
+      setShippingSuggestions([])
     }
   }
+
+  const renderField = (name: string, label: string, type = "text", readOnlyField = false) => (
+    <FormField
+      key={name}
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>
+            <Input
+              {...field}
+              type={type}
+              readOnly={readOnlyField}
+              className={readOnlyField ? "bg-gray-100" : ""}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  )
 
   return (
     <div className="space-y-4">
       {/* Customer Info Fields */}
+      <h2 className="text-lg font-semibold">Customer Information</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {[ 
-          { name: "customerInfo.name", label: "Name" },
-          { name: "customerInfo.email", label: "Email", type: "email" },
-          { name: "customerInfo.phone", label: "Phone", type: "tel" },
-          { name: "customerInfo.address.city", label: "City" },
-          { name: "customerInfo.address.state", label: "State" },
-          { name: "customerInfo.address.zip_code", label: "Zip Code" },
-        ].map(({ name, label, type }) => (
-          <FormField
-            key={name}
-            control={form.control}
-            name={name}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{label}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type={type || "text"}
-                    readOnly={readOnly || sameAsCustomer}
-                    className={(readOnly || sameAsCustomer) ? "bg-gray-100" : ""}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
-        
-        {/* Custom Autocomplete Field for Customer Address */}
+        {renderField("customerInfo.name", "Name")}
+        {renderField("customerInfo.email", "Email", "email")}
+        {renderField("customerInfo.phone", "Phone", "tel")}
+
         <div className="relative col-span-1 md:col-span-2">
           <FormField
             control={form.control}
@@ -182,9 +168,8 @@ export function CustomerInfoFields({ form, readOnly = false }: CustomerInfoField
                 <FormControl>
                   <Input
                     {...field}
-                    onChange={handleCustomerAddressChange}
-                    readOnly={readOnly || sameAsCustomer}
-                    className={(readOnly || sameAsCustomer) ? "bg-gray-100" : ""}
+                    onChange={(e) => handleAddressChange(e, "customer")}
+                  
                     ref={customerAddressInputRef}
                   />
                 </FormControl>
@@ -200,12 +185,16 @@ export function CustomerInfoFields({ form, readOnly = false }: CustomerInfoField
                   className="cursor-pointer hover:bg-gray-100 px-4 py-2 text-sm"
                   onClick={() => handleSuggestionClick(suggestion, "customer")}
                 >
-                  {suggestion.description} {/* Displaying both address and company */}
+                  {suggestion.description}
                 </li>
               ))}
             </ul>
           )}
         </div>
+
+        {renderField("customerInfo.address.city", "City")}
+        {renderField("customerInfo.address.state", "State")}
+        {renderField("customerInfo.address.zip_code", "Zip Code")}
       </div>
 
       {/* Shipping Info Fields */}
@@ -218,36 +207,10 @@ export function CustomerInfoFields({ form, readOnly = false }: CustomerInfoField
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {[ 
-          { name: "shippingAddress.fullName", label: "Name" },
-          { name: "shippingAddress.email", label: "Email", type: "email" },
-          { name: "shippingAddress.phone", label: "Phone", type: "tel" },
-          { name: "shippingAddress.address.city", label: "City" },
-          { name: "shippingAddress.address.state", label: "State" },
-          { name: "shippingAddress.address.zip_code", label: "Zip Code" },
-        ].map(({ name, label, type }) => (
-          <FormField
-            key={name}
-            control={form.control}
-            name={name}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{label}</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type={type || "text"}
-                    readOnly={readOnly || sameAsCustomer}
-                    className={(readOnly || sameAsCustomer) ? "bg-gray-100" : ""}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        ))}
-        
-        {/* Custom Autocomplete Field for Shipping Address */}
+        {renderField("shippingAddress.fullName", "Name", "text", readOnly || sameAsCustomer)}
+        {renderField("shippingAddress.email", "Email", "email", readOnly || sameAsCustomer)}
+        {renderField("shippingAddress.phone", "Phone", "tel", readOnly || sameAsCustomer)}
+
         <div className="relative col-span-1 md:col-span-2">
           <FormField
             control={form.control}
@@ -258,7 +221,7 @@ export function CustomerInfoFields({ form, readOnly = false }: CustomerInfoField
                 <FormControl>
                   <Input
                     {...field}
-                    onChange={handleShippingAddressChange}
+                    onChange={(e) => handleAddressChange(e, "shipping")}
                     readOnly={readOnly || sameAsCustomer}
                     className={(readOnly || sameAsCustomer) ? "bg-gray-100" : ""}
                     ref={shippingAddressInputRef}
@@ -282,6 +245,10 @@ export function CustomerInfoFields({ form, readOnly = false }: CustomerInfoField
             </ul>
           )}
         </div>
+
+        {renderField("shippingAddress.address.city", "City", "text", readOnly || sameAsCustomer)}
+        {renderField("shippingAddress.address.state", "State", "text", readOnly || sameAsCustomer)}
+        {renderField("shippingAddress.address.zip_code", "Zip Code", "text", readOnly || sameAsCustomer)}
       </div>
     </div>
   )

@@ -619,7 +619,7 @@ export function OrdersList({
             customer={selectCustomerInfo.customerInfo}
             amountP={selectCustomerInfo.total}
             orderId={selectCustomerInfo.id}
-            orders={orders}
+            orders={selectCustomerInfo}
           />
         )}
       </TableBody>

@@ -127,6 +127,16 @@ const PaymentForm = ({
 
       return
     }
+
+    const { data, error } = await supabase
+  .from("invoices")
+  .select("*")
+  .eq("order_id", orderId)
+  .single();
+
+
+  console.log(data)
+  
     const paymentData =
       paymentType === "credit_card"
         ? {
@@ -141,6 +151,7 @@ const PaymentForm = ({
           state: formData.state,
           zip: formData.zip,
           country: formData.country,
+          invoiceNumber:data.invoice_number
         }
         : {
           paymentType,
@@ -154,6 +165,8 @@ const PaymentForm = ({
           state: formData.state,
           zip: formData.zip,
           country: formData.country,
+          invoiceNumber:data.invoice_number
+
         };
 
     try {
@@ -267,8 +280,8 @@ const PaymentForm = ({
         isOpen={modalIsOpen}
         shouldCloseOnOverlayClick={false} // ✅ Yahan false karein
         onRequestClose={() => setModalIsOpen(false)}
-        className="bg-white p-6 rounded-lg shadow-lg w-96 mx-auto mt-20 z-[999999] max-h-[80vh] overflow-y-scroll "
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[99999] pointer-events-auto" // <-- Yaha change karein
+        className="bg-white p-6 rounded-lg shadow-lg w-96 mx-auto mt-20 z-[99] max-h-[80vh] overflow-y-scroll "
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[99] pointer-events-auto" // <-- Yaha change karein
       >
         <button
           onClick={() => setModalIsOpen(false)}

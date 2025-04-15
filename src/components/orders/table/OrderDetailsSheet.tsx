@@ -95,7 +95,7 @@ export const OrderDetailsSheet = ({
     }
   };
   const [loading, setLoading] = useState(false);
-  const[componyName,setComponyName] = useState("")
+  const [componyName, setComponyName] = useState("")
 
 
   const sendMail = async () => {
@@ -116,58 +116,58 @@ export const OrderDetailsSheet = ({
 
 
 
-      const fetchUser = async () => {
-    
-          try {
-         if(!currentOrder || !currentOrder.customer) return
-    
-            const userID = currentOrder.customer
-    
-  
-            const { data, error } = await supabase
-              .from("profiles")
-              .select("company_name")
-              .eq("id", userID)
-              .maybeSingle();
-    
-            if (error) {
-              console.error("🚨 Supabase Fetch Error:", error);
-              return;
-            }
-    
-            if (!data) {
-              console.warn("⚠️ No user found for this email.");
-              return;
-            }
-    
-            console.log("✅ User Data:", data);
-            setComponyName(data.company_name || "")
-  
-          } catch (error) {
-    
-          }
-        };
-  
-  useEffect(()=>{
+  const fetchUser = async () => {
+
+    try {
+      if (!currentOrder || !currentOrder.customer) return
+
+      const userID = currentOrder.customer
+
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("company_name")
+        .eq("id", userID)
+        .maybeSingle();
+
+      if (error) {
+        console.error("🚨 Supabase Fetch Error:", error);
+        return;
+      }
+
+      if (!data) {
+        console.warn("⚠️ No user found for this email.");
+        return;
+      }
+
+      console.log("✅ User Data:", data);
+      setComponyName(data.company_name || "")
+
+    } catch (error) {
+
+    }
+  };
+
+  useEffect(() => {
     fetchUser()
-  },[currentOrder])
+  }, [currentOrder])
 
 
-    const { clearCart } = useCart();
-  
+  const { clearCart } = useCart();
+
   useEffect(() => {
     console.log(isEditing);
-  
+
     const clearCartIfEditing = async () => {
-      if(isEditing) {
+      if (isEditing) {
         console.log("object")
         await clearCart();
       }
     };
-  
+
     clearCartIfEditing();
   }, [isEditing]);
-  
+
 
   if (!currentOrder) return null;
 
@@ -215,31 +215,30 @@ export const OrderDetailsSheet = ({
             {currentOrder.payment_status !== "paid" && (
 
 
-<div>
-<div className="flex gap-3 justify-center items-center min-w-full">
-  <Link to={`/pay-now?orderid=${currentOrder.id}`}
-   
-    className="px-4 py-2 bg-red-600 text-white font-semibold text-sm md:text-base rounded-lg hover:bg-red-700 transition duration-300"
-  >
-    Create Payment Link
-  </Link>
-  <button
-      onClick={sendMail}
-      disabled={loading}
-      className={`px-4 py-2 font-semibold text-sm md:text-base rounded-lg transition duration-300 ${
-        loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700 text-white"
-      }`}
-    >
-      {loading ? "Sending..." : "Send Payment Link"}
-    </button>
-</div>
+              <div>
+                <div className="flex gap-3 justify-center items-center min-w-full">
+                  <Link to={`/pay-now?orderid=${currentOrder.id}`}
 
-<div className="flex w-full mt-2 justify-center">
-  <span className="text-red-700 font-semibold text-sm md:text-base bg-red-200 px-3 py-1 rounded-md">
-    Unpaid
-  </span>
-</div>
-</div>
+                    className="px-4 py-2 bg-red-600 text-white font-semibold text-sm md:text-base rounded-lg hover:bg-red-700 transition duration-300"
+                  >
+                    Create Payment Link
+                  </Link>
+                  <button
+                    onClick={sendMail}
+                    disabled={loading}
+                    className={`px-4 py-2 font-semibold text-sm md:text-base rounded-lg transition duration-300 ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-600 hover:bg-red-700 text-white"
+                      }`}
+                  >
+                    {loading ? "Sending..." : "Send Payment Link"}
+                  </button>
+                </div>
+
+                <div className="flex w-full mt-2 justify-center">
+                  <span className="text-red-700 font-semibold text-sm md:text-base bg-red-200 px-3 py-1 rounded-md">
+                    Unpaid
+                  </span>
+                </div>
+              </div>
 
             )}
 

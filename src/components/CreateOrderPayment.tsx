@@ -96,6 +96,35 @@ const CreateOrderPaymentForm = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    const year = new Date().getFullYear(); // Get current year (e.g., 2025)
+
+
+    const { data: inData, error: erroIn } = await supabase
+      .from("centerize_data")
+      .select("id, invoice_no, invoice_start")
+      .order("id", { ascending: false }) // Get latest order
+      .limit(1);
+
+    if (erroIn) {
+      console.error("🚨 Supabase Fetch Error:", erroIn);
+      return null;
+    }
+
+    let newInvNo = 1; // Default to 1 if no previous order exists
+    let invoiceStart = "INV"; // Default order prefix
+
+
+    if (inData && inData.length > 0) {
+      newInvNo = (inData[0].invoice_no || 0) + 1; // Increment last order number
+      invoiceStart = inData[0].invoice_start || "INV"; // Use existing order_start
+    }
+
+
+    const invoiceNumber = `${invoiceStart}-${year}${newInvNo.toString().padStart(6, "0")}`;
+
+
+
     const paymentData =
       paymentType === "credit_card"
         ? {
@@ -110,6 +139,7 @@ const CreateOrderPaymentForm = ({
           state: formData.state,
           zip: formData.zip,
           country: formData.country,
+          invoiceNumber:invoiceNumber
         }
         : {
           paymentType,
@@ -123,6 +153,8 @@ const CreateOrderPaymentForm = ({
           state: formData.state,
           zip: formData.zip,
           country: formData.country,
+          invoiceNumber:invoiceNumber
+
         };
 
     try {
@@ -156,33 +188,6 @@ const CreateOrderPaymentForm = ({
             return;
           }
 
-          // Check stock availability
-          // for (const item of data.items) {
-          //   const { data: product, error: stockError } = await supabase
-          //     .from("products")
-          //     .select("current_stock")
-          //     .eq("id", item.productId)
-          //     .single();
-
-          //   if (stockError || !product) {
-          //     throw new Error(
-          //       `Could not check stock for product ID: ${item.productId}`
-          //     );
-          //   }
-
-          //   if (product.current_stock < item.quantity) {
-          //     toast({
-          //       title: "Insufficient Stock",
-          //       description: `Product ID: ${item.productId} has only ${product.current_stock} units available.`,
-          //       variant: "destructive",
-          //     });
-          //     console.error(
-          //       "Insufficient stock for product ID:",
-          //       item.productId
-          //     );
-          //     return;
-          //   }
-          // }
 
           // Calculate default estimated delivery date (10 days from today)
           const defaultEstimatedDelivery = new Date();
@@ -234,33 +239,7 @@ const CreateOrderPaymentForm = ({
           console.log("Order saved:", newOrder);
 
 
-          const year = new Date().getFullYear(); // Get current year (e.g., 2025)
-
-
-          const { data: inData, error: erroIn } = await supabase
-            .from("centerize_data")
-            .select("id, invoice_no, invoice_start")
-            .order("id", { ascending: false }) // Get latest order
-            .limit(1);
-
-          if (erroIn) {
-            console.error("🚨 Supabase Fetch Error:", erroIn);
-            return null;
-          }
-
-          let newInvNo = 1; // Default to 1 if no previous order exists
-          let invoiceStart = "INV"; // Default order prefix
-
-
-          if (inData && inData.length > 0) {
-            newInvNo = (inData[0].invoice_no || 0) + 1; // Increment last order number
-            invoiceStart = inData[0].invoice_start || "INV"; // Use existing order_start
-          }
-
-
-          const invoiceNumber = `${invoiceStart}-${year}${newInvNo.toString().padStart(6, "0")}`;
-
-
+   
 
           const { error: updateError } = await supabase
             .from("centerize_data")

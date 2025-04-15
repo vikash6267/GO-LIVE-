@@ -66,7 +66,7 @@ app.post("/pay", async (req, res) => {
 
     // Destructure request body
     const {
-
+      invoiceNumber ,
       amount: rawAmount,
       cardNumber,
       expirationDate,
@@ -105,8 +105,7 @@ app.post("/pay", async (req, res) => {
 
 
 
-    console.log(req.body)
-
+  
     // Validate required fields
     if (!amount) {
       return res.status(400).json({ error: "Amount is required" });
@@ -149,7 +148,7 @@ app.post("/pay", async (req, res) => {
 
     // Create order details
     const orderDetails = new ApiContracts.OrderType();
-    orderDetails.setInvoiceNumber(`INV-${Math.floor(Math.random() * 100000)}`);
+    orderDetails.setInvoiceNumber(invoiceNumber || `INV-${Math.floor(Math.random() * 100000)}`);
     orderDetails.setDescription("Product Description");
 
     // Set billing information

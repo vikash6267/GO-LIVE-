@@ -92,7 +92,7 @@ export function LocationTableRow({
           >
             <Edit className="h-4 w-4" />
           </Button>
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
                 <MoreHorizontal className="h-4 w-4" />
@@ -101,16 +101,16 @@ export function LocationTableRow({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {/* <DropdownMenuItem>View Details</DropdownMenuItem> */}
+              <DropdownMenuItem>View Details</DropdownMenuItem>
               <DropdownMenuItem>Edit Location</DropdownMenuItem>
-              {/* <DropdownMenuItem>Manage Staff</DropdownMenuItem> */}
-              {/* <DropdownMenuItem>View Orders</DropdownMenuItem> */}
+              <DropdownMenuItem>Manage Staff</DropdownMenuItem>
+              <DropdownMenuItem>View Orders</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive">
                 Deactivate Location
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
       </TableCell>
     </TableRow>

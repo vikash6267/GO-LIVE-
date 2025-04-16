@@ -96,8 +96,7 @@ export function CustomerInfoFields({ form, readOnly = false }: CustomerInfoField
       service.getPlacePredictions(
         {
           input: value,
-          componentRestrictions: { country: "in" },
-          types: ["geocode", "establishment"]
+              types: ["geocode", "establishment"]
         },
         (predictions: any[]) => {
           if (addressType === "customer") {

@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { AddPharmacyModal } from "@/components/group/AddPharmacyModal";
 
-export const QuickActions = () => {
+export const QuickActions = ({fetchLocations}) => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [showAddLocation, setShowAddLocation] = useState(false);
@@ -80,7 +80,8 @@ export const QuickActions = () => {
           toast({
             title: "Location Added",
             description: "New pharmacy location has been added successfully.",
-          });
+          }); setShowAddLocation(false);
+          fetchLocations()
         }}
       />
     </>

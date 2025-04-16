@@ -104,6 +104,7 @@ export default function GroupOrder() {
 
   const handlePharmacyChange = async (pharmacyId: string) => {
     setSelectedPharmacy(pharmacyId);
+    setOrderData({})
   console.log("pharmacyId",pharmacyId)
     const selectedPharmacyData = groupInfo.pharmacies.find(
       (p) => p.id === pharmacyId

@@ -1,58 +1,122 @@
+import { useState, useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { DashboardLayout } from "@/components/DashboardLayout";
-import { Card } from "@/components/ui/card";
+import { Form } from "@/components/ui/form";
+import { BusinessProfileSection } from "@/components/settings/BusinessProfileSection";
+import { NotificationSection } from "@/components/settings/NotificationSection";
+import { SecuritySection } from "@/components/settings/SecuritySection";
+import { SettingsFormValues, defaultValues } from "@/components/settings/settingsTypes";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
-export default function GroupSettings() {
+export default function PharmacySettings() {
+  const form = useForm<SettingsFormValues>({ defaultValues });
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [email, setEmail] = useState("")
+  const onSubmit = async (data: SettingsFormValues) => {
+    setIsSubmitting(true);
+    try {
+      console.log("Settings form submitted:", data);
+
+      const { data: session, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session?.session?.user?.id) {
+        throw new Error("No active session found");
+      }
+
+      const userID = session.session.user.id;
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          email_notifaction: data.email_notifications,
+          order_updates: data.order_updates,
+          company_name: data.business_name,
+          notes: data.description,
+        })
+        .eq("id", userID);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      toast({ title: "✅ Settings updated successfully!", variant: "default" });
+    } catch (err: any) {
+      toast({ title: "🚨 Error updating settings!", description: err.message, variant: "destructive" });
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        if (!session?.session) {
+          throw new Error("No active session found");
+        }
+
+        const userID = session.session.user.id;
+        const { data, error } = await supabase
+          .from("profiles")
+          .select()
+          .eq("id", userID)
+          .maybeSingle();
+
+        if (error) {
+          console.error("🚨 Supabase Fetch Error:", error);
+          return;
+        }
+
+        if (!data) return;
+        setEmail(data.email)
+        console.log(data.email)
+        form.setValue("description", data.notes || "");
+        form.setValue("business_name", data.company_name || "");
+        form.setValue("email_notifications", data.email_notifaction || false);
+        form.setValue("order_updates", data.order_updates || false);
+      } catch (error) {
+        console.error("⚠️ Error fetching user:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
     <DashboardLayout role="group">
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Settings</h1>
-          <p className="text-muted-foreground">Manage your group preferences</p>
+          <h2 className="text-3xl font-bold tracking-tight">Settings</h2>
+          <p className="text-muted-foreground">Manage your pharmacy settings and preferences</p>
         </div>
 
-        <Card className="p-6 space-y-6">
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Group Information</h2>
-            <div className="grid gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="groupName">Group Name</Label>
-                <Input id="groupName" defaultValue="My Group" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Contact Email</Label>
-                <Input id="email" type="email" defaultValue="contact@mygroup.com" />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid gap-6">
+              <BusinessProfileSection form={form} />
+              <div className="flex items-center gap-2 text-blue-600 font-medium hover:underline">
+            <ArrowRight className="w-5 h-5" />
+            <Link to={`/update-profile?email=${email}`}>Go to Update Profile</Link>
+          </div>
+              <NotificationSection form={form} />
+              <SecuritySection form={form} />
+              <div className=" flex justify-center w-full">
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-50 w-max text-center"
+                >
+                  {isSubmitting ? "Saving..." : "Submit"}
+                </Button>
               </div>
             </div>
-          </div>
-
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Notifications</h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Order Updates</Label>
-                  <p className="text-sm text-muted-foreground">Receive notifications about order status changes</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label>Inventory Alerts</Label>
-                  <p className="text-sm text-muted-foreground">Get notified about low stock items</p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <Button>Save Changes</Button>
-          </div>
-        </Card>
+          </form>
+        </Form>
       </div>
     </DashboardLayout>
   );

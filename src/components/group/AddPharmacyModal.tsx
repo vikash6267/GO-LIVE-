@@ -122,12 +122,14 @@ const onSubmit = async() => {
         profile_id: userProfile.id,
         name: values.name || "",
         type : "branch",
-        address: values.address,
+        address: values.addressAddress,
         contact_email: values.email || "",
         contact_phone: values.phone || "",
       }
    
 
+      console.log(values)
+      
      const { error: insertError } = await supabase.from("locations").insert(locationData);
 
      if (insertError) {
@@ -148,9 +150,9 @@ const onSubmit = async() => {
     description: `${values.name} has been added to your group successfully`,
   });
 
-  // form.reset();
-  // onPharmacyAdded();
-  // onOpenChange(false);
+  form.reset();
+  onPharmacyAdded();
+  onOpenChange(false);
 };
 
   console.log("hello")

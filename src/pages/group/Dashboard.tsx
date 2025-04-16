@@ -47,49 +47,10 @@ const GroupDashboard = () => {
 
   const [dbLocations,setDbLocations] = useState([])
 
-  const handlePharmacyAdded = () => {
-    // console.log("Pharmacy added successfully");
-  };
+ 
 
-  // Define serializable stats without React elements
-  const stats = [
-    {
-      title: "Total Locations",
-      value: String(dbLocations.length),
-      iconType: "building",
-      change: "+2",
-      trend: "up" as const,
-      description: "from last month",
-      tooltip: "Number of active pharmacy locations",
-    },
-    {
-      title: "Total Staff",
-      value: "156",
-      iconType: "users",
-      change: "+12",
-      trend: "up" as const,
-      description: "new members",
-      tooltip: "Total staff members across all locations",
-    },
-    {
-      title: "Monthly Revenue",
-      value: "$234,567",
-      iconType: "dollar",
-      change: "+8.2%",
-      trend: "up" as const,
-      description: "vs last month",
-      tooltip: "Combined revenue from all locations",
-    },
-    {
-      title: "Growth Rate",
-      value: "12.5%",
-      iconType: "trending",
-      change: "+2.4%",
-      trend: "up" as const,
-      description: "vs last quarter",
-      tooltip: "Overall business growth rate",
-    },
-  ];
+
+  
 
 
 
@@ -141,7 +102,12 @@ const GroupDashboard = () => {
       console.error("Error fetching locations:", error);
     }
   };
-
+  
+  const handlePharmacyAdded = () => {
+    // console.log("Pharmacy added successfully");
+    setIsAddPharmacyOpen(false)
+    fetchLocations()
+  };
 
   useEffect(() => {
   
@@ -197,7 +163,7 @@ const GroupDashboard = () => {
           </Card> */}
 
           <div className="">
-            <QuickActions />
+            <QuickActions fetchLocations={fetchLocations} />
           </div>
         </div>
 

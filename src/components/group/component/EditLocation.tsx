@@ -280,7 +280,7 @@ const EditLocationPopup: React.FC<EditLocationPopupProps> = ({ location, onClose
 
                             <div className="space-y-2">
                                 <Label htmlFor="manager">
-                                    Manager <span className="text-gray-500 text-xs">(Optional)</span>
+                                    Manager <span className="text-gray-500 text-xs"></span>
                                 </Label>
                                 <Controller
                                     name="manager"

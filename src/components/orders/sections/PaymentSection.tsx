@@ -27,9 +27,10 @@ interface PaymentSettings {
   apiLoginId: string;
   transactionKey: string;
   testMode: boolean;
+  poIs?: boolean;
 }
 
-export function PaymentSection({ form }: { form: any }) {
+export function PaymentSection({ form ,}: { form: any }) {
   const { toast } = useToast();
   const paymentMethod = form.watch("payment.method");
   const [isProcessing, setIsProcessing] = useState(false);

@@ -7,7 +7,7 @@ import { useOrderFilters } from "./hooks/useOrderFilters";
 import { useOrderManagement } from "./hooks/useOrderManagement";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Download, Package, PlusCircle } from "lucide-react";
+import { Download, LoaderCircle, Package, PlusCircle } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -250,6 +250,7 @@ export const OrdersContainer = ({
   } = useOrderFilters(orders,poIs);
 
 
+ 
 
   const handlePharmacyChange = async (pharmacyId: string) => {
     setSelectedPharmacy(pharmacyId);
@@ -371,6 +372,24 @@ export const OrdersContainer = ({
   };
 
 
+  const setPharmacy = async()=>{
+    if(poIs){
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        toast({
+          title: "Error",
+          description: "Please log in to view orders",
+          variant: "destructive",
+        });
+        return;
+      }
+      handlePharmacyChange(session.user.id)
+    }
+  }
+
   const handleFormChange = (data: Partial<OrderFormValues>) => {
     setOrderData(data);
   };
@@ -378,9 +397,12 @@ export const OrdersContainer = ({
   useEffect(()=>{
     setSelectedPharmacy("")
     setOrderData(null)
+    setPharmacy()
 
   },[isCreateOrderOpen])
 
+  useEffect(()=>{
+  },[])
   return (
     <div className="space-y-4">
 
@@ -424,7 +446,15 @@ export const OrdersContainer = ({
             </SheetTitle>
           </SheetHeader>
 
-          <div className="mb-4 mt-2">
+
+{
+  !orderData && <div className="flex justify-center items-center h-64">
+  <LoaderCircle className="animate-spin w-8 h-8 text-gray-500" />
+</div>
+}
+
+
+      {!poIs &&    <div className="mb-4 mt-2">
             <Label htmlFor="pharmacy-select">Select Pharmacy</Label>
             <Select
               id="pharmacy-select"
@@ -435,7 +465,7 @@ export const OrdersContainer = ({
               isSearchable
               className="w-full mt-1"
             />
-          </div>
+          </div>}
           {orderData?.customerInfo && (
             <div className="mt-2">
               <CreateOrderForm isEditing={false} initialData={orderData} onFormChange={handleFormChange} poIs={poIs} />
@@ -516,6 +546,7 @@ export const OrdersContainer = ({
           onConfirmOrder={confirmOrder}
           onDeleteOrder={onDeleteOrder}
           userRole={userRole}
+          poIs={poIs}
         />
       )}
     </div>

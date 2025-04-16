@@ -42,7 +42,7 @@ export function CreateOrderForm({
   isEditing,
   use,
   locationId,
-  poIs=false
+  poIs = false
 }: CreateOrderFormProps) {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -178,9 +178,9 @@ export function CreateOrderForm({
         totalShippingCost || 0
       );
 
-      
 
-      const newtax = ((calculatedTotal - totalShippingCost ) * Number(taxper)) / 100;
+
+      const newtax = ((calculatedTotal - totalShippingCost) * Number(taxper)) / 100;
 
 
       if (userProfile?.id == null) {
@@ -193,16 +193,20 @@ export function CreateOrderForm({
         return;
       }
 
-     
+
       const defaultEstimatedDelivery = new Date();
       defaultEstimatedDelivery.setDate(defaultEstimatedDelivery.getDate() + 10);
 
       console.log(pId)
 
-  const orderNumber = poIs
-  ? `PO-${Date.now()}` // e.g., PO-1713096284741
-  : await generateOrderId();
-
+      const generateUniqueOrderNumber = () => {
+        const timestamp = Date.now().toString().slice(-5); // Last 5 digits of time
+        const random = Math.floor(100 + Math.random() * 900); // 3 digit random number
+        return `PO-${timestamp}${random}`; // Total 8 digits after 'PO-'
+      };
+      
+      const orderNumber = poIs ? generateUniqueOrderNumber() : await generateOrderId();
+      
       if (!userProfile?.id) return
       let profileID = userProfile?.id
 
@@ -227,7 +231,7 @@ export function CreateOrderForm({
           data.shipping?.estimatedDelivery ||
           defaultEstimatedDelivery.toISOString(),
         location_id: pId,
-        poAccept:!poIs
+        poAccept: !poIs
       };
 
       console.log(orderData);
@@ -248,157 +252,157 @@ export function CreateOrderForm({
       const newOrder = orderResponse[0];
       console.log("Order saved:", newOrder);
 
-if(!poIs){
-  const year = new Date().getFullYear(); // Get current year (e.g., 2025)
+      if (!poIs) {
+        const year = new Date().getFullYear(); // Get current year (e.g., 2025)
 
 
-  const { data: inData, error: erroIn } = await supabase
-    .from("centerize_data")
-    .select("id, invoice_no, invoice_start")
-    .order("id", { ascending: false }) // Get latest order
-    .limit(1);
+        const { data: inData, error: erroIn } = await supabase
+          .from("centerize_data")
+          .select("id, invoice_no, invoice_start")
+          .order("id", { ascending: false }) // Get latest order
+          .limit(1);
 
-  if (erroIn) {
-    console.error("🚨 Supabase Fetch Error:", erroIn);
-    return null;
-  }
+        if (erroIn) {
+          console.error("🚨 Supabase Fetch Error:", erroIn);
+          return null;
+        }
 
-  let newInvNo = 1; // Default to 1 if no previous order exists
-  let invoiceStart = "INV"; // Default order prefix
-
-
-  if (inData && inData.length > 0) {
-    newInvNo = (inData[0].invoice_no || 0) + 1; // Increment last order number
-    invoiceStart = inData[0].invoice_start || "INV"; // Use existing order_start
-  }
+        let newInvNo = 1; // Default to 1 if no previous order exists
+        let invoiceStart = "INV"; // Default order prefix
 
 
-  const invoiceNumber = `${invoiceStart}-${year}${newInvNo.toString().padStart(6, "0")}`;
+        if (inData && inData.length > 0) {
+          newInvNo = (inData[0].invoice_no || 0) + 1; // Increment last order number
+          invoiceStart = inData[0].invoice_start || "INV"; // Use existing order_start
+        }
 
 
-
-  const { error: updateError } = await supabase
-    .from("centerize_data")
-    .update({ invoice_no: newInvNo }) // Correct update syntax
-    .eq("id", inData[0]?.id); // Update only the latest record
-
-  if (updateError) {
-    console.error("🚨 Supabase Update Error:", updateError);
-  } else {
-    console.log("✅ Order No Updated to:", newInvNo);
-  }
-
-  const estimatedDeliveryDate = new Date(newOrder.estimated_delivery);
-
-  // Calculate the due_date by adding 30 days to the estimated delivery
-  const dueDate = new Date(estimatedDeliveryDate);
-  dueDate.setDate(dueDate.getDate() + 30); // Add 30 days
-
-  // Format the due_date as a string in ISO 8601 format with time zone (UTC in this case)
-  const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00.000Z"
-
-  const invoiceData = {
-    invoice_number: invoiceNumber,
-    order_id: newOrder.id,
-    due_date: formattedDueDate,
-    profile_id: newOrder.profile_id,
-    status: "pending" as InvoiceStatus,
-    amount: parseFloat(calculatedTotal + newtax) || 0,
-    tax_amount: orderData.tax_amount || 0,
-    total_amount: parseFloat(calculatedTotal + newtax),
-    payment_status: newOrder.payment_status,
-    payment_method: newOrder.paymentMethod as PaymentMethod,
-    payment_notes: newOrder.notes || null,
-    items: newOrder.items || [],
-    customer_info: newOrder.customerInfo || {
-      name: newOrder.customerInfo?.name,
-      email: newOrder.customerInfo?.email || "",
-      phone: newOrder.customerInfo?.phone || "",
-    },
-    shipping_info: orderData.shippingAddress || {},
-    shippin_cost:totalShippingCost ,
-    subtotal:
-      calculatedTotal + newtax + (isCus ? 0.5 : 0) ||
-      parseFloat(calculatedTotal + newtax + (isCus ? 0.5 : 0)),
-  };
-
-  console.log("Creating invoice with data:", invoiceData);
-
-  const { invoicedata2, error } = await supabase
-    .from("invoices")
-    .insert(invoiceData)
-    .select()
-    .single();
-
-  if (error) {
-    console.error("Error creating invoice:", error);
-    throw error;
-  }
-
-  console.log("Invoice created successfully:", invoicedata2);
-
-
-  // Prepare and save order items
-  const orderItemsData = data.items.map((item) => ({
-    order_id: newOrder.id,
-    product_id: item.productId,
-    quantity: item.quantity,
-    unit_price: item.price,
-    total_price: item.quantity * item.price,
-    notes: item.notes,
-  }));
-
-  const { error: itemsError } = await supabase
-    .from("order_items")
-    .insert(orderItemsData);
-
-  if (itemsError) {
-    throw new Error(itemsError.message);
-  }
-
-  // console.log("Order items saved:", orderItemsData);
-
-  
-  // Update product stock
-  for (const item of data.items) {
-    // console.log("Updating stock for quantity ID:", item.quantity);
-    const { error: stockUpdateError } = await supabase.rpc(
-      "decrement_stock",
-      { product_id: item.productId, quantity: item.quantity }
-    );
-    // console.log("stockUpdateError", stockUpdateError);
-    if (stockUpdateError) {
-      throw new Error(
-        `Failed to update stock for product ID: ${item.productId}`
-      );
-    }
-  }
-
-  console.log("Stock updated successfully");
+        const invoiceNumber = `${invoiceStart}-${year}${newInvNo.toString().padStart(6, "0")}`;
 
 
 
+        const { error: updateError } = await supabase
+          .from("centerize_data")
+          .update({ invoice_no: newInvNo }) // Correct update syntax
+          .eq("id", inData[0]?.id); // Update only the latest record
+
+        if (updateError) {
+          console.error("🚨 Supabase Update Error:", updateError);
+        } else {
+          console.log("✅ Order No Updated to:", newInvNo);
+        }
+
+        const estimatedDeliveryDate = new Date(newOrder.estimated_delivery);
+
+        // Calculate the due_date by adding 30 days to the estimated delivery
+        const dueDate = new Date(estimatedDeliveryDate);
+        dueDate.setDate(dueDate.getDate() + 30); // Add 30 days
+
+        // Format the due_date as a string in ISO 8601 format with time zone (UTC in this case)
+        const formattedDueDate = dueDate.toISOString(); // Example: "2025-04-04T13:45:00.000Z"
+
+        const invoiceData = {
+          invoice_number: invoiceNumber,
+          order_id: newOrder.id,
+          due_date: formattedDueDate,
+          profile_id: newOrder.profile_id,
+          status: "pending" as InvoiceStatus,
+          amount: parseFloat(calculatedTotal + newtax) || 0,
+          tax_amount: orderData.tax_amount || 0,
+          total_amount: parseFloat(calculatedTotal + newtax),
+          payment_status: newOrder.payment_status,
+          payment_method: newOrder.paymentMethod as PaymentMethod,
+          payment_notes: newOrder.notes || null,
+          items: newOrder.items || [],
+          customer_info: newOrder.customerInfo || {
+            name: newOrder.customerInfo?.name,
+            email: newOrder.customerInfo?.email || "",
+            phone: newOrder.customerInfo?.phone || "",
+          },
+          shipping_info: orderData.shippingAddress || {},
+          shippin_cost: totalShippingCost,
+          subtotal:
+            calculatedTotal + newtax + (isCus ? 0.5 : 0) ||
+            parseFloat(calculatedTotal + newtax + (isCus ? 0.5 : 0)),
+        };
+
+        console.log("Creating invoice with data:", invoiceData);
+
+        const { invoicedata2, error } = await supabase
+          .from("invoices")
+          .insert(invoiceData)
+          .select()
+          .single();
+
+        if (error) {
+          console.error("Error creating invoice:", error);
+          throw error;
+        }
+
+        console.log("Invoice created successfully:", invoicedata2);
 
 
-  const { data: orderResponse2, error: orderError2 } = await supabase
-  .from("orders")
-  .select()
-  .eq("id",newOrder.id);
+        // Prepare and save order items
+        const orderItemsData = data.items.map((item) => ({
+          order_id: newOrder.id,
+          product_id: item.productId,
+          quantity: item.quantity,
+          unit_price: item.price,
+          total_price: item.quantity * item.price,
+          notes: item.notes,
+        }));
 
-if (orderError2) {
-  console.error("Order creation error:", orderError2);
-  throw new Error(orderError2.message);
-}
+        const { error: itemsError } = await supabase
+          .from("order_items")
+          .insert(orderItemsData);
+
+        if (itemsError) {
+          throw new Error(itemsError.message);
+        }
+
+        // console.log("Order items saved:", orderItemsData);
 
 
-  try {
-    await axios.post("/order-place", newOrder);
-    console.log("Order status sent successfully to backend.");
-  } catch (apiError) {
-    console.error("Failed to send order status to backend:", apiError);
-  }
+        // Update product stock
+        for (const item of data.items) {
+          // console.log("Updating stock for quantity ID:", item.quantity);
+          const { error: stockUpdateError } = await supabase.rpc(
+            "decrement_stock",
+            { product_id: item.productId, quantity: item.quantity }
+          );
+          // console.log("stockUpdateError", stockUpdateError);
+          if (stockUpdateError) {
+            throw new Error(
+              `Failed to update stock for product ID: ${item.productId}`
+            );
+          }
+        }
 
-}
+        console.log("Stock updated successfully");
+
+
+
+
+
+        const { data: orderResponse2, error: orderError2 } = await supabase
+          .from("orders")
+          .select()
+          .eq("id", newOrder.id);
+
+        if (orderError2) {
+          console.error("Order creation error:", orderError2);
+          throw new Error(orderError2.message);
+        }
+
+
+        try {
+          await axios.post("/order-place", newOrder);
+          console.log("Order status sent successfully to backend.");
+        } catch (apiError) {
+          console.error("Failed to send order status to backend:", apiError);
+        }
+
+      }
 
       // Reset form and local state
       // localStorage.removeItem("cart");
@@ -408,7 +412,7 @@ if (orderError2) {
         description: `Order ID: ${newOrder.id} has been created.`,
       });
 
-      
+
       form.reset();
       // setOrderItems([{ id: 1 }]);
 
@@ -429,7 +433,7 @@ if (orderError2) {
           navigate("/admin/orders", { state: { createOrder: false } });
         }
       }
-      
+
 
       await clearCart();
     } catch (error) {
@@ -470,7 +474,7 @@ if (orderError2) {
 
           <div className="">
 
-            {userTypeRole === "admin" && <div className="flex justify-end w-full">
+            {userTypeRole === "admin" && <div className="flex justify-end w-full gap-5">
               <p
                 onClick={(e) => {
                   e.preventDefault(); // Form submit hone se rokne ke liye
@@ -480,19 +484,19 @@ if (orderError2) {
               >
                 {isPriceChange ? "Close Edit Price" : "Edit Price"}
               </p>
-           
-              <div>
-              <p onClick={() => setIsCustom(true)} className="p-2 bg-blue-600 text-white rounded">
-                Add Items 
-              </p>
 
-              <CustomProductForm isOpen={isCustom} onClose={() => setIsCustom(false)} isEditing={isEditing} form={form} />
-            </div>
-            
+              <div>
+                <p onClick={() => setIsCustom(true)} className="p-2 cursor-pointer bg-blue-600 text-white rounded">
+                  Add Items
+                </p>
+
+                <CustomProductForm isOpen={isCustom} onClose={() => setIsCustom(false)} isEditing={isEditing} form={form} />
+              </div>
+
             </div>}
 
-         
-           
+
+
             {
               isPriceChange && <CartItemsPricing />
             }
@@ -507,7 +511,7 @@ if (orderError2) {
           </div>
           <ShippingSection form={form} />
 
-          <PaymentSection form={form} />
+          {!poIs && <PaymentSection form={form} />}
 
           <OrderFormActions
             orderData={form.getValues()}

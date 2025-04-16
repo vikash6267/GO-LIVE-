@@ -74,6 +74,8 @@ console.log(data)
           payment_status: order.payment_status || "unpaid",
           customization: order.customization || false,
           poAccept:order.poAccept,
+          shipping_cost:order.shipping_cost,
+          tax_amount:order.tax_amount,
           customerInfo: order.customerInfo ||  {
             name:
               profileData.first_name && profileData.last_name

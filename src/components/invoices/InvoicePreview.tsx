@@ -117,6 +117,7 @@ export function InvoicePreview({ invoice }: InvoicePreviewProps) {
   useEffect(() => {
     fetchUser()
   }, [invoice])
+  
   const formattedDate = new Date(invoice.created_at).toLocaleDateString("en-US", {
     year: "numeric",
     month: "2-digit",

@@ -5,7 +5,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Edit, CreditCard } from "lucide-react";
+import { Edit, CreditCard, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CreateOrderForm } from "../CreateOrderForm";
 import { OrderFormValues } from "../schemas/orderSchema";
@@ -554,9 +554,18 @@ export const OrderDetailsSheet = ({
 
 
 
-        <button onClick={handleDownloadPDF}>DOWNLOAD</button>
+{poIs && (
+  <div className="flex w-full justify-end mt-6">
 
-
+<button
+    onClick={handleDownloadPDF}
+    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow hover:shadow-lg transition duration-300"
+  >
+    <Download size={18} />
+    Download PDF
+  </button>
+  </div>
+)}
 
 
 

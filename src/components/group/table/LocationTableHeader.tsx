@@ -21,7 +21,7 @@ export function LocationTableHeader() {
         <TableHead className="bg-white">
           <div className="flex items-center gap-2">
             <User className="h-4 w-4" />
-            Manager
+            Details
           </div>
         </TableHead>
         {/* <TableHead className="bg-white">

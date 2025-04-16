@@ -372,63 +372,7 @@ const Expenses = () => {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="border-l-4 border-l-emerald-500">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  Current Month
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-baseline">
-                  <DollarSign className="h-5 w-5 text-emerald-500 mr-1" />
-                  <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {currentMonthTotal.toLocaleString()}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  {currentMonthExpenses.length} expenses this month
-                </p>
-              </CardContent>
-            </Card>
-            
-            {/* <Card className="border-l-4 border-l-purple-500">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  Month over Month
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-baseline">
-                  <span className={`text-3xl font-bold ${monthOverMonthChange > 0 ? 'text-red-500' : 'text-green-500'}`}>
-                    {monthOverMonthChange > 0 ? '+' : ''}{monthOverMonthChange.toFixed(1)}%
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  Compared to last month (${previousMonthTotal.toLocaleString()})
-                </p>
-              </CardContent>
-            </Card> */}
-            
-            <Card className="border-l-4 border-l-blue-500">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  Total Expenses
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-baseline">
-                  <DollarSign className="h-5 w-5 text-blue-500 mr-1" />
-                  <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {expenses.reduce((sum, expense) => sum + Number(expense.amount), 0).toLocaleString()}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-500 mt-1">
-                  {expenses.length} total expenses recorded
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+     
 
           <Tabs defaultValue="list" className="w-full">
             <TabsList className="grid grid-cols-2 mb-6 w-full max-w-md mx-auto">
@@ -466,12 +410,14 @@ const Expenses = () => {
                           date={startDate} 
                           setDate={(date) => handleDateChange(date, 'start')} 
                         />
-                      </div>
-                      <span className="text-gray-500 text-sm">to</span>
-                      <DatePicker 
+                        to
+                         <DatePicker 
                         date={endDate} 
                         setDate={(date) => handleDateChange(date, 'end')} 
                       />
+                      </div>
+                      
+                     
                     </div>
 
                     {/* View Controls */}

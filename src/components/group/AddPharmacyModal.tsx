@@ -180,9 +180,9 @@ const onSubmit = async() => {
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[calc(90vh-8rem)] px-6">
+        <ScrollArea className="max-h-[calc(90vh-8rem)] px">
           <Form {...form}>
-            <form  className="space-y-4">
+            <form  className="space-y-4 p-2">
               <FormField
                 control={form.control}
                 name="name"

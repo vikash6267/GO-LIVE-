@@ -79,13 +79,13 @@ export function DashboardLayout({
           // { icon: ClipboardList, label: "Reports", path: "/group/reports" },
         ],
       },
-      {
-        label: "Location Management",
-        items: [
-          { icon: Building2, label: "Locations", path: "/group/locations" },
-          // { icon: UserCog, label: "Location Staff", path: "/group/staff" },
-        ],
-      },
+      // {
+      //   label: "Location Management",
+      //   items: [
+      //     { icon: Building2, label: "Locations", path: "/group/locations" },
+      //     // { icon: UserCog, label: "Location Staff", path: "/group/staff" },
+      //   ],
+      // },
       {
         label: "Orders & Products",
         items: [

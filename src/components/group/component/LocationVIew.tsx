@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { Building2, Mail, Phone, MapPin, Package, Globe, Printer, X, ExternalLink } from "lucide-react"
+import { Building2, Mail, Phone, MapPin, Package, Globe, Printer, X,AlertTriangle , ExternalLink } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -19,6 +19,7 @@ interface Location {
   ordersThisMonth: number
   status: string
   type: string
+  attention: string
 }
 
 interface LocationPopupProps {
@@ -28,7 +29,7 @@ interface LocationPopupProps {
 
 const LocationPopup: React.FC<LocationPopupProps> = ({ location, onClose }) => {
   if (!location) return null
-
+console.log(location)
   // Function to determine status badge color
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -58,9 +59,9 @@ const LocationPopup: React.FC<LocationPopupProps> = ({ location, onClose }) => {
             <div>
               <div className="flex items-center gap-2">
                 <CardTitle className="text-xl font-bold">{location.name}</CardTitle>
-                <Badge variant="outline" className={getStatusColor(location.status)}>
+                {/* <Badge variant="outline" className={getStatusColor(location.status)}>
                   {location.status}
-                </Badge>
+                </Badge> */}
               </div>
               <CardDescription className="flex items-center gap-1 mt-1">
                 <Building2 className="h-3.5 w-3.5" />
@@ -97,64 +98,59 @@ const LocationPopup: React.FC<LocationPopupProps> = ({ location, onClose }) => {
           </div>
 
           <Separator />
+          
+          <div className="space-y-6 bg-white p-4 text-black rounded-md">
+  <h3 className="text-base font-semibold">Contact Information</h3>
 
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-muted-foreground">Contact Information</h3>
+  {location.attention && (
+    <div className="flex items-start gap-3">
+      <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5" />
+      <p className="text-sm">
+        <span className="font-medium">Attention:</span> {location.attention}
+      </p>
+    </div>
+  )}
 
-            <div className="grid grid-cols-1  gap-4">
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">Email</p>
-                  <a href={`mailto:${location.contact_email}`} className="text-sm text-blue-600 hover:underline">
-                    {location.contact_email}
-                  </a>
-                </div>
-              </div>
+  <div className="flex items-start gap-3">
+    <Mail className="h-5 w-5 text-gray-700 mt-0.5" />
+    <div>
+      <p className="text-sm font-medium">Email</p>
+      <a
+        href={`mailto:${location.contact_email}`}
+        className="text-sm text-blue-600 hover:underline"
+      >
+        {location.contact_email}
+      </a>
+    </div>
+  </div>
 
-              <div className="flex items-center gap-3">
-                <Phone className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <p className="font-medium">Phone</p>
-                  <a href={`tel:${location.contact_phone}`} className="text-sm text-blue-600 hover:underline">
-                    {location.contact_phone}
-                  </a>
-                </div>
-              </div>
+  <div className="flex items-start gap-3">
+    <Phone className="h-5 w-5 text-gray-700 mt-0.5" />
+    <div>
+      <p className="text-sm font-medium">Phone</p>
+      <a
+        href={`tel:${location.contact_phone}`}
+        className="text-sm text-blue-600 hover:underline"
+      >
+        {location.contact_phone}
+      </a>
+    </div>
+  </div>
 
-              {/* {location.faxNumber && (
-                <div className="flex items-center gap-3">
-                  <Printer className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="font-medium">Fax</p>
-                    <p className="text-sm text-muted-foreground">{location.faxNumber}</p>
-                  </div>
-                </div>
-              )} */}
-            </div>
-          </div>
+  {location.faxNumber && (
+    <div className="flex items-start gap-3">
+      <Printer className="h-5 w-5 text-gray-700 mt-0.5" />
+      <div>
+        <p className="text-sm font-medium">Fax</p>
+        <p className="text-sm text-gray-700">{location.faxNumber}</p>
+      </div>
+    </div>
+  )}
+</div>
 
           <Separator />
 
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-muted-foreground">Performance</h3>
-
-            <div className="flex items-center gap-3">
-              <Package className="h-5 w-5 text-muted-foreground" />
-              <div className="w-full">
-                <div className="flex justify-between">
-                  <p className="font-medium">Orders This Month</p>
-                  <p className="font-semibold">{location.ordersThisMonth}</p>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                  <div
-                    className="bg-blue-600 h-2.5 rounded-full"
-                    style={{ width: `${Math.min(100, (location.ordersThisMonth / 100) * 100)}%` }}
-                  ></div>
-                </div>
-              </div>
-            </div>
-          </div>
+      
         </CardContent>
 
         <CardFooter className="flex justify-between border-t p-4">

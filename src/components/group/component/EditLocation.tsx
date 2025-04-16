@@ -29,7 +29,7 @@ const locationSchema = z.object({
 
         phone: z.string().optional(),
     }),
-    manager: z.string().optional(),
+   
 });
 
 interface Address {
@@ -51,7 +51,7 @@ interface Location {
     contact_email: string;
     contact_phone: string;
     address: Address;
-    manager: string;
+
 }
 
 interface EditLocationPopupProps {
@@ -97,7 +97,6 @@ const EditLocationPopup: React.FC<EditLocationPopupProps> = ({ location, onClose
             contact_phone: data.contact_phone,
             name: data.name,
             type: data.type,
-            manager: data.manager
         };
 
         try {
@@ -279,6 +278,20 @@ const EditLocationPopup: React.FC<EditLocationPopupProps> = ({ location, onClose
                             </div>
 
                             <div className="space-y-2">
+                                    <Label htmlFor="attention">
+                                        Attention
+                                    </Label>
+                                    <Controller
+                                        name="address.attention"
+                                        control={control}
+                                        render={({ field }) => (
+                                            <Input id="attention" {...field} />
+                                        )}
+                                    />
+                                </div>
+
+{/* 
+                            <div className="space-y-2">
                                 <Label htmlFor="manager">
                                     Manager <span className="text-gray-500 text-xs"></span>
                                 </Label>
@@ -290,14 +303,12 @@ const EditLocationPopup: React.FC<EditLocationPopupProps> = ({ location, onClose
                                             id="manager"
                                             type="text"
                                             {...field}
-                                            className={errors.manager ? "border-red-500" : ""}
+                                            
                                         />
                                     )}
                                 />
-                                {errors.contact_email && (
-                                    <p className="text-red-500 text-sm">{errors.contact_email.message}</p>
-                                )}
-                            </div>
+                            
+                            </div> */}
                         </div>
 
                         <div className="space-y-4">
@@ -405,28 +416,13 @@ const EditLocationPopup: React.FC<EditLocationPopupProps> = ({ location, onClose
 
                                 <div className="space-y-2">
                                     <Label htmlFor="phone">
-                                        Address Phone
+                                         Phone
                                     </Label>
                                     <Controller
                                         name="address.phone"
                                         control={control}
                                         render={({ field }) => (
                                             <Input id="phone" {...field} />
-                                        )}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="attention">
-                                        Attention
-                                    </Label>
-                                    <Controller
-                                        name="address.attention"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input id="attention" {...field} />
                                         )}
                                     />
                                 </div>
@@ -444,6 +440,8 @@ const EditLocationPopup: React.FC<EditLocationPopupProps> = ({ location, onClose
                                     />
                                 </div>
                             </div>
+
+                        
                         </div>
                     </CardContent>
 

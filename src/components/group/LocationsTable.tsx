@@ -114,7 +114,7 @@ const handleSubmit = async () => {
 
   const handleExport = () => {
     const csvContent = [
-      ["Name", "Address", "Status", "Manager", , "Last Active"].join(","),
+      ["Name", "Address", "Status", "Details", , "Last Active"].join(","),
       ...filteredLocations.map(location => [
         location.name,
         location.address,
@@ -165,7 +165,7 @@ const handleSubmit = async () => {
           />
         </div>
         <div className="flex gap-2">
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
+          {/* <Select value={filterStatus} onValueChange={setFilterStatus}>
             <SelectTrigger className="w-[180px]">
               <Filter className="w-4 h-4 mr-2" />
               <SelectValue placeholder="Filter by status" />
@@ -195,7 +195,7 @@ const handleSubmit = async () => {
             className="px-3"
           >
             <ArrowUpDown className="h-4 w-4" />
-          </Button>
+          </Button> */}
           <Button
             variant="outline"
             onClick={handleExport}

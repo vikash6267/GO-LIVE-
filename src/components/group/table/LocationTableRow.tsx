@@ -57,7 +57,7 @@ export function LocationTableRow({
       </TableCell> */}
       <TableCell>
         <div className="flex flex-col gap-1">
-          <span>{location.manager}</span>
+          
           {location.contact_phone && (
             <div className="flex items-center gap-1 text-sm text-muted-foreground">
               <Phone className="h-3 w-3" />
@@ -101,9 +101,9 @@ export function LocationTableRow({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>View Details</DropdownMenuItem>
+              {/* <DropdownMenuItem>View Details</DropdownMenuItem> */}
               <DropdownMenuItem>Edit Location</DropdownMenuItem>
-              <DropdownMenuItem>Manage Staff</DropdownMenuItem>
+              {/* <DropdownMenuItem>Manage Staff</DropdownMenuItem> */}
               {/* <DropdownMenuItem>View Orders</DropdownMenuItem> */}
               <DropdownMenuSeparator />
               <DropdownMenuItem className="text-destructive">

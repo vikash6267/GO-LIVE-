@@ -198,7 +198,7 @@ export default function GroupOrder() {
         </div>
 
         <Card className="p-6">
-          <div className=" flex items-center">
+          <div className=" flex items-center gap-5">
           <div className="mb-6">
             <Label htmlFor="pharmacy-select">Select Pharmacy</Label>
             <Select

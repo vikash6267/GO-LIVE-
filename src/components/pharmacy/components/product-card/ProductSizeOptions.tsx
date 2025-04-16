@@ -91,11 +91,11 @@ export const ProductSizeOptions = ({
 
                     {/* Pricing */}
                     <div className="flex items-center space-x-3">
-                      {size.originalPrice > 0 && (
+                      {/* {size.originalPrice > 0 && (
                         <p className="text-lg font-medium text-red-500 line-through">
                           ${formatPrice(size.originalPrice)}
                         </p>
-                      )}
+                      )} */}
                       <p className="text-xl font-bold text-green-700">${formatPrice(totalPrice)}</p>
                     </div>
                   </div>

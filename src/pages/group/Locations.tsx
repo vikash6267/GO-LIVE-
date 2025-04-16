@@ -7,6 +7,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSelector } from "react-redux";
 import { selectUserProfile } from "@/store/selectors/userSelectors";
 import { fetchCustomerLocation } from "./Dashboard";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+import { AddPharmacyModal } from "@/components/group/AddPharmacyModal";
 
 // Sample data for demonstration
 const sampleLocations: Location[] = [
@@ -37,6 +40,7 @@ const sampleLocations: Location[] = [
 export default function Locations() {
   const [currentPage, setCurrentPage] = useState(1);
   const userProfile = useSelector(selectUserProfile);
+  const [isAddPharmacyOpen, setIsAddPharmacyOpen] = useState(false);
   
   const [dbLocations,setDbLocations] = useState([])
   
@@ -95,18 +99,55 @@ export default function Locations() {
     fetchLocations();
   }, [userProfile]);
   
+
+  const handlePharmacyAdded = () => {
+    // console.log("Pharmacy added successfully");
+    setIsAddPharmacyOpen(false)
+    fetchLocations()
+  };
+
+
   return (
     <DashboardLayout role="group">
-      <div className="space-y-6">
-        <LocationMap locations={dbLocations} />
-        <LocationsTable
-          locations={dbLocations}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          fetchLocations={fetchLocations}
-        />
+      <div className="p-4 md:p-6 space-y-6 max-w-screen-2xl mx-auto">
+  
+        {/* Header */}
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-800">Manage Locations</h1>
+            <p className="text-sm text-gray-500">View, add, and manage all your pharmacy locations.</p>
+          </div>
+          <Button
+            onClick={() => setIsAddPharmacyOpen(true)}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+          >
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Add Location
+          </Button>
+        </div>
+  
+   
+  
+        {/* Table Section */}
+        <div className="bg-white rounded-lg shadow border border-gray-200">
+          <LocationsTable
+            locations={dbLocations}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            fetchLocations={fetchLocations}
+          />
+        </div>
       </div>
+  
+      {/* Modal */}
+      <AddPharmacyModal
+        open={isAddPharmacyOpen}
+        onOpenChange={setIsAddPharmacyOpen}
+        onPharmacyAdded={handlePharmacyAdded}
+      />
     </DashboardLayout>
   );
+  
+  
 }

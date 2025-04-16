@@ -205,6 +205,13 @@ function App() {
           <GroupOrder />
         </ProtectedRoute>
       } />
+
+
+<Route path="/group/invoices" element={
+        <ProtectedRoute allowedRoles={['group']}>
+          <PharmacyInvoices />
+        </ProtectedRoute>
+      } />
       <Route path="/group/orders" element={
         <ProtectedRoute allowedRoles={['group']}>
           <GroupOrders />

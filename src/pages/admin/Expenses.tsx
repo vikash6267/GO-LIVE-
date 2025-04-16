@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlusCircle, Calendar, Search, Trash2, Banknote, ArrowDownUp, Filter } from 'lucide-react';
+import { PlusCircle, Calendar, Search, Trash2, Banknote, ArrowDownUp, Filter, Download, DollarSign, Receipt, BarChart3, PieChart, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,6 +27,36 @@ import { format, startOfMonth, endOfMonth, parseISO, isValid } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import DashboardLayout from '@/components/DashboardLayout';
+import { CSVLink } from "react-csv";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+
 export interface Expense {
   id: string;
   name: string;
@@ -36,7 +65,6 @@ export interface Expense {
   date: string;
   created_at: string;
 }
-import { CSVLink } from "react-csv";
 
 // Get all expenses
 export const getAllExpenses = async (): Promise<Expense[]> => {
@@ -93,9 +121,6 @@ export const deleteExpense = async (id: string): Promise<void> => {
   }
 };
 
-
-
-
 const mapToExpenses = (data: any[]): any[] => {
   if (!Array.isArray(data)) {
     console.error('Expected array for expenses mapping, got:', data);
@@ -126,6 +151,7 @@ const Expenses = () => {
   const [startDate, setStartDate] = useState<Date | undefined>(startOfMonth(new Date()));
   const [endDate, setEndDate] = useState<Date | undefined>(endOfMonth(new Date()));
   const [viewMode, setViewMode] = useState<'daily' | 'monthly'>('daily');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -143,7 +169,7 @@ const Expenses = () => {
     try {
       setLoading(true);
       const allExpenses = await getAllExpenses();
-      console.log(allExpenses)
+      console.log(allExpenses);
       // Map to properly typed expenses
       const typedExpenses = mapToExpenses(allExpenses);
       setExpenses(typedExpenses);
@@ -158,6 +184,10 @@ const Expenses = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
 
   const handleAddExpense = async () => {
     if (!newExpense.name) {
@@ -233,26 +263,37 @@ const Expenses = () => {
     }
   };
 
-  const filteredExpenses = expenses.filter(expense => {
-    const matchesSearch = expense.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (expense.description && expense.description.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredExpenses = expenses
+    .filter(expense => {
+      const matchesSearch = expense.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (expense.description && expense.description.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    if (!matchesSearch) return false;
+      if (!matchesSearch) return false;
 
-    if (startDate || endDate) {
-      const expenseDate = parseISO(expense.date);
-      if (!isValid(expenseDate)) return false;
+      if (startDate || endDate) {
+        const expenseDate = parseISO(expense.date);
+        if (!isValid(expenseDate)) return false;
 
-      if (startDate && expenseDate < startDate) return false;
-      if (endDate) {
-        const endOfDay = new Date(endDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        if (expenseDate > endOfDay) return false;
+        if (startDate && expenseDate < startDate) return false;
+        if (endDate) {
+          const endOfDay = new Date(endDate);
+          endOfDay.setHours(23, 59, 59, 999);
+          if (expenseDate > endOfDay) return false;
+        }
       }
-    }
 
-    return true;
-  });
+      return true;
+    })
+    .sort((a, b) => {
+      const dateA = parseISO(a.date);
+      const dateB = parseISO(b.date);
+      
+      if (sortOrder === 'asc') {
+        return dateA.getTime() - dateB.getTime();
+      } else {
+        return dateB.getTime() - dateA.getTime();
+      }
+    });
 
   const totalFilteredExpenses = filteredExpenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
 
@@ -276,229 +317,462 @@ const Expenses = () => {
     return groups;
   }, {} as Record<string, { expenses: Expense[], total: number }>);
 
+  // Calculate statistics
+  const currentMonthExpenses = expenses.filter(expense => {
+    const expenseDate = parseISO(expense.date);
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    return isValid(expenseDate) && 
+           expenseDate.getMonth() === currentMonth && 
+           expenseDate.getFullYear() === currentYear;
+  });
+
+  const currentMonthTotal = currentMonthExpenses.reduce(
+    (sum, expense) => sum + Number(expense.amount), 0
+  );
+
+  const previousMonthExpenses = expenses.filter(expense => {
+    const expenseDate = parseISO(expense.date);
+    const now = new Date();
+    const previousMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+    const previousMonthYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+    return isValid(expenseDate) && 
+           expenseDate.getMonth() === previousMonth && 
+           expenseDate.getFullYear() === previousMonthYear;
+  });
+
+  const previousMonthTotal = previousMonthExpenses.reduce(
+    (sum, expense) => sum + Number(expense.amount), 0
+  );
+
+  const monthOverMonthChange = previousMonthTotal === 0 
+    ? 100 
+    : ((currentMonthTotal - previousMonthTotal) / previousMonthTotal) * 100;
+
   return (
-
     <DashboardLayout role="admin">
-
-
       <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8  pb-12">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 pt-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Expenses</h1>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Expense Tracker</h1>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                Manage and track your business expenses
+                Manage and track your business expenses efficiently
               </p>
             </div>
             <div className="mt-4 md:mt-0 flex space-x-3">
               <Button
-                variant='secondary'
                 onClick={() => setShowAddExpense(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
               >
-                <PlusCircle className="mr-2 h-4 w-4 text-white" />
+                <PlusCircle className="mr-2 h-4 w-4" />
                 Add Expense
               </Button>
             </div>
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-              <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                  {/* Search Input */}
-                  <div className="col-span-1 flex items-center relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <Input
-                      type="text"
-                      placeholder="Search..."
-                      className="pl-10 py-1.5 border-gray-300 focus:border-blue-500 focus:ring-blue-500 text-sm rounded-md w-full"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
-
-                  {/* Date Pickers */}
-                  <div className="flex items-center justify-start space-x-2 flex-wrap">
-                    <DatePicker date={startDate} setDate={(date) => handleDateChange(date, 'start')} />
-                    <span className="text-gray-500 text-sm text-center w-full">to</span>
-                    <DatePicker date={endDate} setDate={(date) => handleDateChange(date, 'end')} />
-                  </div>
-
-                  {/* View Mode Buttons */}
-                  <div className="flex space-x-2 flex-wrap">
-                    <Button
-                      variant={viewMode === 'daily' ? 'default' : 'outline'}
-                      onClick={() => setViewMode('daily')}
-                      className={`py-1.5 text-xs font-semibold flex-1 ${viewMode === 'daily' ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'text-blue-600'
-                        }`}
-                    >
-                      Daily
-                    </Button>
-                    <Button
-                      variant={viewMode === 'monthly' ? 'default' : 'outline'}
-                      onClick={() => setViewMode('monthly')}
-                      className={`py-1.5 text-xs font-semibold flex-1 ${viewMode === 'monthly' ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'text-blue-600'
-                        }`}
-                    >
-                      Monthly
-                    </Button>
-                  </div>
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card className="border-l-4 border-l-emerald-500">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Current Month
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-baseline">
+                  <DollarSign className="h-5 w-5 text-emerald-500 mr-1" />
+                  <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {currentMonthTotal.toLocaleString()}
+                  </span>
                 </div>
-
-              </div>
-
-
-              {loading ? (
-                <div className="p-8 text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                  <p className="mt-4 text-gray-600 dark:text-gray-400">Loading expenses...</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {currentMonthExpenses.length} expenses this month
+                </p>
+              </CardContent>
+            </Card>
+            
+            {/* <Card className="border-l-4 border-l-purple-500">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Month over Month
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-baseline">
+                  <span className={`text-3xl font-bold ${monthOverMonthChange > 0 ? 'text-red-500' : 'text-green-500'}`}>
+                    {monthOverMonthChange > 0 ? '+' : ''}{monthOverMonthChange.toFixed(1)}%
+                  </span>
                 </div>
-              ) : (
-                <>
-                  {viewMode === 'daily' ? (
-                    <div className="overflow-x-scroll ">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-gray-50 dark:bg-gray-800">
-                            <TableHead className="font-semibold">Name</TableHead>
-                            <TableHead className="font-semibold">Amount</TableHead>
-                            <TableHead className="font-semibold">Date</TableHead>
-                            <TableHead className="font-semibold">Description</TableHead>
-                            <TableHead className="w-20 text-right">Actions</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {filteredExpenses.length === 0 ? (
-                            <TableRow>
-                              <TableCell colSpan={5} className="text-center py-8 text-gray-500">
-                                No expenses found for the selected period
-                              </TableCell>
-                            </TableRow>
-                          ) : (
-                            filteredExpenses.map((expense) => (
-                              <TableRow key={expense.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                <TableCell className="font-medium">{expense.name}</TableCell>
-                                <TableCell className="text-blue-600 dark:text-blue-400 font-medium">${parseFloat(expense.amount as any).toLocaleString()}</TableCell>
-                                <TableCell>
-                                  {isValid(parseISO(expense.date)) ?
-                                    format(parseISO(expense.date), 'dd MMM yyyy') :
-                                    'Invalid date'}
-                                </TableCell>
-                                <TableCell className="text-gray-600 dark:text-gray-400">{expense.description || '-'}</TableCell>
-                                <TableCell className="text-right">
-                                  <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    onClick={() => handleDeleteExpense(expense.id)}
-                                    className="hover:bg-red-600"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </TableCell>
-                              </TableRow>
-                            ))
-                          )}
-                        </TableBody>
-                      </Table>
+                <p className="text-xs text-gray-500 mt-1">
+                  Compared to last month (${previousMonthTotal.toLocaleString()})
+                </p>
+              </CardContent>
+            </Card> */}
+            
+            <Card className="border-l-4 border-l-blue-500">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Total Expenses
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-baseline">
+                  <DollarSign className="h-5 w-5 text-blue-500 mr-1" />
+                  <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {expenses.reduce((sum, expense) => sum + Number(expense.amount), 0).toLocaleString()}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {expenses.length} total expenses recorded
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Tabs defaultValue="list" className="w-full">
+            <TabsList className="grid grid-cols-2 mb-6 w-full max-w-md mx-auto">
+              <TabsTrigger value="list" className="flex items-center gap-2">
+                <Receipt className="h-4 w-4" />
+                Expense List
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Analytics
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="list">
+              <Card className="shadow-lg border-gray-200 dark:border-gray-700">
+                <CardHeader className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
+                    {/* Search Input */}
+                    <div className="col-span-1 flex items-center relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                      <Input
+                        type="text"
+                        placeholder="Search expenses..."
+                        className="pl-10 py-2 border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 text-sm rounded-md w-full"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                    </div>
+
+                    {/* Date Pickers */}
+                    <div className="flex items-center justify-start space-x-2 flex-wrap">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-gray-500" />
+                        <DatePicker 
+                          date={startDate} 
+                          setDate={(date) => handleDateChange(date, 'start')} 
+                        />
+                      </div>
+                      <span className="text-gray-500 text-sm">to</span>
+                      <DatePicker 
+                        date={endDate} 
+                        setDate={(date) => handleDateChange(date, 'end')} 
+                      />
+                    </div>
+
+                    {/* View Controls */}
+                    <div className="flex space-x-2 justify-end">
+                      <Select 
+                        value={viewMode} 
+                        onValueChange={(value) => setViewMode(value as 'daily' | 'monthly')}
+                      >
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue placeholder="View Mode" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="daily">Daily View</SelectItem>
+                          <SelectItem value="monthly">Monthly View</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              variant="outline" 
+                              size="icon"
+                              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                            >
+                              <ArrowDownUp className={`h-4 w-4 ${sortOrder === 'desc' ? 'text-emerald-500' : 'text-gray-500'}`} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Sort by date: {sortOrder === 'asc' ? 'Oldest first' : 'Newest first'}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="p-0">
+                  {loading ? (
+                    <div className="p-8 text-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
+                      <p className="mt-4 text-gray-600 dark:text-gray-400">Loading expenses...</p>
                     </div>
                   ) : (
-                    <div className="space-y-6 p-4">
-                      {Object.keys(groupedExpenses).length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">
-                          No expenses found for the selected period
+                    <>
+                      {viewMode === 'daily' ? (
+                        <div className="overflow-x-auto">
+                          <Table>
+                            <TableHeader>
+                              <TableRow className="bg-gray-50 dark:bg-gray-800">
+                                <TableHead className="font-semibold">Name</TableHead>
+                                <TableHead className="font-semibold">Amount</TableHead>
+                                <TableHead className="font-semibold">
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="h-4 w-4" />
+                                    Date
+                                  </div>
+                                </TableHead>
+                                <TableHead className="font-semibold">Description</TableHead>
+                                <TableHead className="w-20 text-right">Actions</TableHead>
+                              </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                              {filteredExpenses.length === 0 ? (
+                                <TableRow>
+                                  <TableCell colSpan={5} className="text-center py-12 text-gray-500">
+                                    <div className="flex flex-col items-center">
+                                      <Receipt className="h-12 w-12 text-gray-300 mb-2" />
+                                      <p>No expenses found for the selected period</p>
+                                      <Button 
+                                        variant="link" 
+                                        onClick={() => {
+                                          setStartDate(undefined);
+                                          setEndDate(undefined);
+                                          setSearchTerm('');
+                                        }}
+                                        className="mt-2 text-emerald-500"
+                                      >
+                                        Clear filters
+                                      </Button>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              ) : (
+                                filteredExpenses.map((expense) => (
+                                  <TableRow key={expense.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                    <TableCell className="font-medium">
+                                      <div className="flex items-center gap-2">
+                                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                                          {expense.name.charAt(0).toUpperCase()}
+                                        </Badge>
+                                        {expense.name}
+                                      </div>
+                                    </TableCell>
+                                    <TableCell className="text-emerald-600 dark:text-emerald-400 font-medium">
+                                      ${parseFloat(expense.amount as any).toLocaleString()}
+                                    </TableCell>
+                                    <TableCell>
+                                      {isValid(parseISO(expense.date)) ?
+                                        format(parseISO(expense.date), 'dd MMM yyyy') :
+                                        'Invalid date'}
+                                    </TableCell>
+                                    <TableCell className="text-gray-600 dark:text-gray-400 max-w-xs truncate">
+                                      {expense.description || '-'}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                      <TooltipProvider>
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <Button
+                                              variant="ghost"
+                                              size="icon"
+                                              onClick={() => handleDeleteExpense(expense.id)}
+                                              className="hover:bg-red-50 hover:text-red-600 text-gray-500"
+                                            >
+                                              <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                          </TooltipTrigger>
+                                          <TooltipContent>
+                                            <p>Delete expense</p>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      </TooltipProvider>
+                                    </TableCell>
+                                  </TableRow>
+                                ))
+                              )}
+                            </TableBody>
+                          </Table>
                         </div>
                       ) : (
-                        Object.entries(groupedExpenses).map(([month, data]) => (
-                          <div key={month} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm">
-                            <div className="bg-gray-50 dark:bg-gray-800 p-4 flex justify-between items-center">
-                              <h3 className="font-medium text-lg">{month}</h3>
-                              <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 p-2 rounded-lg">
-                                <Banknote className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">${data.total.toLocaleString()}</span>
+                        <div className="space-y-6 p-4">
+                          {Object.keys(groupedExpenses).length === 0 ? (
+                            <div className="text-center py-12 text-gray-500">
+                              <div className="flex flex-col items-center">
+                                <PieChart className="h-12 w-12 text-gray-300 mb-2" />
+                                <p>No expenses found for the selected period</p>
+                                <Button 
+                                  variant="link" 
+                                  onClick={() => {
+                                    setStartDate(undefined);
+                                    setEndDate(undefined);
+                                    setSearchTerm('');
+                                  }}
+                                  className="mt-2 text-emerald-500"
+                                >
+                                  Clear filters
+                                </Button>
                               </div>
                             </div>
-                            <div className="overflow-x-auto">
-                              <Table>
-                                <TableHeader>
-                                  <TableRow className="bg-gray-50/50 dark:bg-gray-800/50">
-                                    <TableHead className="font-semibold">Name</TableHead>
-                                    <TableHead className="font-semibold">Amount</TableHead>
-                                    <TableHead className="font-semibold">Date</TableHead>
-                                    <TableHead className="font-semibold">Description</TableHead>
-                                    <TableHead className="w-20 text-right">Actions</TableHead>
-                                  </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                  {data.expenses.map((expense) => (
-                                    <TableRow key={expense.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                                      <TableCell className="font-medium">{expense.name}</TableCell>
-                                      <TableCell className="text-blue-600 dark:text-blue-400 font-medium">${parseFloat(expense.amount as any).toLocaleString()}</TableCell>
-                                      <TableCell>
-                                        {isValid(parseISO(expense.date)) ?
-                                          format(parseISO(expense.date), 'dd MMM yyyy') :
-                                          'Invalid date'}
-                                      </TableCell>
-                                      <TableCell className="text-gray-600 dark:text-gray-400">{expense.description || '-'}</TableCell>
-                                      <TableCell className="text-right">
-                                        <Button
-                                          variant="destructive"
-                                          size="sm"
-                                          onClick={() => handleDeleteExpense(expense.id)}
-                                          className="hover:bg-red-600"
-                                        >
-                                          <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                      </TableCell>
-                                    </TableRow>
-                                  ))}
-                                </TableBody>
-                              </Table>
-                            </div>
-                          </div>
-                        ))
+                          ) : (
+                            Object.entries(groupedExpenses).map(([month, data]) => (
+                              <div key={month} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm">
+                                <div className="bg-gray-50 dark:bg-gray-800 p-4 flex justify-between items-center">
+                                  <h3 className="font-medium text-lg flex items-center gap-2">
+                                    <Calendar className="h-4 w-4 text-gray-500" />
+                                    {month}
+                                  </h3>
+                                  <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 p-2 rounded-lg">
+                                    <Banknote className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                                      ${data.total.toLocaleString()}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="overflow-x-auto">
+                                  <Table>
+                                    <TableHeader>
+                                      <TableRow className="bg-gray-50/50 dark:bg-gray-800/50">
+                                        <TableHead className="font-semibold">Name</TableHead>
+                                        <TableHead className="font-semibold">Amount</TableHead>
+                                        <TableHead className="font-semibold">Date</TableHead>
+                                        <TableHead className="font-semibold">Description</TableHead>
+                                        <TableHead className="w-20 text-right">Actions</TableHead>
+                                      </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                      {data.expenses.map((expense) => (
+                                        <TableRow key={expense.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                          <TableCell className="font-medium">
+                                            <div className="flex items-center gap-2">
+                                              <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                                                {expense.name.charAt(0).toUpperCase()}
+                                              </Badge>
+                                              {expense.name}
+                                            </div>
+                                          </TableCell>
+                                          <TableCell className="text-emerald-600 dark:text-emerald-400 font-medium">
+                                            ${parseFloat(expense.amount as any).toLocaleString()}
+                                          </TableCell>
+                                          <TableCell>
+                                            {isValid(parseISO(expense.date)) ?
+                                              format(parseISO(expense.date), 'dd MMM yyyy') :
+                                              'Invalid date'}
+                                          </TableCell>
+                                          <TableCell className="text-gray-600 dark:text-gray-400 max-w-xs truncate">
+                                            {expense.description || '-'}
+                                          </TableCell>
+                                          <TableCell className="text-right">
+                                            <TooltipProvider>
+                                              <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                  <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => handleDeleteExpense(expense.id)}
+                                                    className="hover:bg-red-50 hover:text-red-600 text-gray-500"
+                                                  >
+                                                    <Trash2 className="h-4 w-4" />
+                                                  </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                  <p>Delete expense</p>
+                                                </TooltipContent>
+                                              </Tooltip>
+                                            </TooltipProvider>
+                                          </TableCell>
+                                        </TableRow>
+                                      ))}
+                                    </TableBody>
+                                  </Table>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
                       )}
-                    </div>
+                    </>
                   )}
+                </CardContent>
 
-                  <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    {/* Expense Count */}
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {filteredExpenses.length}{" "}
-                      {filteredExpenses.length === 1 ? "expense" : "expenses"} found
-                    </span>
+                <CardFooter className="border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  {/* Expense Count */}
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {filteredExpenses.length}{" "}
+                    {filteredExpenses.length === 1 ? "expense" : "expenses"} found
+                  </span>
 
-                    {/* Right Side Controls */}
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 w-full sm:w-auto">
+                  {/* Right Side Controls */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-6 w-full sm:w-auto">
+                    {/* CSV Download Button */}
+                    <CSVLink
+                      data={filteredExpenses}
+                      headers={headers}
+                      filename="expenses.csv"
+                      className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-medium text-sm px-4 py-2 rounded-md shadow transition duration-200"
+                    >
+                      <Download className="h-4 w-4" />
+                      Export CSV
+                    </CSVLink>
 
-                      {/* CSV Download Button */}
-                      <CSVLink
-                        data={expenses}
-                        headers={headers}
-                        filename="expenses.csv"
-                        className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium text-sm px-4 py-2 rounded shadow transition duration-200"
-                      >
-                        ⬇️ Download CSV
-                      </CSVLink>
-
-                      {/* Total Display */}
-                      <div className="flex items-center gap-1">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Total:
-                        </span>
-                        <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
-                          ${totalFilteredExpenses.toLocaleString()}
-                        </span>
+                    {/* Total Display */}
+                    <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-900/20 p-2 rounded-lg">
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Total:
+                      </span>
+                      <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                        ${totalFilteredExpenses.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="analytics">
+              <Card className="shadow-lg border-gray-200 dark:border-gray-700">
+                <CardHeader>
+                  <CardTitle>Expense Analytics</CardTitle>
+                  <CardDescription>
+                    Visualize your spending patterns and trends
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <h3 className="text-lg font-medium mb-4">Monthly Breakdown</h3>
+                      <div className="h-64 flex items-center justify-center">
+                        <div className="text-center text-gray-500">
+                          <BarChart3 className="h-16 w-16 mx-auto text-gray-300 mb-2" />
+                          <p>Monthly expense chart will appear here</p>
+                          <p className="text-sm mt-2">Upgrade to premium for analytics</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <h3 className="text-lg font-medium mb-4">Expense Categories</h3>
+                      <div className="h-64 flex items-center justify-center">
+                        <div className="text-center text-gray-500">
+                          <PieChart className="h-16 w-16 mx-auto text-gray-300 mb-2" />
+                          <p>Category distribution chart will appear here</p>
+                          <p className="text-sm mt-2">Upgrade to premium for analytics</p>
+                        </div>
                       </div>
                     </div>
                   </div>
-
-                </>
-              )}
-            </div>
-          </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </main>
 
         {/* Add Expense Dialog */}
@@ -518,7 +792,7 @@ const Expenses = () => {
                   value={newExpense.name}
                   onChange={(e) => setNewExpense({ ...newExpense, name: e.target.value })}
                   placeholder="Rent, Utilities, Materials, etc."
-                  className="focus:border-blue-500 focus:ring-blue-500"
+                  className="focus:border-emerald-500 focus:ring-emerald-500"
                 />
               </div>
               <div className="space-y-2">
@@ -531,7 +805,7 @@ const Expenses = () => {
                   value={newExpense.amount}
                   onChange={(e) => setNewExpense({ ...newExpense, amount: parseFloat(e.target.value) })}
                   placeholder="Enter amount"
-                  className="focus:border-blue-500 focus:ring-blue-500"
+                  className="focus:border-emerald-500 focus:ring-emerald-500"
                 />
               </div>
               <div className="space-y-2">
@@ -549,7 +823,7 @@ const Expenses = () => {
                   onChange={(e) => setNewExpense({ ...newExpense, description: e.target.value })}
                   placeholder="Add additional details"
                   rows={3}
-                  className="focus:border-blue-500 focus:ring-blue-500"
+                  className="focus:border-emerald-500 focus:ring-emerald-500"
                 />
               </div>
             </div>
@@ -557,14 +831,13 @@ const Expenses = () => {
               <Button variant="outline" onClick={() => setShowAddExpense(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleAddExpense} className="bg-blue-600 hover:bg-blue-700">
+              <Button onClick={handleAddExpense} className="bg-emerald-600 hover:bg-emerald-700 text-white">
                 Add Expense
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
-
     </DashboardLayout>
   );
 };

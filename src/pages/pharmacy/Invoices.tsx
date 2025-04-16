@@ -7,10 +7,24 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { InvoiceTableContainer } from "@/components/invoices/components/InvoiceTableContainer";
 import { CreateInvoiceForm } from "@/components/invoices/CreateInvoiceForm";
 import { InvoiceStatus } from "@/components/invoices/types/invoice.types";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const Invoices = () => {
+
+    const location = useLocation();
+    const [poIs, setPoIs] = useState<"group" | "pharmacy">("pharmacy");
+
+    useEffect(() => {
+      if (location.pathname.startsWith('/group/invoices')) {
+        setPoIs("group");
+      } else {
+        setPoIs("pharmacy");
+      }
+    }, [location.pathname]);
+  
   return (
-    <DashboardLayout role="pharmacy">
+    <DashboardLayout role={poIs}>
       <div className="space-y-6 p-6">
         <div className="flex items-center justify-between">
           <div>

@@ -6,11 +6,12 @@ import { AddPharmacyModal } from "@/components/group/AddPharmacyModal";
 import { Location } from "@/components/group/types/location";
 import { EnhancedStatsCard } from "@/components/dashboard/EnhancedStatsCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
-import { Building2, TrendingUp, DollarSign, Users } from "lucide-react";
+import { Building2, TrendingUp, DollarSign, Users, PlusCircle } from "lucide-react";
 import { LocationMap } from "@/components/group/LocationMap";
 import { useSelector } from "react-redux";
 import { selectUserProfile } from "@/store/selectors/userSelectors";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 
 export const fetchCustomerLocation = async (userId) => {
@@ -135,12 +136,24 @@ const GroupDashboard = () => {
   return (
     <DashboardLayout role="group">
       <div className="space-y-8 p-6">
-        <div className="space-y-2">
+    <div className="flex  justify-between items-center">
+    <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight">Group Dashboard</h1>
           <p className="text-muted-foreground">
             Manage your pharmacy locations and monitor performance
           </p>
         </div>
+
+        <div className="mt-4 md:mt-0 flex space-x-3">
+                        <Button
+                          onClick={() => setIsAddPharmacyOpen(true)}
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                        >
+                          <PlusCircle className="mr-2 h-4 w-4" />
+                          Add Location
+                        </Button>
+                      </div>
+    </div>
 
         {/* <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, index) => (
@@ -162,9 +175,10 @@ const GroupDashboard = () => {
             </CardContent>
           </Card> */}
 
-          <div className="">
+          {/* <div className="">
             <QuickActions fetchLocations={fetchLocations} />
-          </div>
+          </div> */}
+           
         </div>
 
         <Card className="overflow-hidden">

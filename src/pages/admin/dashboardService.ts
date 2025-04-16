@@ -23,7 +23,7 @@ export const fetchDashboardData = async () => {
     const { data: pendingInvoicesData } = await supabase
       .from("invoices")
       .select("*")
-      .eq("status", "pending");
+      .eq("payment_status", "unpaid");
 
     // Fix the low stock query using a proper comparison
     const { data: lowStockProducts } = await supabase

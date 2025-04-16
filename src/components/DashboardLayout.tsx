@@ -92,6 +92,8 @@ export function DashboardLayout({
           { icon: Package, label: "Products", path: "/group/products" },
           { icon: ShoppingCart, label: "Order Products", path: "/group/order" },
           { icon: ListChecks, label: "Orders", path: "/group/orders" },
+      { icon: Receipt, label: "Invoices", path: "/group/invoices" },
+
 
         ],
       },

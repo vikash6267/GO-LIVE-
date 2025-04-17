@@ -97,11 +97,22 @@ export const deleteUser = async (userId: string, userName: string): Promise<bool
     
         if (!response.ok) {
           const errorData = await response.json();
+          toast({
+            title: "Unable to Delete Location",
+            description: `This location is associated with orders placed by ${userName}, so it cannot be deleted.`,
+            variant:"destructive"
+          });
+          
           console.error("Error deleting user:", errorData);
           throw new Error(errorData.message || "Failed to delete user");
+       
         }
     
         console.log("User deleted successfully:", userId);
+        toast({
+          title: "Success",
+          description: `${userName} has been deleted`,
+        });
         return true;
       } catch (error) {
         console.error("Delete error:", error);
@@ -114,10 +125,7 @@ export const deleteUser = async (userId: string, userName: string): Promise<bool
     
     console.log('User deleted successfully:', userId);
     
-    toast({
-      title: "Success",
-      description: `${userName} has been deleted`,
-    });
+ 
     
     return true;
   } catch (error) {

@@ -1,469 +1,687 @@
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { X } from 'lucide-react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-import { useSelector } from "react-redux";
-import { selectUserProfile } from "@/store/selectors/userSelectors";
+"use client"
 
-// Define the validation schema with Zod
-const locationSchema = z.object({
-    name: z.string().min(1, { message: "Name is required" }),
-    type: z.string().min(1, { message: "Type is required" }),
-    contact_email: z.string().optional(),
-    contact_phone: z.string().optional(),
-    address: z.object({
-        city: z.string().min(1, { message: "City is required" }),
-        state: z.string().min(1, { message: "State is required" }),
-        street1: z.string().min(1, { message: "Street address is required" }),
-        street2: z.string().optional(),
-        zip_code: z.string().min(1, { message: "ZIP code is required" }),
-        attention: z.string().optional(),
-        faxNumber: z.string().optional(),
+import { useEffect, useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Checkbox } from "@/components/ui/checkbox"
+import { toast } from "@/components/ui/use-toast"
+import { supabase } from "@/integrations/supabase/client"
 
-        phone: z.string().optional(),
-    }),
-   
-});
+// Define the user data schema
+const userFormSchema = z.object({
+  // Personal Information
+  first_name: z.string().min(1, "First name is required"),
+  last_name: z.string().min(1, "Last name is required"),
+  email: z.string().email("Invalid email address"),
+  mobile_phone: z.string().optional(),
+  work_phone: z.string().optional(),
 
-interface Address {
-    city: string;
-    phone: string;
-    state: string;
-    street1: string;
-    street2: string;
-    zip_code: string;
-    attention: string;
-    faxNumber: string;
-    countryRegion: string;
+  // Company Information
+  company_name: z.string().optional(),
+  type: z.enum(["pharmacy", "hospital"]),
+  account_status: z.enum(["active", "inactive", "pending"]),
+
+  // Billing Information
+  billing_address: z.object({
+    street1: z.string().min(1, "Street address is required"),
+    street2: z.string().optional(),
+    attention: z.string().optional(),
+    city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
+    zipCode: z.string().min(1, "Zip code is required"), // Keep as zipCode in the form
+    phone: z.string().optional(),
+    faxNumber: z.string().optional(),
+    countryRegion: z.string().optional(), // Keep as countryRegion in the form
+  }),
+
+  // Shipping Information
+  same_as_shipping: z.boolean().default(false),
+  shipping_address: z.object({
+    street1: z.string().min(1, "Street address is required"),
+    street2: z.string().optional(),
+    attention: z.string().optional(),
+    city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
+    zipCode: z.string().min(1, "Zip code is required"), // Keep as zipCode in the form
+    phone: z.string().optional(),
+    faxNumber: z.string().optional(),
+    countryRegion: z.string().optional(), // Keep as countryRegion in the form
+  }),
+
+  // Preferences
+  currency: z.string().default("USD"),
+  payment_terms: z.string().default("DueOnReceipt"),
+  tax_preference: z.enum(["Taxable", "Non-taxable"]).default("Taxable"),
+  portal_language: z.string().default("English"),
+  enable_portal: z.boolean().default(false),
+})
+
+type UserFormValues = z.infer<typeof userFormSchema>
+
+interface UserEditModalProps {
+  open: boolean
+  onOpenChange: () => void
+  userData: any
+  onSave: (data: UserFormValues) => void
 }
 
-interface Location {
-    id: string;
-    name: string;
-    type: string;
-    contact_email: string;
-    contact_phone: string;
-    address: Address;
+export function EditLocationPopup({ open, onOpenChange, userData, onSave }: UserEditModalProps) {
+  const [activeTab, setActiveTab] = useState("personal")
+  const [loading, setLoading] = useState(false)
 
-}
+  // Initialize form with user data
+  const form = useForm<UserFormValues>({
+    resolver: zodResolver(userFormSchema),
+    defaultValues: {
+      first_name: userData?.first_name || "",
+      last_name: userData?.last_name || "",
+      email: userData?.email || "",
+      mobile_phone: userData?.mobile_phone || "",
+      work_phone: userData?.work_phone || "",
+      company_name: userData?.company_name || "",
+      type: userData?.type || "pharmacy",
+      account_status: userData?.account_status || "pending",
+      billing_address: {
+        street1: userData?.billing_address?.street1 || "",
+        street2: userData?.billing_address?.street2 || "",
+        attention: userData?.billing_address?.attention || "",
+        city: userData?.billing_address?.city || "",
+        state: userData?.billing_address?.state || "",
+        zipCode: userData?.billing_address?.zip_code || "", // Changed from zipCode to zip_code
+        phone: userData?.billing_address?.phone || "",
+        faxNumber: userData?.billing_address?.faxNumber || "",
+        countryRegion: userData?.billing_address?.country || "", // Changed from countryRegion to country
+      },
+      same_as_shipping: userData?.same_as_shipping || false,
+      shipping_address: {
+        street1: userData?.shipping_address?.street1 || "",
+        street2: userData?.shipping_address?.street2 || "",
+        attention: userData?.shipping_address?.attention || "",
+        city: userData?.shipping_address?.city || "",
+        state: userData?.shipping_address?.state || "",
+        zipCode: userData?.shipping_address?.zip_code || "", // Changed from zipCode to zip_code
+        phone: userData?.shipping_address?.phone || "",
+        faxNumber: userData?.shipping_address?.faxNumber || "",
+        countryRegion: userData?.shipping_address?.country || "", // Changed from countryRegion to country
+      },
 
-interface EditLocationPopupProps {
-    location: Location;
-    onClose: () => void;
-    onSave: () => void;
-}
+      currency: userData?.currency || "USD",
+      payment_terms: userData?.payment_terms || "DueOnReceipt",
+      tax_preference: userData?.tax_preference || "Taxable",
+      portal_language: userData?.portal_language || "English",
+      enable_portal: userData?.enable_portal || false,
+    },
+  })
 
-type FormData = z.infer<typeof locationSchema>;
+  console.log(userData.shipping_address)
+  const onSubmit = async (data: UserFormValues) => {
+    setLoading(true)
+    try {
+      console.log(data)
 
-const EditLocationPopup: React.FC<EditLocationPopupProps> = ({ location, onClose, onSave }) => {
-    const { toast } = useToast();
-    const userProfile = useSelector(selectUserProfile);
-
-    const {
-        control,
-        handleSubmit,
-        formState: { errors, isSubmitting }
-    } = useForm<FormData>({
-        resolver: zodResolver(locationSchema),
-        defaultValues: {
-            ...location,
-            address: {
-                ...location?.address
+      const profileData = {
+        first_name: data.first_name?.trim(),
+        last_name: data.last_name?.trim(),
+        email: data.email?.trim(),
+        type: data.type,
+        account_status: data.account_status,
+        company_name: data.company_name?.trim() || null,
+        display_name:
+          data.first_name?.trim() && data.last_name?.trim()
+            ? `${data.first_name.trim()} ${data.last_name.trim()}`
+            : null,
+        work_phone: data.work_phone?.trim() || null,
+        mobile_phone: data.mobile_phone?.trim() || null,
+        billing_address: {
+          street1: data.billing_address.street1,
+          street2: data.billing_address.street2 || "",
+          attention: data.billing_address.attention || "",
+          city: data.billing_address.city,
+          state: data.billing_address.state,
+          zip_code: data.billing_address.zipCode, // Changed to zip_code to match the database field
+          phone: data.billing_address.phone || "",
+          faxNumber: data.billing_address.faxNumber || "",
+          country: data.billing_address.countryRegion || "IN", // Changed to country to match the database field
+        },
+        shipping_address: data.same_as_shipping
+          ? {
+              street1: data.billing_address.street1,
+              street2: data.billing_address.street2 || "",
+              attention: data.billing_address.attention || "",
+              city: data.billing_address.city,
+              state: data.billing_address.state,
+              zip_code: data.billing_address.zipCode, // Changed to zip_code to match the database field
+              phone: data.billing_address.phone || "",
+              faxNumber: data.billing_address.faxNumber || "",
+              country: data.billing_address.countryRegion || "IN", // Changed to country to match the database field
             }
-        }
-    });
+          : {
+              street1: data.shipping_address.street1,
+              street2: data.shipping_address.street2 || "",
+              attention: data.shipping_address.attention || "",
+              city: data.shipping_address.city,
+              state: data.shipping_address.state,
+              zip_code: data.shipping_address.zipCode, // Changed to zip_code to match the database field
+              phone: data.shipping_address.phone || "",
+              faxNumber: data.shipping_address.faxNumber || "",
+              country: data.shipping_address.countryRegion || "IN", // Changed to country to match the database field
+            },
+        same_as_shipping: data.same_as_shipping || false,
+        tax_preference: data.tax_preference || "Taxable",
+        currency: data.currency || "USD",
+        payment_terms: data.payment_terms || "DueOnReceipt",
+        enable_portal: data.enable_portal || false,
+        portal_language: data.portal_language || "English",
+        updated_at: new Date().toISOString(),
+      }
 
-    useEffect(() => {
+      const { data: userDataDb, error } = await supabase
+        .from("profiles")
+        .update(profileData)
+        .eq("id", userData.id)
+        .select()
+        .maybeSingle()
 
-    })
+      if (error) {
+        console.error("Supabase update error:", error)
+        console.error("Error details:", {
+          code: error.code,
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+        })
 
-    console.log(location)
+        toast({
+          title: "Error",
+          description: `Failed to update profile: ${error.message}`,
+          variant: "destructive",
+        })
+        throw new Error(`Database error: ${error.message}`)
+      }
 
-    const onSubmit = async (data: FormData) => {
+      toast({
+        title: "User updated successfully",
+        description: "The user information has been updated.",
+      })
+      onOpenChange()
+    } catch (error) {
+      toast({
+        title: "Error updating user",
+        description: "There was an error updating the user information.",
+        variant: "destructive",
+      })
+    }
+    setLoading(false)
+  }
 
-        console.log("Submitted Data:", data);
+  // Update shipping address when same_as_shipping changes
+  const watchSameAsShipping = form.watch("same_as_shipping")
+  const watchBillingAddress = form.watch("billing_address")
 
-        // ✅ Correctly defining `updateLocation`
-        const updateLocation = {
-            address: data.address,
-            contact_email: data.contact_email,
-            contact_phone: data.contact_phone,
-            name: data.name,
-            type: data.type,
-        };
+  // Update shipping address when same_as_shipping is checked
+  useEffect(() => {
+    if (watchSameAsShipping) {
+      form.setValue("shipping_address", {
+        street1: watchBillingAddress.street1,
+        street2: watchBillingAddress.street2 || "",
+        attention: watchBillingAddress.attention || "",
+        city: watchBillingAddress.city,
+        state: watchBillingAddress.state,
+        zipCode: watchBillingAddress.zipCode,
+        phone: watchBillingAddress.phone || "",
+        faxNumber: watchBillingAddress.faxNumber || "",
+        countryRegion: watchBillingAddress.countryRegion || "",
+      })
+    }
+  }, [watchSameAsShipping, watchBillingAddress, form])
 
-        try {
-            // ✅ Updating the location in Supabase
-            const { data: updatedData, error } = await supabase
-                .from("locations")
-                .update(updateLocation)
-                .eq("id", String(location.id))
-                .select("*") // Returns the updated order
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Edit Location</DialogTitle>
+          <DialogDescription>Update locations information. Click save when you're done.</DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid grid-cols-3 mb-4">
+                <TabsTrigger value="personal">Personal</TabsTrigger>
+                <TabsTrigger value="company">Company</TabsTrigger>
+                <TabsTrigger value="address">Address</TabsTrigger>
+                {/* <TabsTrigger value="preferences">Preferences</TabsTrigger> */}
+              </TabsList>
 
+              {/* Personal Information Tab */}
+              <TabsContent value="personal" className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="first_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="First name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="last_name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Last name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="Email" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="mobile_phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Mobile Phone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Mobile phone" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="work_phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Work Phone</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Work phone" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </TabsContent>
 
+              {/* Company Information Tab */}
+              <TabsContent value="company" className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="company_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Company Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Company name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* <div className="grid grid-cols-2 gap-4">
 
-            if (error) {
-                console.error("Error updating location:", error);
-                alert("Failed to update location. Please try again.");
-                return;
-            }
+                                    <FormField
+                                        control={form.control}
+                                        name="account_status"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Account Status</FormLabel>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select status" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="pending">Pending</SelectItem>
+                                                        <SelectItem value="active">Active</SelectItem>
+                                                        <SelectItem value="inactive">Inactive</SelectItem>
 
-            if (!updatedData) {
-                alert("Location not found. Please check the ID.");
-                return
-            }
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div> */}
+              </TabsContent>
 
-            console.log("Updated Location Data:", updatedData);
-            toast({
-                title: `location Update`,
-                description: " location details updated...",
-            });
+              {/* Address Tab */}
+              <TabsContent value="address" className="space-y-4">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-medium">Billing Address</h3>
+                  <FormField
+                    control={form.control}
+                    name="billing_address.street1"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Address</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Street address" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="billing_address.city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>City</FormLabel>
+                          <FormControl>
+                            <Input placeholder="City" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="billing_address.state"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>State</FormLabel>
+                          <FormControl>
+                            <Input placeholder="State" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="billing_address.zipCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Zip Code</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Zip code" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="billing_address.phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Phone" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
 
+                <FormField
+                  control={form.control}
+                  name="same_as_shipping"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-4">
+                      <FormControl>
+                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                      </FormControl>
+                      <div className="space-y-1 leading-none">
+                        <FormLabel>Same as shipping address</FormLabel>
+                      </div>
+                    </FormItem>
+                  )}
+                />
 
-            const { data: updatedData2, error: error2 } = await supabase
-                .from("locations")
-                .select("*") // Returns the updated order
-                .eq("profile_id", userProfile?.id)
-
-            if (error2) {
-                console.error("Error updating location:", error);
-                alert("Failed to update location. Please try again.");
-                return;
-            }
-
-            if (updatedData2 && updatedData2.length > 0) {
-                const newLocations = updatedData2.map((location) => ({
-                    name: location.name || "",
-                    type: location.type || "branch",
-                    status: location.status || "pending",
-                    address: location.address || {},
-                    contact_email: location.contact_email || "",
-                    contact_phone: location.contact_phone || "",
-                }));
-
-                console.log(newLocations);
-
-                const { data: profileData2, error: error3 } = await supabase
-                    .from("profiles")
-                    .update({ locations: newLocations })
-                    .eq("id", userProfile?.id);
-
-                if (error3) {
-                    console.error("Error updating locations:", error3);
-                } else {
-                    console.log("Locations updated successfully", profileData2);
-                }
-            }
-
-
-            onClose()
-            onSave()
-        } catch (err) {
-            console.error("Unexpected error:", err);
-            alert("An unexpected error occurred. Please try again.");
-        }
-    };
-
-    return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto ">
-            <Card className="w-full max-w-2xl bg-white shadow-xl h-[90vh] overflow-y-scroll">
-                <CardHeader className="border-b">
-                    <div className="flex items-center justify-between">
-                        <CardTitle className="text-xl font-bold">Edit Location</CardTitle>
-                        <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
-                            <X className="h-4 w-4" />
-                        </Button>
+                {!watchSameAsShipping && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium">Shipping Address</h3>
+                    <FormField
+                      control={form.control}
+                      name="shipping_address.street1"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street Address</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Street address" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={form.control}
+                        name="shipping_address.city"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>City</FormLabel>
+                            <FormControl>
+                              <Input placeholder="City" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="shipping_address.state"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>State</FormLabel>
+                            <FormControl>
+                              <Input placeholder="State" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     </div>
-                </CardHeader>
+                    <FormField
+                      control={form.control}
+                      name="shipping_address.zipCode"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Zip Code</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Zip code" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+              </TabsContent>
 
-                <form onSubmit={handleSubmit(onSubmit)}>
-                    <CardContent className="p-6 space-y-6">
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold border-b pb-2">General Information</h3>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="name">
-                                        Name <span className="text-red-500">*</span>
-                                    </Label>
-                                    <Controller
-                                        name="name"
-                                        control={control}
+              {/* Preferences Tab */}
+              {/* <TabsContent value="preferences" className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="currency"
                                         render={({ field }) => (
-                                            <Input
-                                                id="name"
-                                                {...field}
-                                                className={errors.name ? "border-red-500" : ""}
-                                            />
+                                            <FormItem>
+                                                <FormLabel>Currency</FormLabel>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select currency" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="USD">USD</SelectItem>
+                                                        <SelectItem value="EUR">EUR</SelectItem>
+                                                        <SelectItem value="GBP">GBP</SelectItem>
+                                                        <SelectItem value="CAD">CAD</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
                                         )}
                                     />
-                                    {errors.name && (
-                                        <p className="text-red-500 text-sm">{errors.name.message}</p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="type">
-                                        Type <span className="text-red-500">*</span>
-                                    </Label>
-                                    <Controller
-                                        name="type"
-                                        control={control}
-                                        rules={{ required: "Type is required" }}
+                                    <FormField
+                                        control={form.control}
+                                        name="payment_terms"
                                         render={({ field }) => (
-                                            <select
-                                                id="type"
-                                                {...field}
-                                                className={`w-full p-2 border rounded-md ${errors.type ? "border-red-500" : "border-gray-300"}`}
-                                            >
-                                                <option value="" disabled>Select Type</option>
-                                                <option value="Branch">Branch</option>
-
-                                            </select>
-                                        )}
-                                    />
-                                    {errors.type && <p className="text-red-500 text-sm">{errors.type.message}</p>}
-                                </div>
-
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="contact_email">
-                                        Email Address <span className="text-gray-500 text-xs">(Optional)</span>
-                                    </Label>
-                                    <Controller
-                                        name="contact_email"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input
-                                                id="contact_email"
-                                                type="email"
-                                                {...field}
-                                                className={errors.contact_email ? "border-red-500" : ""}
-                                            />
-                                        )}
-                                    />
-                                    {errors.contact_email && (
-                                        <p className="text-red-500 text-sm">{errors.contact_email.message}</p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="contact_phone">
-                                        Phone Number <span className="text-gray-500 text-xs">(Optional)</span>
-                                    </Label>
-                                    <Controller
-                                        name="contact_phone"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input
-                                                id="contact_phone"
-                                                {...field}
-                                                className={errors.contact_phone ? "border-red-500" : ""}
-                                            />
-                                        )}
-                                    />
-                                    {errors.contact_phone && (
-                                        <p className="text-red-500 text-sm">{errors.contact_phone.message}</p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                    <Label htmlFor="attention">
-                                        Attention
-                                    </Label>
-                                    <Controller
-                                        name="address.attention"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input id="attention" {...field} />
+                                            <FormItem>
+                                                <FormLabel>Payment Terms</FormLabel>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select payment terms" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="DueOnReceipt">Due on Receipt</SelectItem>
+                                                        <SelectItem value="Net15">Net 15</SelectItem>
+                                                        <SelectItem value="Net30">Net 30</SelectItem>
+                                                        <SelectItem value="Net45">Net 45</SelectItem>
+                                                        <SelectItem value="Net60">Net 60</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
                                         )}
                                     />
                                 </div>
-
-{/* 
-                            <div className="space-y-2">
-                                <Label htmlFor="manager">
-                                    Manager <span className="text-gray-500 text-xs"></span>
-                                </Label>
-                                <Controller
-                                    name="manager"
-                                    control={control}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <FormField
+                                        control={form.control}
+                                        name="tax_preference"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Tax Preference</FormLabel>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select tax preference" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="Taxable">Taxable</SelectItem>
+                                                        <SelectItem value="Non-taxable">Non-taxable</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                    <FormField
+                                        control={form.control}
+                                        name="portal_language"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Portal Language</FormLabel>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Select language" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="English">English</SelectItem>
+                                                        <SelectItem value="Spanish">Spanish</SelectItem>
+                                                        <SelectItem value="French">French</SelectItem>
+                                                        <SelectItem value="German">German</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <FormField
+                                    control={form.control}
+                                    name="enable_portal"
                                     render={({ field }) => (
-                                        <Input
-                                            id="manager"
-                                            type="text"
-                                            {...field}
-                                            
-                                        />
+                                        <FormItem className="flex flex-row items-start space-x-3 space-y-0 py-4">
+                                            <FormControl>
+                                                <Checkbox
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                />
+                                            </FormControl>
+                                            <div className="space-y-1 leading-none">
+                                                <FormLabel>Enable Portal Access</FormLabel>
+                                            </div>
+                                        </FormItem>
                                     )}
                                 />
-                            
-                            </div> */}
-                        </div>
+                            </TabsContent> */}
+            </Tabs>
 
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold border-b pb-2">Address Information</h3>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange()}
+                disabled={loading}
+                className={loading ? "opacity-50 cursor-not-allowed" : ""}
+              >
+                Cancel
+              </Button>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="street1">
-                                        Street Address 1 <span className="text-red-500">*</span>
-                                    </Label>
-                                    <Controller
-                                        name="address.street1"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input
-                                                id="street1"
-                                                {...field}
-                                                className={errors.address?.street1 ? "border-red-500" : ""}
-                                            />
-                                        )}
-                                    />
-                                    {errors.address?.street1 && (
-                                        <p className="text-red-500 text-sm">{errors.address.street1.message}</p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="street2">
-                                        Street Address 2
-                                    </Label>
-                                    <Controller
-                                        name="address.street2"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input id="street2" {...field} />
-                                        )}
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="city">
-                                        City <span className="text-red-500">*</span>
-                                    </Label>
-                                    <Controller
-                                        name="address.city"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input
-                                                id="city"
-                                                {...field}
-                                                className={errors.address?.city ? "border-red-500" : ""}
-                                            />
-                                        )}
-                                    />
-                                    {errors.address?.city && (
-                                        <p className="text-red-500 text-sm">{errors.address.city.message}</p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="state">
-                                        State <span className="text-red-500">*</span>
-                                    </Label>
-                                    <Controller
-                                        name="address.state"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input
-                                                id="state"
-                                                {...field}
-                                                className={errors.address?.state ? "border-red-500" : ""}
-                                            />
-                                        )}
-                                    />
-                                    {errors.address?.state && (
-                                        <p className="text-red-500 text-sm">{errors.address.state.message}</p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="zip_code">
-                                        ZIP Code <span className="text-red-500">*</span>
-                                    </Label>
-                                    <Controller
-                                        name="address.zip_code"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input
-                                                id="zip_code"
-                                                {...field}
-                                                className={errors.address?.zip_code ? "border-red-500" : ""}
-                                            />
-                                        )}
-                                    />
-                                    {errors.address?.zip_code && (
-                                        <p className="text-red-500 text-sm">{errors.address.zip_code.message}</p>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="phone">
-                                         Phone
-                                    </Label>
-                                    <Controller
-                                        name="address.phone"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input id="phone" {...field} />
-                                        )}
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="faxNumber">
-                                        Fax Number
-                                    </Label>
-                                    <Controller
-                                        name="address.faxNumber"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Input id="faxNumber" {...field} />
-                                        )}
-                                    />
-                                </div>
-                            </div>
-
-                        
-                        </div>
-                    </CardContent>
-
-                    <CardFooter className="flex justify-end gap-2 border-t p-4">
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={onClose}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? "Saving..." : "Save Changes"}
-                        </Button>
-                    </CardFooter>
-                </form>
-            </Card>
-        </div>
-    );
-};
-
-export default EditLocationPopup;
+              <Button type="submit" disabled={loading} className={loading ? "opacity-50 cursor-not-allowed" : ""}>
+                {loading ? "Saving Changes..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+}

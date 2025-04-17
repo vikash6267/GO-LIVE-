@@ -1,7 +1,7 @@
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Phone, Mail, Edit, Eye, MoreHorizontal } from "lucide-react";
+import { MapPin, Phone, Mail, Edit, Eye, MoreHorizontal, Delete, Trash, Trash2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -17,6 +17,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Location } from "../types/location";
+import { deleteUser } from "@/components/users/actions/deleteUser";
+import { string } from "zod";
 
 interface LocationTableRowProps {
   location: Location;
@@ -91,6 +93,13 @@ export function LocationTableRow({
             onClick={() => onEdit(location.id)}
           >
             <Edit className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => deleteUser(String(location.id),location.name)}
+          >
+            <Trash2 className="h-4 w-4"  />
           </Button>
           {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>

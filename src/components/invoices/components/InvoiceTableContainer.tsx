@@ -51,11 +51,33 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
           orders (order_number),
           profiles (first_name, last_name, email,company_name)
         `).order("created_at", { ascending: false });
-      if (role === "pharmacy" || role === "group") {
+      if (role === "pharmacy") {
         // If user is not admin, fetch orders for their profile only
         query.eq('profile_id', session.user.id);
       }
-
+      if (role === "group") {
+        const { data, error } = await supabase
+            .from("profiles")
+            .select("id")
+            .eq("group_id", session.user.id);
+    
+        if (error) {
+            console.error("Failed to fetch customer information:", error);
+            throw new Error("Failed to fetch customer information: " + error.message);
+        }
+    
+        if (!data || data.length === 0) {
+            throw new Error("No customer information found.");
+        }
+    
+        console.log("Data", data);
+    
+        // Extract user IDs from the data array
+        const userIds = data.map(user => user.id);
+    
+        // Fetch orders where profile id is in the list of userIds
+        query.in("profile_id", userIds);
+    }
    
 
       if (filters.search) {

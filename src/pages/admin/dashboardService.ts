@@ -14,11 +14,18 @@ export const fetchDashboardData = async () => {
     ).toFixed(2) || "0.00";
 
     // Fetch order count by status
-    const { data: activeOrdersData } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("status", "processing");
-
+    const { data: activeOrdersData, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("status", "processing")
+    .eq("poAccept", true)
+   
+  if (error) {
+    console.error("Error fetching data:", error);
+  } else {
+    console.log("Fetched data:", activeOrdersData);
+  }
+  
     // Fetch pending invoices
     const { data: pendingInvoicesData } = await supabase
       .from("invoices")

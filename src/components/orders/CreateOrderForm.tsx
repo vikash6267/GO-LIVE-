@@ -211,6 +211,7 @@ export function CreateOrderForm({
       let profileID = userProfile?.id
 
       sessionStorage.getItem('userType') === "admin" ? profileID = data.customer : userProfile?.id
+      sessionStorage.getItem('userType') === "group" ? profileID = pId : userProfile?.id
       console.log(profileID)
       // Prepare order data
       const orderData = {
@@ -395,12 +396,12 @@ export function CreateOrderForm({
         }
 
 
-        try {
-          await axios.post("/order-place", newOrder);
-          console.log("Order status sent successfully to backend.");
-        } catch (apiError) {
-          console.error("Failed to send order status to backend:", apiError);
-        }
+        // try {
+        //   await axios.post("/order-place", newOrder);
+        //   console.log("Order status sent successfully to backend.");
+        // } catch (apiError) {
+        //   console.error("Failed to send order status to backend:", apiError);
+        // }
 
       }
 

@@ -406,87 +406,96 @@ export const OrdersContainer = ({
   return (
     <div className="space-y-4">
 
-
 <div className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-2 p-2 bg-card rounded-lg shadow-sm border">
-  <OrderFilters
-    onSearch={setSearchQuery}
-    onDateChange={setDateRange}
-    onExport={() => console.log("Export functionality to be implemented")}
-  />
+  {/* Left-side filters */}
+  <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+    <OrderFilters
+      onSearch={setSearchQuery}
+      onDateChange={setDateRange}
+      onExport={() => console.log("Export functionality to be implemented")}
+    />
 
-{ !poIs && <CSVLink {...exportToCSV(filteredOrders)} className="btn btn-primary">
-    <Button variant="outline">
-        <Download className="mr-2 h-4 w-4" />
-        Export Orders
-      </Button>
-  </CSVLink>}
+    {/* Move StatusFilter right here */}
+    {!poIs && (
+      <StatusFilter
+        value={statusFilter}
+        onValueChange={setStatusFilter}
+      />
+    )}
 
+    {/* Export Orders */}
+    {!poIs && (
+      <CSVLink {...exportToCSV(filteredOrders)}>
+        <Button variant="outline" className="flex items-center">
+          <Download className="mr-2 h-4 w-4" />
+          Export Orders
+        </Button>
+      </CSVLink>
+    )}
 
+    {/* Admin-only buttons */}
+    {userRole === "admin" && (
+      <>
+        {/* Create Order Sheet */}
+        <Sheet open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>
+          <SheetTrigger asChild>
+            <Button className="w-auto min-w-fit px-3 py-2 text-sm">
+              <PlusCircle className="mr-1 h-4 w-4" />
+              {poIs ? "Purchase Orders" : "Create Order"}
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[90vw] sm:max-w-[640px] overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>{poIs ? "Create Purchase Orders" : "Create New Order"}</SheetTitle>
+            </SheetHeader>
 
-  {userRole === "admin" && (
-    <div className="flex flex-wrap justify-center md:justify-end items-center gap-2 w-full md:w-auto">
-      <Sheet open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>
-        <SheetTrigger asChild>
-          <Button className="w-auto min-w-fit px-3 py-2 text-sm">
-            <PlusCircle className="mr-1 h-4 w-4" />
-          
-            {
-              poIs ? "Purchase Orders" : "  Create Order"
-            }
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="right" className="w-[90vw] sm:max-w-[640px] overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>
+            {!orderData && (
+              <div className="flex justify-center items-center h-64">
+                <LoaderCircle className="animate-spin w-8 h-8 text-gray-500" />
+              </div>
+            )}
 
+            {!poIs && (
+              <div className="mb-4 mt-2">
+                <Label htmlFor="pharmacy-select">Select Pharmacy</Label>
+                <Select
+                  id="pharmacy-select"
+                  options={options}
+                  value={options.find((option) => option.value === selectedPharmacy)}
+                  onChange={(selectedOption) => handlePharmacyChange(selectedOption.value)}
+                  placeholder="Search pharmacy..."
+                  isSearchable
+                  className="w-full mt-1"
+                />
+              </div>
+            )}
 
-            {
-              poIs ? " Create Purchase Orders" : "  Create New Order"
-            }
-            </SheetTitle>
-          </SheetHeader>
+            {orderData?.customerInfo && (
+              <div className="mt-2">
+                <CreateOrderForm
+                  isEditing={false}
+                  initialData={orderData}
+                  onFormChange={handleFormChange}
+                  poIs={poIs}
+                />
+              </div>
+            )}
+          </SheetContent>
+        </Sheet>
 
-
-{
-  !orderData && <div className="flex justify-center items-center h-64">
-  <LoaderCircle className="animate-spin w-8 h-8 text-gray-500" />
+        {/* All Products Sheet */}
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button variant="secondary" className="w-auto min-w-fit px-3 py-2 bg-blue-500 text-white text-sm">
+              <Package className="mr-1 h-4 w-4" />
+              All Products
+            </Button>
+          </SheetTrigger>
+        </Sheet>
+      </>
+    )}
+  </div>
 </div>
-}
-
-
-      {!poIs &&    <div className="mb-4 mt-2">
-            <Label htmlFor="pharmacy-select">Select Pharmacy</Label>
-            <Select
-              id="pharmacy-select"
-              options={options}
-              value={options.find((option) => option.value === selectedPharmacy)}
-              onChange={(selectedOption) => handlePharmacyChange(selectedOption.value)}
-              placeholder="Search pharmacy..."
-              isSearchable
-              className="w-full mt-1"
-            />
-          </div>}
-          {orderData?.customerInfo && (
-            <div className="mt-2">
-              <CreateOrderForm isEditing={false} initialData={orderData} onFormChange={handleFormChange} poIs={poIs} />
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
-
-      <Sheet open={isOpen} onOpenChange={setIsOpen}>
-        <SheetTrigger asChild>
-          <Button variant="secondary" className="w-auto min-w-fit px-3 py-2 bg-blue-500 text-white text-sm">
-            <Package className="mr-1 h-4 w-4" />
-            All Products
-          </Button>
-        </SheetTrigger>
-      </Sheet>
-    </div>
-  )}
-</div>
-
-
 
 
 
@@ -509,7 +518,6 @@ export const OrdersContainer = ({
         </div>
       )}
 
- {!poIs &&     <StatusFilter value={statusFilter} onValueChange={setStatusFilter} />}
 
       <OrdersList
         orders={filteredOrders}

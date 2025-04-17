@@ -16,7 +16,10 @@ export const useOrderManagement = () => {
 
   const loadOrders = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+  
       if (!session) {
         toast({
           title: "Error",
@@ -26,17 +29,16 @@ export const useOrderManagement = () => {
         return;
       }
   
-      let ordersData = null;
-      // const role = session.user.email || null;
-  const role = sessionStorage.getItem('userType');
-      console.log(session.user)
-      // Refactor for user role checking
+      const role = sessionStorage.getItem("userType");
       const adminRoles = ["admin"];
-  
-      // Conditionally fetch orders based on role
-      const query = supabase
+      console.log("Session:", session);
+      console.log("User ID:", session.user.id);
+      console.log("Role from sessionStorage:", role);
+      
+      let query = supabase
         .from("orders")
-        .select(`
+        .select(
+          `
           *,
           profiles (
             first_name, 
@@ -46,47 +48,38 @@ export const useOrderManagement = () => {
             type, 
             company_name
           )
-        `)
+        `
+        )
         .is("deleted_at", null)
-        .order("created_at", { ascending: false }); // Order by most recent first
+        .order("created_at", { ascending: false });
   
       if (role === "pharmacy") {
-        // If user is not admin, fetch orders for their profile only
-        query.eq('profile_id', session.user.id);
+        query = query.eq("profile_id", session.user.id);
       }
-
+  
       if (role === "group") {
-        const { data, error } = await supabase
-            .from("profiles")
-            .select("id")
-            .eq("group_id", session.user.id);
-    
-        if (error) {
-            console.error("Failed to fetch customer information:", error);
-            throw new Error("Failed to fetch customer information: " + error.message);
-        }
-    
-        if (!data || data.length === 0) {
-            throw new Error("No customer information found.");
-        }
-    
-        console.log("Data", data);
-    
-        // Extract user IDs from the data array
-        const userIds = data.map(user => user.id);
-    
-        // Fetch orders where profile id is in the list of userIds
-        query.in("profile_id", userIds);
-    }
+        const { data: groupProfiles, error } = await supabase
+          .from("profiles")
+          .select("id")
+          .eq("group_id", session.user.id);
+  
+        if (error) throw new Error("Failed to fetch customer information");
+  
+        if (!groupProfiles || groupProfiles.length === 0)
+          throw new Error("No customer profiles found");
+  
+        const userIds = groupProfiles.map((user) => user.id);
+        console.log(userIds)
+        query = query.in("profile_id", userIds);
+      }
   
       const { data, error } = await query;
-      if (error) throw error;
   
-console.log(data)
+      if (error) throw error;
   
       const formattedOrders: OrderFormValues[] = (data as any[]).map((order) => {
         const profileData = order.profiles || {};
-  console.log(data)
+  
         return {
           id: order.id || "",
           customer: order.profile_id || "",
@@ -95,17 +88,17 @@ console.log(data)
           status: order.status || "pending",
           payment_status: order.payment_status || "unpaid",
           customization: order.customization || false,
-          poAccept:order.poAccept,
-          shipping_cost:order.shipping_cost,
-          tax_amount:order.tax_amount,
-          customerInfo: order.customerInfo ||  {
+          poAccept: order.poAccept,
+          shipping_cost: order.shipping_cost,
+          tax_amount: order.tax_amount,
+          customerInfo: {
             name:
               profileData.first_name && profileData.last_name
                 ? `${profileData.first_name} ${profileData.last_name}`
                 : "Unknown",
             email: profileData.email || "",
             phone: profileData.mobile_phone || "",
-            type: "Pharmacy",
+            type: profileData.type || "Pharmacy",
             address: {
               street: profileData.company_name || "",
               city: "",
@@ -113,8 +106,8 @@ console.log(data)
               zip_code: "",
             },
           },
-          order_number : order.order_number,
-          items: order.items || [], // Ensure order.items exists
+          order_number: order.order_number,
+          items: order.items || [],
           shipping: {
             method: order.shipping_method || "custom",
             cost: order.shipping_cost || 0,
@@ -126,32 +119,36 @@ console.log(data)
             notes: "",
           },
           specialInstructions: order.notes || "",
-          shippingAddress: order.shippingAddress ? {
-            fullName: order.shippingAddress.fullName || "",
-            email: order.shippingAddress.email || "",
-            phone: order.shippingAddress.phone || "",
-      
-            address: {
-              street: order.shippingAddress.address.street || "",
-              city: order.shippingAddress.address.city || "",
-              state: order.shippingAddress.address.state || "",
-              zip_code: order.shippingAddress.address.zip_code || "",
-            },
-          } : {
-            fullName:
-              profileData.first_name && profileData.last_name
-                ? `${profileData.first_name} ${profileData.last_name}`
-                : "",
-            street: "",
-            city: "",
-            state: "",
-            zip_code: "",
-          },
+          shippingAddress: order.shippingAddress
+            ? {
+                fullName: order.shippingAddress.fullName || "",
+                email: order.shippingAddress.email || "",
+                phone: order.shippingAddress.phone || "",
+                address: {
+                  street: order.shippingAddress.address?.street || "",
+                  city: order.shippingAddress.address?.city || "",
+                  state: order.shippingAddress.address?.state || "",
+                  zip_code: order.shippingAddress.address?.zip_code || "",
+                },
+              }
+            : {
+                fullName:
+                  profileData.first_name && profileData.last_name
+                    ? `${profileData.first_name} ${profileData.last_name}`
+                    : "",
+                email: profileData.email || "",
+                phone: profileData.mobile_phone || "",
+                address: {
+                  street: profileData.company_name || "",
+                  city: "",
+                  state: "",
+                  zip_code: "",
+                },
+              },
         };
       });
   
       setOrders(formattedOrders);
-  
     } catch (error) {
       console.error("Error loading orders:", error);
       toast({
@@ -161,6 +158,7 @@ console.log(data)
       });
     }
   };
+  
   
 
   // Refresh orders when the component mounts

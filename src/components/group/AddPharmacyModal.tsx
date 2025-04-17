@@ -33,7 +33,7 @@ import axios from '../../../axiosconfig'
 
 const pharmacySchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  license: z.string().min(5, "License number is required"),
+  license: z.string().optional(),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
   password: z.string().optional().default("12345678"),
@@ -126,23 +126,49 @@ export function AddPharmacyModal({
   
     setLoading(true); // Start loading
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: values.email,
-        password: "12345678",
-        options: {
-          data: {
-            first_name: values.name.split(" ")[0] || "",
-            last_name: values.name.split(" ")[1] || "",
-            phone: values.phone,
+   
+
+      const response = await fetch(
+        "https://cfyqeilfmodrbiamqgme.supabase.co/auth/v1/admin/users",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmeXFlaWxmbW9kcmJpYW1xZ21lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNjMzNTUzNSwiZXhwIjoyMDUxOTExNTM1fQ.nOqhABs1EMQHOrNtiGdt6uAxWxGnnGRcWr5dkn_BLr0`, // Use the service role key here
+            "Content-Type": "application/json",
+            apikey:
+              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmeXFlaWxmbW9kcmJpYW1xZ21lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNjMzNTUzNSwiZXhwIjoyMDUxOTExNTM1fQ.nOqhABs1EMQHOrNtiGdt6uAxWxGnnGRcWr5dkn_BLr0",
           },
-        },
-      });
-  
-      if (authError) throw authError;
-      if (!authData.user) throw new Error("No user data returned from auth signup");
-  
+          body: JSON.stringify({
+            email: values.email,
+            password: "12345678",
+            email_confirm: true, // ❗ Set to false so user gets a confirmation email
+            type: "pharmacy",
+            user_metadata: {
+              first_name: values.name.split(" ")[0] || "",
+              last_name: values.name.split(" ")[1] || "",
+            },
+          }),
+        }
+      );
+
+      const tempUserData = await response.json();
+
+      if (!response.ok) {
+        console.error("Supabase Error Response:", tempUserData);
+        toast({
+          title: "Failed to create user",
+          description: tempUserData?.msg || tempUserData?.error_description || "Something went wrong with Supabase Auth.",
+          variant: "destructive",
+        });
+        throw new Error(tempUserData?.msg || tempUserData?.error_description || "Auth error");
+      }
+
+
+  const authData =  tempUserData 
+   console.log(authData)
+
       const locationData = {
-        id: authData.user.id,
+        id: authData.id,
         display_name: values.name,
         first_name: values.name.split(" ")[0] || "",
         last_name: values.name.split(" ")[1] || "",

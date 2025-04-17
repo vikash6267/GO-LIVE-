@@ -36,7 +36,7 @@ const pharmacySchema = z.object({
   license: z.string().min(5, "License number is required"),
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Phone number must be at least 10 digits"),
-  password: z.string().optional().default("123456778"),
+  password: z.string().optional().default("12345678"),
 
   address: z.object({
     attention: z.string().optional(),
@@ -78,6 +78,7 @@ export function AddPharmacyModal({
   const { toast } = useToast();
   const userProfile = useSelector(selectUserProfile);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<PharmacyFormData>({
     resolver: zodResolver(pharmacySchema),
@@ -112,11 +113,8 @@ export function AddPharmacyModal({
   });
 
   const onSubmit = async () => {
-    const values = form.getValues()
-
-    console.log(values)
-
-    
+    const values = form.getValues();
+  
     if (Object.keys(form.formState.errors).length > 0) {
       toast({
         title: "Error",
@@ -125,34 +123,24 @@ export function AddPharmacyModal({
       });
       return;
     }
-
-
-
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: values.email,
-      password: "12345678",
-      options: {
-        data: {
-          first_name: values.name.split(" ")[0] || "",
-          last_name: values.name.split(" ")[1] || "",
-          phone: values.phone,
-        },
-      },
-    });
-
-    if (authError) {
-      console.error("Auth error during signup:", authError);
-      throw authError;
-    }
-
-    if (!authData.user) {
-      console.error("No user data returned from auth signup");
-      throw new Error("No user data returned from auth signup");
-    }
-
   
-
-    if (values) {
+    setLoading(true); // Start loading
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: values.email,
+        password: "12345678",
+        options: {
+          data: {
+            first_name: values.name.split(" ")[0] || "",
+            last_name: values.name.split(" ")[1] || "",
+            phone: values.phone,
+          },
+        },
+      });
+  
+      if (authError) throw authError;
+      if (!authData.user) throw new Error("No user data returned from auth signup");
+  
       const locationData = {
         id: authData.user.id,
         display_name: values.name,
@@ -164,51 +152,46 @@ export function AddPharmacyModal({
         mobile_phone: values.phone || "",
         group_id: userProfile?.id,
         status: "pending",
-        type: "pharmacy", // Set type as pharmacy by default
-        role: "user", // Default role
+        type: "pharmacy",
+        role: "user",
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
-
-
+  
       const { error: profileError } = await supabase
         .from("profiles")
         .upsert([locationData]);
-
+  
       if (profileError) {
-        console.error("Profile creation error:", profileError);
-        // If profile creation fails, we should clean up the auth user
         toast({
           title: "Failed To Create Location",
-          description:
-          profileError.message,
-          variant:"destructive"
+          description: profileError.message,
+          variant: "destructive",
         });
-       
         throw profileError;
       }
-
-     
-      console.log("Profile created successfully");
+  
+      // await axios.post("/user-verification", {
+      //   groupname: userProfile.display_name,
+      //   name: `${values.name.split(" ")[0] || ""} ${values.name.split(" ")[1] || ""}`,
+      //   email: values.email,
+      // });
+  
       toast({
-        title: "Account Created",
-        description:
-          "Your account has been created successfully. Please check your email to verify your account.",
+        title: "Pharmacy Added",
+        description: `${values.name} has been added to your group successfully`,
       });
-
+  
+      form.reset();
+      onPharmacyAdded();
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Error:", error);
+    } finally {
+      setLoading(false); // Stop loading no matter what
     }
-
-
-
-    toast({
-      title: "Pharmacy Added",
-      description: `${values.name} has been added to your group successfully`,
-    });
-
-    form.reset();
-    onPharmacyAdded();
-    onOpenChange(false);
   };
+  
 
   console.log("hello")
   useEffect(() => {
@@ -338,8 +321,8 @@ export function AddPharmacyModal({
         </ScrollArea>
 
         <DialogFooter className="p-6 pt-4">
-          <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
-            Add Pharmacy
+          <Button type="submit" onClick={onSubmit} disabled={loading}>
+          {loading ? "Adding..." : "Add Pharmacy"}
           </Button>
         </DialogFooter>
       </DialogContent>

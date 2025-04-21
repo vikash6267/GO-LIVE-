@@ -235,8 +235,7 @@ export function CreateOrderForm({
         poAccept: !poIs
       };
 
-      console.log(orderData);
-
+      
 
       // Save order to Supabase
       const { data: orderResponse, error: orderError } = await supabase
@@ -327,8 +326,7 @@ export function CreateOrderForm({
             parseFloat(calculatedTotal + newtax + (isCus ? 0.5 : 0)),
         };
 
-        console.log("Creating invoice with data:", invoiceData);
-
+      
         const { invoicedata2, error } = await supabase
           .from("invoices")
           .insert(invoiceData)
@@ -340,8 +338,7 @@ export function CreateOrderForm({
           throw error;
         }
 
-        console.log("Invoice created successfully:", invoicedata2);
-
+       
 
         // Prepare and save order items
         const orderItemsData = data.items.map((item) => ({
@@ -361,8 +358,7 @@ export function CreateOrderForm({
           throw new Error(itemsError.message);
         }
 
-        // console.log("Order items saved:", orderItemsData);
-
+   
 
         // Update product stock
         for (const item of data.items) {
@@ -379,9 +375,7 @@ export function CreateOrderForm({
           }
         }
 
-        console.log("Stock updated successfully");
-
-
+     
 
 
 
@@ -406,7 +400,9 @@ export function CreateOrderForm({
       }
 
       // Reset form and local state
-      // localStorage.removeItem("cart");
+    window.location.reload();
+
+      localStorage.removeItem("cart");
 
       toast({
         title: "Order Created Successfully",

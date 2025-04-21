@@ -401,8 +401,7 @@ export const OrdersContainer = ({
 
   },[isCreateOrderOpen])
 
-  useEffect(()=>{
-  },[])
+
   return (
     <div className="space-y-4">
 

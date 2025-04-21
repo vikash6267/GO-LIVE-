@@ -22,7 +22,7 @@ export function OrderCustomerInfo({ customerInfo, shippingAddress,componyName }:
         <p><span className="font-medium">Email:</span> {customerInfo?.email || "N/A"}</p>
         <p><span className="font-medium">Phone:</span> {customerInfo?.phone || "N/A"}</p>
         <p><span className="font-medium">Type:</span> {customerInfo?.type || "N/A"}</p>
-       {componyName && <p><span className="font-medium">Compony:</span> {componyName}</p>}
+       {componyName && <p><span className="font-medium">Company:</span> {componyName}</p>}
       </div>
       <div className="text-sm">
         <p><span className="font-medium">Address:</span> {customerInfo?.address?.street || "N/A"}</p>
@@ -39,7 +39,7 @@ export function OrderCustomerInfo({ customerInfo, shippingAddress,componyName }:
         <p><span className="font-medium">Name:</span> {shippingAddress?.fullName || "N/A"}</p>
         <p><span className="font-medium">Email:</span> {shippingAddress?.email || "N/A"}</p>
         <p><span className="font-medium">Phone:</span> {shippingAddress?.phone || "N/A"}</p>
-       {componyName && <p><span className="font-medium">Compony:</span> {componyName}</p>}
+       {componyName && <p><span className="font-medium">Company:</span> {componyName}</p>}
 
       </div>
       <div className="text-sm">

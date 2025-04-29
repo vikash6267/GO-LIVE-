@@ -114,7 +114,7 @@ export function AddressFields({ form, type, prefix = "" }: AddressFieldsProps) {
         <AddressInput form={form} fieldName={fieldName("zip_code")} label="ZIP Code *" />
         <AddressInput form={form} fieldName={fieldName("phone")} label="Phone" type="tel" />
       </div>
-      <AddressInput form={form} fieldName={fieldName("country")} label="Country *" />
+      <AddressInput form={form} fieldName={fieldName("countryRegion")} label="Country *" />
 
       <AddressInput form={form} fieldName={fieldName("faxNumber")} label="Fax Number" type="tel" />
     </div>

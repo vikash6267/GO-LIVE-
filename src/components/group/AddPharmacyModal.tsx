@@ -132,7 +132,7 @@ export function AddPharmacyModal({
     try {
    
       const mainEmail = values.email === userProfile?.email 
-      ? `noreply+${Date.now()}@example.com` 
+      ? `noreply${Date.now()}@9rx.com` 
       : values.email;
 
       console.log(mainEmail)
@@ -149,7 +149,7 @@ export function AddPharmacyModal({
           body: JSON.stringify({
             email: mainEmail,
             password: "12345678",
-            email_confirm: true, // ❗ Set to false so user gets a confirmation email
+            email_confirm: true, 
             type: "pharmacy",
             user_metadata: {
               first_name: values.name.split(" ")[0] || "",

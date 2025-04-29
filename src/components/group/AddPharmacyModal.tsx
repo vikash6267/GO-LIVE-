@@ -112,6 +112,10 @@ export function AddPharmacyModal({
     },
   });
 
+
+  useEffect(()=>{
+    form.setValue("email",userProfile?.email)
+  },[userProfile])
   const onSubmit = async () => {
     const values = form.getValues();
   
@@ -127,7 +131,11 @@ export function AddPharmacyModal({
     setLoading(true); // Start loading
     try {
    
+      const mainEmail = values.email === userProfile?.email 
+      ? `noreply+${Date.now()}@example.com` 
+      : values.email;
 
+      console.log(mainEmail)
       const response = await fetch(
         "https://cfyqeilfmodrbiamqgme.supabase.co/auth/v1/admin/users",
         {
@@ -139,7 +147,7 @@ export function AddPharmacyModal({
               "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmeXFlaWxmbW9kcmJpYW1xZ21lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczNjMzNTUzNSwiZXhwIjoyMDUxOTExNTM1fQ.nOqhABs1EMQHOrNtiGdt6uAxWxGnnGRcWr5dkn_BLr0",
           },
           body: JSON.stringify({
-            email: values.email,
+            email: mainEmail,
             password: "12345678",
             email_confirm: true, // ❗ Set to false so user gets a confirmation email
             type: "pharmacy",
@@ -174,7 +182,7 @@ export function AddPharmacyModal({
         last_name: values.name.split(" ")[1] || "",
         group_type: "branch",
         billing_address: values.addressAddress as any,
-        email: values.email || "",
+        email: mainEmail || "",
         mobile_phone: values.phone || "",
         group_id: userProfile?.id,
         status: "pending",

@@ -5,7 +5,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { Edit, CreditCard, Download } from "lucide-react";
+import { Edit, CreditCard, Download, LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CreateOrderForm } from "../CreateOrderForm";
 import { OrderFormValues } from "../schemas/orderSchema";
@@ -24,6 +24,7 @@ import { Link } from "react-router-dom";
 
 import { useCart } from "@/hooks/use-cart";
 import jsPDF from "jspdf";
+import { current } from "@reduxjs/toolkit";
 
 
 interface OrderDetailsSheetProps {
@@ -31,6 +32,7 @@ interface OrderDetailsSheetProps {
   isEditing: boolean;
   poIs?: boolean;
   setIsEditing: (value: boolean) => void;
+  loadOrders?: () => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onProcessOrder?: (orderId: string) => void;
@@ -51,7 +53,8 @@ export const OrderDetailsSheet = ({
   onShipOrder,
   onConfirmOrder,
   onDeleteOrder,
-  poIs=false,
+  poIs = false,
+  loadOrders,
   userRole = "pharmacy",
 }: OrderDetailsSheetProps) => {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
@@ -59,7 +62,8 @@ export const OrderDetailsSheet = ({
   const [currentOrder, setCurrentOrder] = useState<OrderFormValues>(order);
   const pdfTemplateRef = useRef<HTMLDivElement>(null)
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
-  
+  const [loading, setLoading] = useState(false);
+
   // Update currentOrder when order prop changes
   useEffect(() => {
     setCurrentOrder(order);
@@ -98,7 +102,7 @@ export const OrderDetailsSheet = ({
       });
     }
   };
-  const [loading, setLoading] = useState(false);
+  const [loadingQuick, setLoadingQuick] = useState(false);
   const [componyName, setComponyName] = useState("")
 
 
@@ -176,6 +180,64 @@ export const OrderDetailsSheet = ({
   console.log(currentOrder)
 
 
+  const quickBookUpdate = async () => {
+    setLoadingQuick(true);
+    try {
+      const { data, error } = await supabase
+        .from("orders")
+        .select(
+          `
+          *,
+          profiles (
+            first_name, 
+            last_name, 
+            email, 
+            mobile_phone, 
+            type, 
+            company_name
+          )
+          `
+        )
+        .eq("id", currentOrder.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching order:", error);
+      } else {
+        console.log("Order data:", data);
+        const quickBook = await axios.post("/invoice-quickbook", data);
+
+        if (quickBook?.status === 200) {
+          const invoiceId = quickBook?.data?.data?.Invoice?.Id;
+          console.log("QuickBooks Invoice ID:", invoiceId);
+
+          const { error: updateError } = await supabase
+            .from("orders")
+            .update({ quickBooksID: invoiceId }) // Make sure column name matches
+            .eq("id", currentOrder.id);
+
+          if (updateError) {
+            console.error("Error updating order with QuickBooks ID:", updateError);
+          } else {
+            console.log("Order updated with QuickBooks ID successfully.");
+            await loadOrders()
+            const updatedData = {
+              ...currentOrder,
+              quickBooksID: invoiceId, // ya jis variable me ID hai
+            };
+            
+            setCurrentOrder(updatedData);
+            
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error in quickBookUpdate:", error);
+    } finally {
+      setLoadingQuick(false);
+    }
+  };
+
 
 
   const formattedDate = new Date(currentOrder.date).toLocaleDateString("en-US", {
@@ -187,262 +249,262 @@ export const OrderDetailsSheet = ({
 
 
 
-   const handleDownloadPDF = async () => {
-      setIsGeneratingPDF(true)
-  
-      try {
-        // Create a new PDF document
-        const doc = new jsPDF({
-          orientation: "portrait",
-          unit: "mm",
-          format: "a4",
+  const handleDownloadPDF = async () => {
+    setIsGeneratingPDF(true)
+
+    try {
+      // Create a new PDF document
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      })
+
+      // Set font
+      doc.setFont("helvetica")
+
+      // Page dimensions
+      const pageWidth = doc.internal.pageSize.getWidth()
+      const pageHeight = doc.internal.pageSize.getHeight()
+      const margin = 10
+      const contentWidth = pageWidth - margin * 2
+
+      // Add company logo
+      if (true) {
+        const img = new Image()
+        img.crossOrigin = "anonymous"
+        img.src = "/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png"
+
+        await new Promise((resolve) => {
+          img.onload = resolve
         })
-  
-        // Set font
-        doc.setFont("helvetica")
-  
-        // Page dimensions
-        const pageWidth = doc.internal.pageSize.getWidth()
-        const pageHeight = doc.internal.pageSize.getHeight()
-        const margin = 10
-        const contentWidth = pageWidth - margin * 2
-  
-        // Add company logo
-        if (true) {
-          const img = new Image()
-          img.crossOrigin = "anonymous"
-          img.src = "/lovable-uploads/0b13fa53-b941-4c4c-9dc4-7d20221c2770.png"
-  
-          await new Promise((resolve) => {
-            img.onload = resolve
-          })
-  
-          // Calculate logo dimensions (max height 20mm)
-          const logoHeight = 25
-          const logoWidth = (img.width / img.height) * logoHeight
-  
-          // Position logo at top center
-          doc.addImage(img, "PNG", pageWidth / 2 - logoWidth / 2, margin, logoWidth, logoHeight)
-        }
-  
-        // Add currentOrder title and details
-        doc.setFontSize(15)
-        doc.text("PURCHASE ORDER", pageWidth - margin - 45, margin + 10)
-  
-        doc.setFontSize(10)
-       
-        doc.text(`ORDER - ${currentOrder.order_number}`, pageWidth - margin - 40, margin + 20)
-        doc.text(`Date - ${formattedDate}`, pageWidth - margin - 40, margin + 25)
-  
-        // Company details
-        doc.setFontSize(9)
-        doc.text("Tax ID : 99-0540972", margin, margin + 5)
-        doc.text("936 Broad River Ln,", margin, margin + 10)
-        doc.text("Charlotte, NC 28211", margin, margin + 15)
-        doc.text("+1 800 969 6295", margin, margin + 20)
-        doc.text("info@9rx.com", margin, margin + 25)
-        doc.text("www.9rx.com", margin, margin + 30)
-  
-        // Horizontal line
-        doc.setDrawColor(200, 200, 200)
-        doc.line(margin, margin + 40, pageWidth - margin, margin + 40)
-  
-        // Customer and shipping info
-        const infoStartY = margin + 50
-  
-        // Bill To
-        doc.setFontSize(11)
-        doc.setFont("helvetica", "bold")
-        doc.text("Bill To", margin, infoStartY)
-  
-        doc.setFont("helvetica", "normal")
-        doc.setFontSize(9)
-        doc.text(componyName, margin, infoStartY + 5)
-        doc.text(currentOrder.customerInfo?.name || "N/A", margin, infoStartY + 10)
-        doc.text(currentOrder.customerInfo?.phone || "N/A", margin, infoStartY + 15)
-        doc.text(currentOrder.customerInfo?.email || "N/A", margin, infoStartY + 20)
-        doc.text(
-          `${currentOrder.customerInfo.address?.street || "N/A"}, ${currentOrder.customerInfo.address?.city || "N/A"}, ${currentOrder.customerInfo.address?.state || "N/A"} ${currentOrder.customerInfo.address?.zip_code || "N/A"}`,
-          margin,
-          infoStartY + 25,
-          { maxWidth: contentWidth / 2 - 5 },
-        )
-  
-        // Ship To
-        doc.setFontSize(11)
-        doc.setFont("helvetica", "bold")
-        doc.text("Ship To", pageWidth / 2, infoStartY)
-  
-        doc.setFont("helvetica", "normal")
-        doc.setFontSize(9)
-        doc.text(componyName, pageWidth / 2, infoStartY + 5)
-        doc.text(currentOrder.shippingAddress?.fullName || "N/A", pageWidth / 2, infoStartY + 10)
-        doc.text(currentOrder.shippingAddress?.phone || "N/A", pageWidth / 2, infoStartY + 15)
-        doc.text(currentOrder.shippingAddress?.email || "N/A", pageWidth / 2, infoStartY + 20)
-        doc.text(
-          `${currentOrder.shippingAddress.address?.street || "N/A"}, ${currentOrder.shippingAddress.address?.city || "N/A"}, ${currentOrder.shippingAddress.address?.state || "N/A"} ${currentOrder.shippingAddress.address?.zip_code || "N/A"}`,
-          pageWidth / 2,
-          infoStartY + 25,
-          { maxWidth: contentWidth / 2 - 5 },
-        )
-  
-        // Horizontal line
-        doc.line(margin, infoStartY + 35, pageWidth - margin, infoStartY + 35)
-  
-        // Items table
-        const tableStartY = infoStartY + 45
-  
-        // Prepare table data
-        const tableHead = [["Description", "Sizes", "Qty", "Amount"]]
-        const tableBody =
-          currentOrder?.items?.map((item) => [
-            item.name,
-            item.sizes?.map((size) => `${size.size_value} ${size.size_unit}`).join(", "),
-            item.quantity.toString(),
-            `$${item.price}`,
-          ]) || []
-  
-          // Add table
-          ; (doc as any).autoTable({
-            head: tableHead,
-            body: tableBody,
-            startY: tableStartY,
-            margin: { left: margin, right: margin },
-            styles: { fontSize: 9, cellPadding: 3 },
-            headStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0], fontStyle: "bold" },
-            columnStyles: {
-              0: { cellWidth: "auto" },
-              1: { cellWidth: "auto" },
-              2: { cellWidth: 20, halign: "right" },
-              3: { cellWidth: 30, halign: "right" },
-            },
-            theme: "grid",
-          })
-  
-        // Get the final Y position after the table
-        const finalY = (doc as any).lastAutoTable.finalY + 10
-  
-        // Payment status and summary section
-        const paymentStatusX = margin
-        const paymentStatusWidth = contentWidth / 3
-        const summaryX = margin + paymentStatusWidth + 10
-        const summaryWidth = contentWidth - paymentStatusWidth - 10
-  
-        // Payment status box
-        // doc.setFillColor(240, 240, 240)
-        // doc.rect(paymentStatusX, finalY, paymentStatusWidth, 40, "F")
-        // doc.setDrawColor(200, 200, 200)
-        // doc.rect(paymentStatusX, finalY, paymentStatusWidth, 40, "S")
-  
-        // Payment status label
-        // if (currentOrder?.payment_status === "paid") {
-        //   doc.setFillColor(39, 174, 96)
-        //   doc.setTextColor(255, 255, 255)
-        // } else {
-        //   doc.setFillColor(231, 76, 60)
-        //   doc.setTextColor(255, 255, 255)
-        // }
-  
-        // doc.roundedRect(paymentStatusX + 5, finalY + 5, 50, 10, 5, 5, "F")
-        // doc.setFontSize(8)
-        // doc.setFont("helvetica", "bold")
-        // doc.text(currentOrder?.payment_status === "paid" ? "Paid" : "Unpaid", paymentStatusX + 10, finalY + 11)
-  
-        // Payment details if paid
-        // if (currentOrder?.payment_status === "paid") {
-        //   doc.setTextColor(0, 0, 0)
-        //   doc.setFontSize(8)
-        //   doc.setFont("helvetica", "bold")
-        //   doc.text(
-        //     currentOrder.payment_method === "card" ? "Transaction ID:" : "Payment Notes:",
-        //     paymentStatusX + 5,
-        //     finalY + 25,
-        //   )
-  
-        //   doc.setFont("helvetica", "normal")
-        //   doc.text(
-        //     currentOrder.payment_method === "card" ? currentOrder?.payment_transication : currentOrder?.payment_notes,
-        //     paymentStatusX + 5,
-        //     finalY + 30,
-        //     { maxWidth: paymentStatusWidth - 10 },
-        //   )
-        // }
-  
-        // Summary box
-        doc.setFillColor(255, 255, 255)
-        doc.setTextColor(0, 0, 0)
-        doc.rect(summaryX, finalY, summaryWidth, 40, "F")
-        doc.setDrawColor(200, 200, 200)
-        doc.rect(summaryX, finalY, summaryWidth, 40, "S")
-  
-        // Summary content
-        const summaryLeftX = summaryX + 5
-        const summaryRightX = summaryX + summaryWidth - 5
-        let summaryY = finalY + 10
-  
-        // Sub Total
-        doc.setFontSize(9)
-        doc.setFont("helvetica", "normal")
-        doc.text("Sub Total", summaryLeftX, summaryY)
-        doc.text(`$${(Number(currentOrder?.total) - currentOrder?.tax_amount - Number(currentOrder.shipping_cost))?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, {
-          align: "right",
-        })
-  
-        // Tax
-        summaryY += 5
-        doc.text(
-          `Tax `,
-          summaryLeftX,
-          summaryY,
-        )
-        doc.text(`$${Number(currentOrder?.tax_amount)?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, { align: "right" })
-        summaryY += 5
-        doc.text(
-          `Shipping `,
-          summaryLeftX,
-          summaryY,
-        )
-        doc.text(`$${Number(currentOrder?.shipping_cost)?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, { align: "right" })
-  
-        // Divider
-        summaryY += 3
-        doc.line(summaryLeftX, summaryY, summaryRightX, summaryY)
-  
-        // Total
-        summaryY += 5
-        doc.setFont("helvetica", "bold")
-        doc.text("Total", summaryLeftX, summaryY)
-        doc.text(`$${Number(currentOrder?.total)?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, { align: "right" })
-  
-        // Balance Due
-        summaryY += 5
-        // doc.setTextColor(231, 76, 60)
-        // doc.text("Balance Due", summaryLeftX, summaryY)
-        // doc.text(
-        //   currentOrder?.payment_status === "paid" ? "$0" : `$${Number(currentOrder?.total)?.toFixed(2) || "0.00"}`,
-        //   summaryRightX,
-        //   summaryY,
-        //   { align: "right" },
-        // )
-  
-        // Save the PDF
-        doc.save(`Invoice_${currentOrder.id}.pdf`)
-  
-        toast({
-          title: "Success",
-          description: "Invoice downloaded successfully",
-        })
-      } catch (error) {
-        console.error("Error generating PDF:", error)
-        toast({
-          title: "Error",
-          description: "Failed to generate PDF. Please try again.",
-          variant: "destructive",
-        })
-      } finally {
-        setIsGeneratingPDF(false)
+
+        // Calculate logo dimensions (max height 20mm)
+        const logoHeight = 25
+        const logoWidth = (img.width / img.height) * logoHeight
+
+        // Position logo at top center
+        doc.addImage(img, "PNG", pageWidth / 2 - logoWidth / 2, margin, logoWidth, logoHeight)
       }
+
+      // Add currentOrder title and details
+      doc.setFontSize(15)
+      doc.text("PURCHASE ORDER", pageWidth - margin - 45, margin + 10)
+
+      doc.setFontSize(10)
+
+      doc.text(`ORDER - ${currentOrder.order_number}`, pageWidth - margin - 40, margin + 20)
+      doc.text(`Date - ${formattedDate}`, pageWidth - margin - 40, margin + 25)
+
+      // Company details
+      doc.setFontSize(9)
+      doc.text("Tax ID : 99-0540972", margin, margin + 5)
+      doc.text("936 Broad River Ln,", margin, margin + 10)
+      doc.text("Charlotte, NC 28211", margin, margin + 15)
+      doc.text("+1 800 969 6295", margin, margin + 20)
+      doc.text("info@9rx.com", margin, margin + 25)
+      doc.text("www.9rx.com", margin, margin + 30)
+
+      // Horizontal line
+      doc.setDrawColor(200, 200, 200)
+      doc.line(margin, margin + 40, pageWidth - margin, margin + 40)
+
+      // Customer and shipping info
+      const infoStartY = margin + 50
+
+      // Bill To
+      doc.setFontSize(11)
+      doc.setFont("helvetica", "bold")
+      doc.text("Bill To", margin, infoStartY)
+
+      doc.setFont("helvetica", "normal")
+      doc.setFontSize(9)
+      doc.text(componyName, margin, infoStartY + 5)
+      doc.text(currentOrder.customerInfo?.name || "N/A", margin, infoStartY + 10)
+      doc.text(currentOrder.customerInfo?.phone || "N/A", margin, infoStartY + 15)
+      doc.text(currentOrder.customerInfo?.email || "N/A", margin, infoStartY + 20)
+      doc.text(
+        `${currentOrder.customerInfo.address?.street || "N/A"}, ${currentOrder.customerInfo.address?.city || "N/A"}, ${currentOrder.customerInfo.address?.state || "N/A"} ${currentOrder.customerInfo.address?.zip_code || "N/A"}`,
+        margin,
+        infoStartY + 25,
+        { maxWidth: contentWidth / 2 - 5 },
+      )
+
+      // Ship To
+      doc.setFontSize(11)
+      doc.setFont("helvetica", "bold")
+      doc.text("Ship To", pageWidth / 2, infoStartY)
+
+      doc.setFont("helvetica", "normal")
+      doc.setFontSize(9)
+      doc.text(componyName, pageWidth / 2, infoStartY + 5)
+      doc.text(currentOrder.shippingAddress?.fullName || "N/A", pageWidth / 2, infoStartY + 10)
+      doc.text(currentOrder.shippingAddress?.phone || "N/A", pageWidth / 2, infoStartY + 15)
+      doc.text(currentOrder.shippingAddress?.email || "N/A", pageWidth / 2, infoStartY + 20)
+      doc.text(
+        `${currentOrder.shippingAddress.address?.street || "N/A"}, ${currentOrder.shippingAddress.address?.city || "N/A"}, ${currentOrder.shippingAddress.address?.state || "N/A"} ${currentOrder.shippingAddress.address?.zip_code || "N/A"}`,
+        pageWidth / 2,
+        infoStartY + 25,
+        { maxWidth: contentWidth / 2 - 5 },
+      )
+
+      // Horizontal line
+      doc.line(margin, infoStartY + 35, pageWidth - margin, infoStartY + 35)
+
+      // Items table
+      const tableStartY = infoStartY + 45
+
+      // Prepare table data
+      const tableHead = [["Description", "Sizes", "Qty", "Amount"]]
+      const tableBody =
+        currentOrder?.items?.map((item) => [
+          item.name,
+          item.sizes?.map((size) => `${size.size_value} ${size.size_unit}`).join(", "),
+          item.quantity.toString(),
+          `$${item.price}`,
+        ]) || []
+
+        // Add table
+        ; (doc as any).autoTable({
+          head: tableHead,
+          body: tableBody,
+          startY: tableStartY,
+          margin: { left: margin, right: margin },
+          styles: { fontSize: 9, cellPadding: 3 },
+          headStyles: { fillColor: [220, 220, 220], textColor: [0, 0, 0], fontStyle: "bold" },
+          columnStyles: {
+            0: { cellWidth: "auto" },
+            1: { cellWidth: "auto" },
+            2: { cellWidth: 20, halign: "right" },
+            3: { cellWidth: 30, halign: "right" },
+          },
+          theme: "grid",
+        })
+
+      // Get the final Y position after the table
+      const finalY = (doc as any).lastAutoTable.finalY + 10
+
+      // Payment status and summary section
+      const paymentStatusX = margin
+      const paymentStatusWidth = contentWidth / 3
+      const summaryX = margin + paymentStatusWidth + 10
+      const summaryWidth = contentWidth - paymentStatusWidth - 10
+
+      // Payment status box
+      // doc.setFillColor(240, 240, 240)
+      // doc.rect(paymentStatusX, finalY, paymentStatusWidth, 40, "F")
+      // doc.setDrawColor(200, 200, 200)
+      // doc.rect(paymentStatusX, finalY, paymentStatusWidth, 40, "S")
+
+      // Payment status label
+      // if (currentOrder?.payment_status === "paid") {
+      //   doc.setFillColor(39, 174, 96)
+      //   doc.setTextColor(255, 255, 255)
+      // } else {
+      //   doc.setFillColor(231, 76, 60)
+      //   doc.setTextColor(255, 255, 255)
+      // }
+
+      // doc.roundedRect(paymentStatusX + 5, finalY + 5, 50, 10, 5, 5, "F")
+      // doc.setFontSize(8)
+      // doc.setFont("helvetica", "bold")
+      // doc.text(currentOrder?.payment_status === "paid" ? "Paid" : "Unpaid", paymentStatusX + 10, finalY + 11)
+
+      // Payment details if paid
+      // if (currentOrder?.payment_status === "paid") {
+      //   doc.setTextColor(0, 0, 0)
+      //   doc.setFontSize(8)
+      //   doc.setFont("helvetica", "bold")
+      //   doc.text(
+      //     currentOrder.payment_method === "card" ? "Transaction ID:" : "Payment Notes:",
+      //     paymentStatusX + 5,
+      //     finalY + 25,
+      //   )
+
+      //   doc.setFont("helvetica", "normal")
+      //   doc.text(
+      //     currentOrder.payment_method === "card" ? currentOrder?.payment_transication : currentOrder?.payment_notes,
+      //     paymentStatusX + 5,
+      //     finalY + 30,
+      //     { maxWidth: paymentStatusWidth - 10 },
+      //   )
+      // }
+
+      // Summary box
+      doc.setFillColor(255, 255, 255)
+      doc.setTextColor(0, 0, 0)
+      doc.rect(summaryX, finalY, summaryWidth, 40, "F")
+      doc.setDrawColor(200, 200, 200)
+      doc.rect(summaryX, finalY, summaryWidth, 40, "S")
+
+      // Summary content
+      const summaryLeftX = summaryX + 5
+      const summaryRightX = summaryX + summaryWidth - 5
+      let summaryY = finalY + 10
+
+      // Sub Total
+      doc.setFontSize(9)
+      doc.setFont("helvetica", "normal")
+      doc.text("Sub Total", summaryLeftX, summaryY)
+      doc.text(`$${(Number(currentOrder?.total) - currentOrder?.tax_amount - Number(currentOrder.shipping_cost))?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, {
+        align: "right",
+      })
+
+      // Tax
+      summaryY += 5
+      doc.text(
+        `Tax `,
+        summaryLeftX,
+        summaryY,
+      )
+      doc.text(`$${Number(currentOrder?.tax_amount)?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, { align: "right" })
+      summaryY += 5
+      doc.text(
+        `Shipping `,
+        summaryLeftX,
+        summaryY,
+      )
+      doc.text(`$${Number(currentOrder?.shipping_cost)?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, { align: "right" })
+
+      // Divider
+      summaryY += 3
+      doc.line(summaryLeftX, summaryY, summaryRightX, summaryY)
+
+      // Total
+      summaryY += 5
+      doc.setFont("helvetica", "bold")
+      doc.text("Total", summaryLeftX, summaryY)
+      doc.text(`$${Number(currentOrder?.total)?.toFixed(2) || "0.00"}`, summaryRightX, summaryY, { align: "right" })
+
+      // Balance Due
+      summaryY += 5
+      // doc.setTextColor(231, 76, 60)
+      // doc.text("Balance Due", summaryLeftX, summaryY)
+      // doc.text(
+      //   currentOrder?.payment_status === "paid" ? "$0" : `$${Number(currentOrder?.total)?.toFixed(2) || "0.00"}`,
+      //   summaryRightX,
+      //   summaryY,
+      //   { align: "right" },
+      // )
+
+      // Save the PDF
+      doc.save(`Invoice_${currentOrder.id}.pdf`)
+
+      toast({
+        title: "Success",
+        description: "Invoice downloaded successfully",
+      })
+    } catch (error) {
+      console.error("Error generating PDF:", error)
+      toast({
+        title: "Error",
+        description: "Failed to generate PDF. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsGeneratingPDF(false)
     }
+  }
 
 
 
@@ -457,6 +519,32 @@ export const OrderDetailsSheet = ({
             {isEditing ? "Edit order details" : "View order details"}
           </SheetDescription>
         </SheetHeader>
+        
+        {false && !currentOrder?.quickBooksID && (
+  <div className="w-full flex justify-end items-end flex-1">
+    <Button
+      variant="outline"
+      onClick={quickBookUpdate}
+      disabled={loadingQuick}
+      className={`
+        px-5 py-2 rounded-3xl font-semibold transition-all duration-300 
+        flex items-center gap-2 
+        ${loadingQuick ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"} 
+        text-white
+      `}
+    >
+      {loadingQuick ? (
+        <>
+          <LoaderCircle className="animate-spin" />
+          <span>Updating...</span>
+        </>
+      ) : (
+        "QUICK BOOKS UPDATE"
+      )}
+    </Button>
+  </div>
+)}
+
 
         {isEditing ? (
           <div className="mt-6">
@@ -472,7 +560,7 @@ export const OrderDetailsSheet = ({
         ) : (
           <div className="mt-6 space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-            { !poIs && <h3 className="text-base md:text-lg font-semibold">Order Status</h3>}
+              {!poIs && <h3 className="text-base md:text-lg font-semibold">Order Status</h3>}
               <span className="text-sm md:text-base">Order Number: {currentOrder.order_number}</span>
               {userRole === "admin" && (
                 <Button
@@ -487,9 +575,9 @@ export const OrderDetailsSheet = ({
               )}
             </div>
 
-           { !poIs && <OrderWorkflowStatus status={currentOrder.status} />}
+            {!poIs && <OrderWorkflowStatus status={currentOrder.status} />}
 
-            {currentOrder.payment_status !== "paid" &&  !poIs && (
+            {currentOrder.payment_status !== "paid" && !poIs && (
 
 
               <div>
@@ -520,7 +608,7 @@ export const OrderDetailsSheet = ({
             )}
 
 
-            {userRole === "admin" &&  !poIs &&(
+            {userRole === "admin" && !poIs && (
               <div className="flex justify-end">
                 <OrderActions
                   order={currentOrder}
@@ -554,18 +642,18 @@ export const OrderDetailsSheet = ({
 
 
 
-{poIs && (
-  <div className="flex w-full justify-end mt-6">
+        {poIs && (
+          <div className="flex w-full justify-end mt-6">
 
-<button
-    onClick={handleDownloadPDF}
-    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow hover:shadow-lg transition duration-300"
-  >
-    <Download size={18} />
-    Download PDF
-  </button>
-  </div>
-)}
+            <button
+              onClick={handleDownloadPDF}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg shadow hover:shadow-lg transition duration-300"
+            >
+              <Download size={18} />
+              Download PDF
+            </button>
+          </div>
+        )}
 
 
 

@@ -79,7 +79,7 @@ export const useOrderManagement = () => {
   
       const formattedOrders: OrderFormValues[] = (data as any[]).map((order) => {
         const profileData = order.profiles || {};
-  
+
         return {
           id: order.id || "",
           customer: order.profile_id || "",
@@ -90,6 +90,7 @@ export const useOrderManagement = () => {
           customization: order.customization || false,
           poAccept: order.poAccept,
           shipping_cost: order.shipping_cost,
+          quickBooksID: order.quickBooksID,
           tax_amount: order.tax_amount,
           customerInfo: {
             name:

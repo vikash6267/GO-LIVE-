@@ -219,7 +219,7 @@ export function CreateOrderForm({
         profile_id: profileID,
         status: data.status,
         total_amount: calculatedTotal + newtax,
-        shipping_cost: data.shipping?.cost || 0,
+        shipping_cost: totalShippingCost || 0,
         tax_amount: newtax,
         customization: isCus,
         items: data.items,

@@ -454,6 +454,7 @@ export type Database = {
           order_number: string;
           profile_id: string | null;
           shipping_cost: number | null;
+          quickBooksID: number | null;
           shipping_method:
             | Database["public"]["Enums"]["shipping_method"]
             | null;
@@ -468,6 +469,7 @@ export type Database = {
           deleted_at?: string | null;
           estimated_delivery?: string | null;
           id?: string;
+          quickBooksID: number | null;
           notes?: string | null;
           order_number: string;
           profile_id?: string | null;
@@ -486,6 +488,7 @@ export type Database = {
           deleted_at?: string | null;
           estimated_delivery?: string | null;
           id?: string;
+          quickBooksID: number | null;
           notes?: string | null;
           order_number?: string;
           profile_id?: string | null;

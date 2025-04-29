@@ -43,46 +43,27 @@ export function UserTableRow({
   
 const[location,setLocations] = useState(0)
 
-   const fetchUserProfile = async () => {
- 
-    if (user.type.toLowerCase() !== "group" || !user?.id) return
-if(user.type.toLowerCase() === "group" && user?.id){
 
-  try {
-    const { data: session } = await supabase.auth.getSession();
-    if (!session?.session) {
-      console.error("Authentication Error: No active session found");
-      throw new Error("No active session found");
+
+
+  const [locationDetails, setLocationDetails] = useState<
+  { name: string; type: string; address: string }[]
+>([]);
+
+useEffect(() => {
+  const fetchData = async () => {
+    if (userType === "group") {
+      const details = await getLocationDetails(user.id);
+      setLocations(details.length)
+      setLocationDetails(details || []);
     }
-    const { count, error } = await supabase
-    .from("locations")
-    .select("*", { count: "exact" }) // "exact" ko correct format me likha hai
-    .eq("profile_id", user?.id);
-
-    if (error) {
-      console.error("Database Error - Failed to fetch profile:", error);
-      throw new Error(`Database error: ${error.message}`);
-    }
-
-    if (!count) {
-     
-      throw new Error("User profile not found");
-    }
-
-    setLocations(count)
-
-    
-  } catch (error: any) {
-    console.error("Error in fetchUserProfile:", error);
-    throw new Error(error.message || "Failed to fetch user profile");
-  }
-}
-  
   };
 
-  useEffect(()=>{
-    fetchUserProfile()
-  },[user])
+  fetchData();
+}, [user.id, userType, getLocationDetails]);
+
+
+
   return (
     <TableRow className="hover:bg-muted/50">
       <TableCell className="px-2 sm:px-4">
@@ -120,41 +101,48 @@ if(user.type.toLowerCase() === "group" && user?.id){
           </Badge>
         </div>
       </TableCell>
-      <TableCell className="hidden xl:table-cell">
-        {userType === "group" ? (
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                className="flex items-center space-x-2 hover:bg-muted"
-              >
-                <MapPin className="h-4 w-4 text-muted-foreground" />
-                <Badge variant="outline">{location|| 0}</Badge>
-              </Button>
-            </PopoverTrigger>
-            {/* <PopoverContent className="w-80">
-              <div className="space-y-2">
-                <h4 className="font-medium">Location Details</h4>
-                <div className="divide-y">
-                  {getLocationDetails(user.id).map((location, index) => (
-                    <div key={index} className="py-2">
-                      <div className="flex items-center space-x-2">
-                        <span>{getLocationTypeIcon(location.type)}</span>
-                        <span className="font-medium">{location.name}</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground ml-6">
-                        {location.address}
-                      </p>
-                    </div>
-                  ))}
+
+  <TableCell className="hidden xl:table-cell">
+  {userType === "group" ? (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="ghost"
+          className="flex items-center space-x-2 hover:bg-muted"
+        >
+          <MapPin className="h-4 w-4 text-muted-foreground" />
+          <Badge variant="outline">{location || 0}</Badge>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 h-[250px] overflow-hidden overflow-y-scroll">
+        <div className="space-y-2">
+          <h4 className="font-medium">Location Details</h4>
+          <div className="divide-y">
+            {locationDetails.length > 0 ? (
+              locationDetails.map((location, index) => (
+                <div key={index} className="py-2">
+                  <div className="flex items-center space-x-2">
+                    <span>{getLocationTypeIcon(location.type)}</span>
+                    <span className="font-medium">{location.name}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground ml-6">
+                    {location.address}
+                  </p>
                 </div>
-              </div>
-            </PopoverContent> */}
-          </Popover>
-        ) : (
-          "-"
-        )}
-      </TableCell>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">No locations found</p>
+            )}
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  ) : (
+    "-"
+  )}
+</TableCell>
+
+
       <TableCell>
         <Badge 
           className={`${getStatusBadgeColor(user.status)} cursor-pointer whitespace-nowrap`}

@@ -387,7 +387,7 @@ export function EditLocationPopup({ open, onOpenChange, userData, onSave }: User
               {/* Address Tab */}
               <TabsContent value="address" className="space-y-4">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Billing Address</h3>
+                  <h3 className="text-lg font-medium">Shipping Address</h3>
                   <FormField
                     control={form.control}
                     name="billing_address.street1"
@@ -476,7 +476,7 @@ export function EditLocationPopup({ open, onOpenChange, userData, onSave }: User
 
                 {!watchSameAsShipping && (
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Shipping Address</h3>
+                    <h3 className="text-lg font-medium">Billing Address</h3>
                     <FormField
                       control={form.control}
                       name="shipping_address.street1"

@@ -206,7 +206,7 @@ const CreateOrderPaymentForm = ({
                 profile_id: profileID,
             status: data.status,
             total_amount: calculatedTotal + tax,
-            shipping_cost: data.shipping?.cost || 0,
+            shipping_cost: totalShippingCost || 0,
             tax_amount: Number(tax),
             items: data.items,
             payment_status: "paid", // Use correct column name

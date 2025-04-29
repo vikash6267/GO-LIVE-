@@ -1,3 +1,4 @@
+import { supabase } from "@/integrations/supabase/client";
 import { UserRole } from "../schemas/userFormSchemas";
 
 export const getStatusBadgeColor = (status: string) => {
@@ -28,30 +29,48 @@ export const getRoleBadgeColor = (role: UserRole) => {
   }
 };
 
-export const getLocationDetails = (userId: string) => {
-  // Convert the string ID to a number for the switch case
-  const numericId = parseInt(userId, 10);
-  const locationTypes = {
-    1: [],
-    2: [],
-    3: [
-      { name: "Main Office", type: "headquarters", address: "123 Main St, CA" },
-      { name: "North Branch", type: "branch", address: "456 North Ave, NY" },
-      { name: "West Warehouse", type: "warehouse", address: "789 West Rd, TX" },
-    ],
-    4: [
-      { name: "Regional HQ", type: "headquarters", address: "321 Region St, FL" },
-      { name: "East Branch", type: "branch", address: "654 East Blvd, MA" },
-    ],
-    5: [
-      { name: "National Center", type: "headquarters", address: "987 National Ave, DC" },
-      { name: "South Hub", type: "branch", address: "654 South St, GA" },
-      { name: "Central Warehouse", type: "warehouse", address: "321 Central Rd, IL" },
-    ],
-  }[numericId] || [];
-  
-  return locationTypes;
+export const getLocationDetails = async (userId: string) => {
+  const { data: groupProfiles, error } = await supabase
+    .from("profiles")
+    .select("display_name, billing_address")
+    .eq("group_id", userId);
+
+  if (error) throw new Error("Failed to fetch customer information");
+
+  if (!groupProfiles || groupProfiles.length === 0) {
+    return [];
+  }
+
+  // Convert and map billing_address to expected structure
+  const locationDetails = groupProfiles
+    .filter(profile => profile.billing_address) // Ensure address exists
+    .map(profile => {
+      const addr = profile.billing_address;
+      return {
+        name: profile.display_name || "Unnamed Location",
+        type: addr.type || "branch", // Defaulting to 'branch' if type is missing
+        address: formatAddress(addr),
+      };
+    });
+
+  return locationDetails;
 };
+
+// Helper function to format the address object to string
+const formatAddress = (addr: any) => {
+  const parts = [
+    addr.attention,
+    addr.street1,
+    addr.street2,
+    addr.city,
+    addr.state,
+    addr.zip_code,
+    addr.countryRegion,
+  ].filter(Boolean); // Remove undefined or empty values
+
+  return parts.join(", ");
+};
+
 
 export const getLocationTypeIcon = (type: string) => {
   switch (type) {

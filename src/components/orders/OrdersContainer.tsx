@@ -554,6 +554,7 @@ export const OrdersContainer = ({
           onDeleteOrder={onDeleteOrder}
           userRole={userRole}
           poIs={poIs}
+          loadOrders={loadOrders}
         />
       )}
     </div>

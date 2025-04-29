@@ -19,6 +19,7 @@ const logger = require("morgan");
 
 
 const { orderSatusCtrl, orderPlacedCtrl, userNotificationCtrl, contactCtrl, customization, accountActivation, paymentLink, paymentLinkCtrl, adminAccountActivation, updateProfileNotification, paymentSuccessFull } = require("./controllers/orderStatus");
+const { invoicesCtrl } = require("./controllers/quickBooks");
 
 app.use(logger("dev"));
 
@@ -302,6 +303,7 @@ app.post("/pay-successfull", paymentSuccessFull)
 app.post("/contact", contactCtrl)
 app.post("/customization", customization)
 app.post("/paynow-user", paymentLinkCtrl)
+app.post("/invoice-quickbook", invoicesCtrl)
 
 
 

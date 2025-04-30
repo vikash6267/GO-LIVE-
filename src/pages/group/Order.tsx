@@ -148,13 +148,16 @@ export default function GroupOrder() {
       // Billing address को सुरक्षित तरीके से एक्सेस करें
       const billingAddress = (data.billing_address || {}) as any;
   
+
+      const finalEmail = data.email.includes('noreply') ? userProfile?.email : data.email;
+
       setOrderData((prevState) => ({
  
         customerInfo: {
           cusid:data.id || "test",
           type: "Pharmacy",
           name: data.first_name,
-          email: data.email || "",
+          email: finalEmail  || "",
           phone: data.mobile_phone || "",
           address: {
             street: billingAddress.street || "",

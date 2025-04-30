@@ -32,10 +32,13 @@ import axios from '../../../axiosconfig'
 
 
 const pharmacySchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  name: z.string().optional(),
+  firstName: z.string().min(2, "Fisrt Name must be at least 2 characters"),
+  lastName: z.string().min(2, "Last Name must be at least 2 characters"),
   license: z.string().optional(),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Phone number must be at least 10 digits"),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+  company_name: z.string().optional(),
   password: z.string().optional().default("12345678"),
 
   address: z.object({
@@ -84,7 +87,10 @@ export function AddPharmacyModal({
     resolver: zodResolver(pharmacySchema),
     defaultValues: {
       name: "",
+      firstName: "",
+      lastName: "",
       license: "",
+      company_name: "",
       email: "",
       phone: "",
       address: {
@@ -177,13 +183,14 @@ export function AddPharmacyModal({
 
       const locationData = {
         id: authData.id,
-        display_name: values.name,
-        first_name: values.name.split(" ")[0] || "",
-        last_name: values.name.split(" ")[1] || "",
+        display_name: `${values.firstName} ${values.lastName}`,
+        first_name: values.firstName || "",
+        last_name: values.lastName || "",
         group_type: "branch",
         billing_address: values.addressAddress as any,
         email: mainEmail || "",
         mobile_phone: values.phone || "",
+        company_name: values.company_name || "",
         group_id: userProfile?.id,
         status: "pending",
         type: "pharmacy",
@@ -257,19 +264,47 @@ export function AddPharmacyModal({
             <form className="space-y-4">
               <FormField
                 control={form.control}
-                name="name"
+                name="company_name"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Pharmacy Name</FormLabel>
                     <FormControl>
-                      <Input {...field} placeholder="Enter pharmacy name" />
+                      <Input {...field} placeholder="Enter Pharmacy name" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
+         <div className=" grid grid-cols-2">
+         <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fisrt Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter first name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} placeholder="Enter last name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+         </div>
+
+              {/* <FormField
                 control={form.control}
                 name="license"
                 render={({ field }) => (
@@ -281,9 +316,9 @@ export function AddPharmacyModal({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
-              <div className="grid grid-cols-2 gap-4">
+              {/* <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="email"
@@ -321,7 +356,7 @@ export function AddPharmacyModal({
 
                   )}
                 />
-                {/* <FormField
+                <FormField
                   control={form.control}
                   name="password"
                   render={({ field }) => (
@@ -346,8 +381,8 @@ export function AddPharmacyModal({
                       <FormMessage />
                     </FormItem>
                   )}
-                /> */}
-              </div>
+                />
+              </div> */}
 
               <AddressFields form={form} type="address" />
             </form>

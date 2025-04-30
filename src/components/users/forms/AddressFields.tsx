@@ -61,7 +61,7 @@ export function AddressFields({ form, type, prefix = "" }: AddressFieldsProps) {
 
   return (
     <div className="space-y-4 relative">
-      <AddressInput form={form} fieldName={fieldName("attention")} label="Attention" />
+      {/* <AddressInput form={form} fieldName={fieldName("attention")} label="Attention" /> */}
 
       {/* Street 1 with Autocomplete and Autofill */}
       <div className="relative">

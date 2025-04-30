@@ -260,7 +260,7 @@ export function EditLocationPopup({ open, onOpenChange, userData, onSave }: User
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid grid-cols-3 mb-4">
                 <TabsTrigger value="personal">Personal</TabsTrigger>
-                <TabsTrigger value="company">Company</TabsTrigger>
+                <TabsTrigger value="company">Pharmacy</TabsTrigger>
                 <TabsTrigger value="address">Address</TabsTrigger>
                 {/* <TabsTrigger value="preferences">Preferences</TabsTrigger> */}
               </TabsList>
@@ -345,9 +345,9 @@ export function EditLocationPopup({ open, onOpenChange, userData, onSave }: User
                   name="company_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Company Name</FormLabel>
+                      <FormLabel>Pharmacy Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Company name" {...field} />
+                        <Input placeholder="Pharmacy name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -393,7 +393,20 @@ export function EditLocationPopup({ open, onOpenChange, userData, onSave }: User
                     name="billing_address.street1"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Street Address</FormLabel>
+                        <FormLabel>Street Address1</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Street address" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="billing_address.street2"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Street Address 2</FormLabel>
                         <FormControl>
                           <Input placeholder="Street address" {...field} />
                         </FormControl>
@@ -482,7 +495,20 @@ export function EditLocationPopup({ open, onOpenChange, userData, onSave }: User
                       name="shipping_address.street1"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Street Address</FormLabel>
+                          <FormLabel>Street Address1</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Street address" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="shipping_address.street2"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Street Address2</FormLabel>
                           <FormControl>
                             <Input placeholder="Street address" {...field} />
                           </FormControl>

@@ -23,7 +23,6 @@ import ProductShowcase from "../pharmacy/ProductShowcase";
 import { useLocation, useNavigate } from "react-router-dom";
 import { OrderFormValues } from "./schemas/orderSchema";
 import {
-
   SelectContent,
   SelectItem,
   SelectTrigger,
@@ -35,7 +34,6 @@ import { CSVLink } from "react-csv";
 import { useCart } from "@/hooks/use-cart";
 import { useDispatch } from "react-redux";
 import { updateCartPrice } from "@/store/actions/cartActions";
-
 
 const exportToCSV = (orders: OrderFormValues[]) => {
   if (!orders || orders.length === 0) {
@@ -66,14 +64,13 @@ const exportToCSV = (orders: OrderFormValues[]) => {
   return { data: orders, headers, filename: "orders.csv" };
 };
 
-
 interface OrdersContainerProps {
   userRole?: "admin" | "pharmacy" | "group" | "hospital";
   onProcessOrder?: (orderId: string) => void;
   onShipOrder?: (orderId: string) => void;
   onConfirmOrder?: (orderId: string) => void;
   onDeleteOrder?: (orderId: string) => Promise<void>;
-  poIs?:boolean
+  poIs?: boolean;
 }
 
 export const OrdersContainer = ({
@@ -82,22 +79,23 @@ export const OrdersContainer = ({
   onShipOrder,
   onConfirmOrder,
   onDeleteOrder,
-  poIs=false,
+  poIs = false,
 }: OrdersContainerProps) => {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
-
   const navigate = useNavigate();
 
-  const [isCreateOrderOpen, setIsCreateOrderOpen] = useState<boolean>(!!location.state?.createOrder);
+  const [isCreateOrderOpen, setIsCreateOrderOpen] = useState<boolean>(
+    !!location.state?.createOrder
+  );
 
   const [orderData, setOrderData] = useState<Partial<OrderFormValues>>({});
   const [selectedPharmacy, setSelectedPharmacy] = useState<string>("");
   const [userData, setUserData] = useState<any[]>([]);
-  const [options, setOptions] = useState([])
- const[orderStatus,setOrderStatus] = useState<string>("");
+  const [options, setOptions] = useState([]);
+  const [orderStatus, setOrderStatus] = useState<string>("");
 
   const {
     orders,
@@ -112,7 +110,7 @@ export const OrdersContainer = ({
     handleProcessOrder: processOrder,
     handleShipOrder: shipOrder,
     handleConfirmOrder: confirmOrder,
-    loadOrders
+    loadOrders,
   } = useOrderManagement();
 
   const { cartItems } = useCart();
@@ -158,21 +156,24 @@ export const OrdersContainer = ({
         const { data, error } = await supabase
           .from("profiles")
           .select("id, display_name, type, email");
-    
+
         if (error) {
           console.error("Failed to fetch customer information:", error);
-          throw new Error(`Failed to fetch customer information: ${error.message}`);
+          throw new Error(
+            `Failed to fetch customer information: ${error.message}`
+          );
         }
-    
+
         const userEmail = sessionStorage.getItem("userEmail")?.toLowerCase();
         console.log("User Email from Session:", userEmail);
-    
+
         // ✅ poIs is true: show only the logged-in admin
         if (poIs) {
           const onlyLoggedInAdmin = data.find(
-            (user) => user.email.toLowerCase() === userEmail && user.type === "admin"
+            (user) =>
+              user.email.toLowerCase() === userEmail && user.type === "admin"
           );
-    
+
           if (onlyLoggedInAdmin) {
             setOptions([
               {
@@ -184,15 +185,16 @@ export const OrdersContainer = ({
             // If not found or not admin, set empty list
             setOptions([]);
           }
-    
+
           return; // ✅ return early
         }
-    
+
         // ✅ poIs is false: apply original logic
         const loggedInAdmin = data.find(
-          (user) => user.email.toLowerCase() === userEmail && user.type === "admin"
+          (user) =>
+            user.email.toLowerCase() === userEmail && user.type === "admin"
         );
-    
+
         const filteredData = data.filter((user) => {
           if (
             loggedInAdmin &&
@@ -203,7 +205,7 @@ export const OrdersContainer = ({
           }
           return user.type !== "admin";
         });
-    
+
         const sortedOptions = filteredData
           .map((user) => ({
             value: user.id,
@@ -211,24 +213,19 @@ export const OrdersContainer = ({
             isCustom: user.type === "admin" ? 0 : 1,
           }))
           .sort((a, b) => a.isCustom - b.isCustom);
-    
+
         setOptions(sortedOptions);
       } catch (error) {
         console.error("Error fetching users:", error);
       }
     };
-    
-
-
 
     fetchUsers();
     fetchOrders();
-  }, [orderStatus,poIs]); // Ensure dependencies are correctly placed if needed
-
-
+  }, [orderStatus, poIs]); // Ensure dependencies are correctly placed if needed
 
   useEffect(() => {
-    // setIsCreateOrderOpen(location.state?.createOrder) 
+    // setIsCreateOrderOpen(location.state?.createOrder)
     if (location.state?.createOrder) {
       setIsCreateOrderOpen(true);
 
@@ -237,7 +234,7 @@ export const OrdersContainer = ({
     }
   }, [location, navigate]);
 
-  console.log(orders)
+  console.log(orders);
 
   const {
     statusFilter,
@@ -247,14 +244,11 @@ export const OrdersContainer = ({
     setSearchQuery,
     setDateRange,
     filteredOrders,
-  } = useOrderFilters(orders,poIs);
-
-
- 
+  } = useOrderFilters(orders, poIs);
 
   const handlePharmacyChange = async (pharmacyId: string) => {
     setSelectedPharmacy(pharmacyId);
-    setOrderData(null)
+    setOrderData(null);
     try {
       const { data, error } = await supabase
         .from("profiles")
@@ -274,24 +268,25 @@ export const OrdersContainer = ({
 
       console.log("Successfully fetched profile:", data);
       const { data: groupData, error: fetchError } = await supabase
-      .from("group_pricing")
-      .select("*");
+        .from("group_pricing")
+        .select("*");
 
-    if (fetchError) {
-      console.error("Error fetching group pricing:", fetchError.message);
-      return;
-    }
+      if (fetchError) {
+        console.error("Error fetching group pricing:", fetchError.message);
+        return;
+      }
 
-    console.log("Fetched Group Data:", groupData);
+      console.log("Fetched Group Data:", groupData);
 
-    let ID = data.id;
+      let ID = data.id;
 
-      const handlePriceChange = (productId: string, sizeId: string, newPrice: number) => {
+      const handlePriceChange = (
+        productId: string,
+        sizeId: string,
+        newPrice: number
+      ) => {
         dispatch(updateCartPrice(productId, sizeId, newPrice));
       };
-    
-
-      
 
       const mappedCart = await Promise.all(
         cartItems.map(async (item) => {
@@ -302,31 +297,33 @@ export const OrdersContainer = ({
                 .from("product_sizes")
                 .select("size_value, price")
                 .eq("id", size.id);
-      
+
               if (fetchSizeError) throw fetchSizeError;
-      
+
               let newPrice = sizeFetch?.[0]?.price || size.price;
-      
+
               await handlePriceChange(item.productId, size.id, newPrice);
-      
+
               // Check for applicable group pricing
               const applicableGroup = groupData.find(
                 (group) =>
                   group.group_ids.includes(ID) &&
-                  group.product_arrayjson.some((product) => product.product_id === size.id)
+                  group.product_arrayjson.some(
+                    (product) => product.product_id === size.id
+                  )
               );
-      
+
               if (applicableGroup) {
                 const groupProduct = applicableGroup.product_arrayjson.find(
                   (product) => product.product_id === size.id
                 );
-      
+
                 if (groupProduct && groupProduct.new_price) {
                   newPrice = parseFloat(groupProduct.new_price) || newPrice;
                   await handlePriceChange(item.productId, size.id, newPrice);
                 }
               }
-      
+
               return {
                 ...size,
                 price: newPrice,
@@ -334,17 +331,15 @@ export const OrdersContainer = ({
               };
             })
           );
-      
+
           return {
             ...item,
             sizes: updatedSizes,
           };
         })
       );
-      
 
-
-      console.log(mappedCart)
+      console.log(mappedCart);
 
       sessionStorage.setItem("taxper", data.taxPercantage);
 
@@ -355,7 +350,7 @@ export const OrdersContainer = ({
           type: "Pharmacy",
           name: data.display_name,
           email: data.email || "",
-          phone: data.mobile_phone || "",
+          phone: data.mobile_phone || data?.work_phone || data?.phone || "",
           address: {
             street: `${data.billing_address?.street1 || ""}`,
             city: data.billing_address?.city || "",
@@ -371,9 +366,8 @@ export const OrdersContainer = ({
     }
   };
 
-
-  const setPharmacy = async()=>{
-    if(poIs){
+  const setPharmacy = async () => {
+    if (poIs) {
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -386,117 +380,129 @@ export const OrdersContainer = ({
         });
         return;
       }
-      handlePharmacyChange(session.user.id)
+      handlePharmacyChange(session.user.id);
     }
-  }
+  };
 
   const handleFormChange = (data: Partial<OrderFormValues>) => {
     setOrderData(data);
   };
 
-  useEffect(()=>{
-    setSelectedPharmacy("")
-    setOrderData(null)
-    setPharmacy()
-
-  },[isCreateOrderOpen])
-
+  useEffect(() => {
+    setSelectedPharmacy("");
+    setOrderData(null);
+    setPharmacy();
+  }, [isCreateOrderOpen]);
 
   return (
     <div className="space-y-4">
+      <div className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-2 p-2 bg-card rounded-lg shadow-sm border">
+        {/* Left-side filters */}
+        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+          <OrderFilters
+            onSearch={setSearchQuery}
+            onDateChange={setDateRange}
+            onExport={() =>
+              console.log("Export functionality to be implemented")
+            }
+          />
 
-<div className="flex flex-col md:flex-row flex-wrap justify-between items-center gap-2 p-2 bg-card rounded-lg shadow-sm border">
-  {/* Left-side filters */}
-  <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-    <OrderFilters
-      onSearch={setSearchQuery}
-      onDateChange={setDateRange}
-      onExport={() => console.log("Export functionality to be implemented")}
-    />
+          {/* Move StatusFilter right here */}
+          {!poIs && (
+            <StatusFilter
+              value={statusFilter}
+              onValueChange={setStatusFilter}
+            />
+          )}
 
-    {/* Move StatusFilter right here */}
-    {!poIs && (
-      <StatusFilter
-        value={statusFilter}
-        onValueChange={setStatusFilter}
-      />
-    )}
+          {/* Export Orders */}
+          {!poIs && (
+            <CSVLink {...exportToCSV(filteredOrders)}>
+              <Button variant="outline" className="flex items-center">
+                <Download className="mr-2 h-4 w-4" />
+                Export Orders
+              </Button>
+            </CSVLink>
+          )}
 
-    {/* Export Orders */}
-    {!poIs && (
-      <CSVLink {...exportToCSV(filteredOrders)}>
-        <Button variant="outline" className="flex items-center">
-          <Download className="mr-2 h-4 w-4" />
-          Export Orders
-        </Button>
-      </CSVLink>
-    )}
+          {/* Admin-only buttons */}
+          {userRole === "admin" && (
+            <>
+              {/* Create Order Sheet */}
+              <Sheet
+                open={isCreateOrderOpen}
+                onOpenChange={setIsCreateOrderOpen}
+              >
+                <SheetTrigger asChild>
+                  <Button className="w-auto min-w-fit px-3 py-2 text-sm">
+                    <PlusCircle className="mr-1 h-4 w-4" />
+                    {poIs ? "Purchase Orders" : "Create Order"}
+                  </Button>
+                </SheetTrigger>
+                <SheetContent
+                  side="right"
+                  className="w-[90vw] sm:max-w-[640px] overflow-y-auto"
+                >
+                  <SheetHeader>
+                    <SheetTitle>
+                      {poIs ? "Create Purchase Orders" : "Create New Order"}
+                    </SheetTitle>
+                  </SheetHeader>
 
-    {/* Admin-only buttons */}
-    {userRole === "admin" && (
-      <>
-        {/* Create Order Sheet */}
-        <Sheet open={isCreateOrderOpen} onOpenChange={setIsCreateOrderOpen}>
-          <SheetTrigger asChild>
-            <Button className="w-auto min-w-fit px-3 py-2 text-sm">
-              <PlusCircle className="mr-1 h-4 w-4" />
-              {poIs ? "Purchase Orders" : "Create Order"}
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-[90vw] sm:max-w-[640px] overflow-y-auto">
-            <SheetHeader>
-              <SheetTitle>{poIs ? "Create Purchase Orders" : "Create New Order"}</SheetTitle>
-            </SheetHeader>
+                  {!orderData && (
+                    <div className="flex justify-center items-center h-64">
+                      <LoaderCircle className="animate-spin w-8 h-8 text-gray-500" />
+                    </div>
+                  )}
 
-            {!orderData && (
-              <div className="flex justify-center items-center h-64">
-                <LoaderCircle className="animate-spin w-8 h-8 text-gray-500" />
-              </div>
-            )}
+                  {!poIs && (
+                    <div className="mb-4 mt-2">
+                      <Label htmlFor="pharmacy-select">Select Pharmacy</Label>
+                      <Select
+                        id="pharmacy-select"
+                        options={options}
+                        value={options.find(
+                          (option) => option.value === selectedPharmacy
+                        )}
+                        onChange={(selectedOption) =>
+                          handlePharmacyChange(selectedOption.value)
+                        }
+                        placeholder="Search pharmacy..."
+                        isSearchable
+                        className="w-full mt-1"
+                      />
+                    </div>
+                  )}
 
-            {!poIs && (
-              <div className="mb-4 mt-2">
-                <Label htmlFor="pharmacy-select">Select Pharmacy</Label>
-                <Select
-                  id="pharmacy-select"
-                  options={options}
-                  value={options.find((option) => option.value === selectedPharmacy)}
-                  onChange={(selectedOption) => handlePharmacyChange(selectedOption.value)}
-                  placeholder="Search pharmacy..."
-                  isSearchable
-                  className="w-full mt-1"
-                />
-              </div>
-            )}
+                  {orderData?.customerInfo && (
+                    <div className="mt-2">
+                      <CreateOrderForm
+                        isEditing={false}
+                        initialData={orderData}
+                        onFormChange={handleFormChange}
+                        poIs={poIs}
+                      />
+                    </div>
+                  )}
+                </SheetContent>
+              </Sheet>
 
-            {orderData?.customerInfo && (
-              <div className="mt-2">
-                <CreateOrderForm
-                  isEditing={false}
-                  initialData={orderData}
-                  onFormChange={handleFormChange}
-                  poIs={poIs}
-                />
-              </div>
-            )}
-          </SheetContent>
-        </Sheet>
-
-        {/* All Products Sheet */}
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild>
-            <Button variant="secondary" className="w-auto min-w-fit px-3 py-2 bg-blue-500 text-white text-sm">
-              <Package className="mr-1 h-4 w-4" />
-              All Products
-            </Button>
-          </SheetTrigger>
-        </Sheet>
-      </>
-    )}
-  </div>
-</div>
-
-
+              {/* All Products Sheet */}
+              <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="secondary"
+                    className="w-auto min-w-fit px-3 py-2 bg-blue-500 text-white text-sm"
+                  >
+                    <Package className="mr-1 h-4 w-4" />
+                    All Products
+                  </Button>
+                </SheetTrigger>
+              </Sheet>
+            </>
+          )}
+        </div>
+      </div>
 
       {/* Popup Modal */}
       {isOpen && (
@@ -516,7 +522,6 @@ export const OrdersContainer = ({
           </div>
         </div>
       )}
-
 
       <OrdersList
         orders={filteredOrders}

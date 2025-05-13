@@ -19,7 +19,7 @@ export const useOrderManagement = () => {
       const {
         data: { session },
       } = await supabase.auth.getSession();
-  
+
       if (!session) {
         toast({
           title: "Error",
@@ -28,13 +28,13 @@ export const useOrderManagement = () => {
         });
         return;
       }
-  
+
       const role = sessionStorage.getItem("userType");
       const adminRoles = ["admin"];
       console.log("Session:", session);
       console.log("User ID:", session.user.id);
       console.log("Role from sessionStorage:", role);
-      
+
       let query = supabase
         .from("orders")
         .select(
@@ -52,103 +52,105 @@ export const useOrderManagement = () => {
         )
         .is("deleted_at", null)
         .order("created_at", { ascending: false });
-  
+
       if (role === "pharmacy") {
         query = query.eq("profile_id", session.user.id);
       }
-  
+
       if (role === "group") {
         const { data: groupProfiles, error } = await supabase
           .from("profiles")
           .select("id")
           .eq("group_id", session.user.id);
-  
+
         if (error) throw new Error("Failed to fetch customer information");
-  
+
         if (!groupProfiles || groupProfiles.length === 0)
           throw new Error("No customer profiles found");
-  
+
         const userIds = groupProfiles.map((user) => user.id);
-        console.log(userIds)
+        console.log(userIds);
         query = query.in("profile_id", userIds);
       }
-  
-      const { data, error } = await query;
-  
-      if (error) throw error;
-  
-      const formattedOrders: OrderFormValues[] = (data as any[]).map((order) => {
-        const profileData = order.profiles || {};
 
-        return {
-          id: order.id || "",
-          customer: order.profile_id || "",
-          date: order.created_at || new Date().toISOString(),
-          total: (order.total_amount || 0).toString(),
-          status: order.status || "pending",
-          payment_status: order.payment_status || "unpaid",
-          customization: order.customization || false,
-          poAccept: order.poAccept,
-          shipping_cost: order.shipping_cost,
-          quickBooksID: order.quickBooksID,
-          tax_amount: order.tax_amount,
-          customerInfo: {
-            name:
-              profileData.first_name && profileData.last_name
-                ? `${profileData.first_name} ${profileData.last_name}`
-                : "Unknown",
-            email: profileData.email || "",
-            phone: profileData.mobile_phone || "",
-            type: profileData.type || "Pharmacy",
-            address: {
-              street: profileData.company_name || "",
-              city: "",
-              state: "",
-              zip_code: "",
-            },
-          },
-          order_number: order.order_number,
-          items: order.items || [],
-          shipping: {
-            method: order.shipping_method || "custom",
-            cost: order.shipping_cost || 0,
-            trackingNumber: order.tracking_number || "",
-            estimatedDelivery: order.estimated_delivery || "",
-          },
-          payment: {
-            method: "manual",
-            notes: "",
-          },
-          specialInstructions: order.notes || "",
-          shippingAddress: order.shippingAddress
-            ? {
-                fullName: order.shippingAddress.fullName || "",
-                email: order.shippingAddress.email || "",
-                phone: order.shippingAddress.phone || "",
-                address: {
-                  street: order.shippingAddress.address?.street || "",
-                  city: order.shippingAddress.address?.city || "",
-                  state: order.shippingAddress.address?.state || "",
-                  zip_code: order.shippingAddress.address?.zip_code || "",
-                },
-              }
-            : {
-                fullName:
-                  profileData.first_name && profileData.last_name
-                    ? `${profileData.first_name} ${profileData.last_name}`
-                    : "",
-                email: profileData.email || "",
-                phone: profileData.mobile_phone || "",
-                address: {
-                  street: profileData.company_name || "",
-                  city: "",
-                  state: "",
-                  zip_code: "",
-                },
+      const { data, error } = await query;
+
+      if (error) throw error;
+
+      const formattedOrders: OrderFormValues[] = (data as any[]).map(
+        (order) => {
+          const profileData = order.profiles || {};
+
+          return {
+            id: order.id || "",
+            customer: order.profile_id || "",
+            date: order.created_at || new Date().toISOString(),
+            total: (order.total_amount || 0).toString(),
+            status: order.status || "pending",
+            payment_status: order.payment_status || "unpaid",
+            customization: order.customization || false,
+            poAccept: order.poAccept,
+            shipping_cost: order.shipping_cost,
+            quickBooksID: order.quickBooksID,
+            tax_amount: order.tax_amount,
+            customerInfo: order.customerInfo || {
+              name:
+                profileData.first_name && profileData.last_name
+                  ? `${profileData.first_name} ${profileData.last_name}`
+                  : "Unknown",
+              email: profileData.email || "",
+              phone: profileData.mobile_phone || "",
+              type: profileData.type || "Pharmacy",
+              address: {
+                street: profileData.company_name || "",
+                city: "",
+                state: "",
+                zip_code: "",
               },
-        };
-      });
-  
+            },
+            order_number: order.order_number,
+            items: order.items || [],
+            shipping: {
+              method: order.shipping_method || "custom",
+              cost: order.shipping_cost || 0,
+              trackingNumber: order.tracking_number || "",
+              estimatedDelivery: order.estimated_delivery || "",
+            },
+            payment: {
+              method: "manual",
+              notes: "",
+            },
+            specialInstructions: order.notes || "",
+            shippingAddress: order.shippingAddress
+              ? {
+                  fullName: order.shippingAddress.fullName || "",
+                  email: order.shippingAddress.email || "",
+                  phone: order.shippingAddress.phone || "",
+                  address: {
+                    street: order.shippingAddress.address?.street || "",
+                    city: order.shippingAddress.address?.city || "",
+                    state: order.shippingAddress.address?.state || "",
+                    zip_code: order.shippingAddress.address?.zip_code || "",
+                  },
+                }
+              : {
+                  fullName:
+                    profileData.first_name && profileData.last_name
+                      ? `${profileData.first_name} ${profileData.last_name}`
+                      : "",
+                  email: profileData.email || "",
+                  phone: profileData.mobile_phone || "",
+                  address: {
+                    street: profileData.company_name || "",
+                    city: "",
+                    state: "",
+                    zip_code: "",
+                  },
+                },
+          };
+        }
+      );
+
       setOrders(formattedOrders);
     } catch (error) {
       console.error("Error loading orders:", error);
@@ -159,8 +161,6 @@ export const useOrderManagement = () => {
       });
     }
   };
-  
-  
 
   // Refresh orders when the component mounts
   useEffect(() => {
@@ -175,7 +175,7 @@ export const useOrderManagement = () => {
 
   const handleDeleteOrder = async (orderId: string): Promise<void> => {
     try {
-      const { error:invoiceDeleteError } = await supabase
+      const { error: invoiceDeleteError } = await supabase
         .from("invoices")
         .delete()
         .eq("order_id", orderId);
@@ -215,9 +215,8 @@ export const useOrderManagement = () => {
   };
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
-    console.log(newStatus)
+    console.log(newStatus);
     try {
-      
       // Update order and get the updated order in response
       const { data: updatedOrder, error } = await supabase
         .from("orders")
@@ -228,30 +227,30 @@ export const useOrderManagement = () => {
         .eq("id", orderId)
         .select("*") // Returns the updated order
         .single(); // Ensures only one order is fetched
-  
+
       if (error) throw error;
-  
+
       // Log the updated order
       console.log("Updated Order:", updatedOrder);
-  
-     // Send the updated order to the backend
-     if(newStatus !== "processing"){
-      try {
-        await axios.post("/order-status", updatedOrder);
-        console.log("Order status sent successfully to backend.");
-      } catch (apiError) {
-        console.error("Failed to send order status to backend:", apiError);
+
+      // Send the updated order to the backend
+      if (newStatus !== "processing") {
+        try {
+          await axios.post("/order-status", updatedOrder);
+          console.log("Order status sent successfully to backend.");
+        } catch (apiError) {
+          console.error("Failed to send order status to backend:", apiError);
+        }
       }
-     }
 
       // Reload orders to sync state
       await loadOrders();
-  
+
       toast({
         title: "Success",
         description: `Order status updated to ${newStatus}`,
       });
-  
+
       return updatedOrder; // Return the updated order
     } catch (error) {
       console.error("Error updating order status:", error);
@@ -263,7 +262,6 @@ export const useOrderManagement = () => {
       throw error;
     }
   };
-  
 
   const handleProcessOrder = async (orderId: string) => {
     return updateOrderStatus(orderId, "processing");
@@ -291,6 +289,6 @@ export const useOrderManagement = () => {
     handleShipOrder,
     handleConfirmOrder,
     handleDeleteOrder,
-    loadOrders
+    loadOrders,
   };
 };

@@ -26,6 +26,8 @@ import PaymentForm from "@/components/PaymentModal";
 import axios from "../../../../axiosconfig";
 import { InvoiceStatus, PaymentMethod } from "@/components/invoices/types/invoice.types";
 
+import { useCart } from "@/hooks/use-cart";
+
 interface OrdersListProps {
   orders: OrderFormValues[];
   onOrderClick: (order: OrderFormValues) => void;
@@ -65,6 +67,7 @@ export function OrdersList({
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [loadingPO, setLoadingPO] = useState(false);
   const [selectCustomerInfo, setSelectCustomerInfo] = useState<any>({});
+  const { cartItems, clearCart, addToCart } = useCart();
 
   const createInvoiceForOrder = async (
     orderId: string,
@@ -460,12 +463,12 @@ export function OrdersList({
                 <TableCell onClick={(e) => e.stopPropagation()} className="text-center border-gray-300">
                   <Checkbox
                     checked={selectedOrders.includes(orderId)}
-                    onCheckedChange={() => onOrderSelect(orderId)}
+                    onCheckedChange={() => {onOrderSelect(orderId)  }}
                   />
                 </TableCell>
               )}
-              <TableCell onClick={() => onOrderClick(order)} className="font-medium text-center border-gray-300">
-                {order.customerInfo?.name || "N/A"}
+              <TableCell onClick={async() => {onOrderClick(order) ;await clearCart()}} className="font-medium text-center border-gray-300">
+                {order.customerInfo?.name || "N/A"} 
               </TableCell>
               <TableCell className="text-center border-gray-300">
                 {(() => {

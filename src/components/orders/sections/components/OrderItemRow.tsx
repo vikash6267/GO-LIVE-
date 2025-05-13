@@ -18,16 +18,21 @@ export const OrderItemRow = ({ index, form, products }: OrderItemRowProps) => {
   const selectedProduct = products.find((p) => p.id === selectedProductId.productId);
 
   // Handle Remove Product from Form and Cart
-  const handleRemove = () => {
-    const productId = selectedProductId.productId;
+// Handle Remove Product from Form and Cart
+const handleRemove = () => {
+  const productId = selectedProductId.productId;
 
-    // Remove from the form
-    const updatedItems = allValues.items.filter((_, i) => i !== index);
-    form.setValue("items", updatedItems);
+  // Remove from the form
+  const updatedItems = allValues.items.filter((_, i) => i !== index);
+  form.setValue("items", updatedItems);
 
-    // Remove from the cart if present
-    removeFromCart(productId);
-  };
+  // Trigger re-render by updating form state
+  form.trigger("items");
+
+  // Remove from the cart if present
+  removeFromCart(productId);
+};
+
 
   return (
     <div className="flex flex-col p-4 border rounded-lg shadow-md">

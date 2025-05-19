@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
-import Modal from "react-modal";
-import axios from "../../axiosconfig";
+"use client"
+
+import { useEffect, useState } from "react"
+import Modal from "react-modal"
+import axios from "../../axiosconfig"
 import {
   CreditCard,
   Landmark,
@@ -9,34 +11,153 @@ import {
   MapPin,
   Building,
   Globe,
-} from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
-import { useOrderManagement } from "./orders/hooks/useOrderManagement";
+  DollarSign,
+  Calendar,
+  KeyRound,
+  Loader2,
+} from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import { supabase } from "@/integrations/supabase/client"
+import { useNavigate } from "react-router-dom"
+import { useOrderManagement } from "./orders/hooks/useOrderManagement"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { cn } from "@/lib/utils"
 
-Modal.setAppElement(document.getElementById("body"));
+Modal.setAppElement(document.getElementById("body"))
 
-const PaymentForm = ({
-  modalIsOpen,
-  setModalIsOpen,
-  customer,
-  amountP,
-  orderId,
-  orders,
-  payNow = false,
-  
- 
-}) => {
-  const [paymentType, setPaymentType] = useState("credit_card");
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false); // Loading state
-  const navigate = useNavigate();
-  const [notes, setNotes] = useState("")
-  const {
+function validateCardNumber(cardNumber) {
+  // Remove spaces and non-numeric characters
+  const cleaned = cardNumber.replace(/\D/g, "")
 
-    loadOrders
-  } = useOrderManagement();
+  // Most cards have 16 digits, Amex has 15
+  const isValidLength = cleaned.length === 16 || cleaned.length === 15
+
+  if (!isValidLength) {
+    return "Card number must be 15-16 digits"
+  }
+
+  return null
+}
+
+function validateCVV(cvv) {
+  // Remove non-numeric characters
+  const cleaned = cvv.replace(/\D/g, "")
+
+  // CVV should be exactly 3 digits (4 for Amex, but we'll stick with 3 for simplicity)
+  if (cleaned.length !== 3) {
+    return "CVV must be 3 digits"
+  }
+
+  return null
+}
+
+function validateCardholderName(name) {
+  if (!name || name.trim().length < 3) {
+    return "Cardholder name must be at least 3 characters"
+  }
+  return null
+}
+
+function validateExpirationDate(date) {
+  if (!date) return "Expiration date is required"
+
+  // Check format
+  if (!date.match(/^\d{2}\/\d{2}$/)) {
+    return "Expiration date must be in MM/YY format"
+  }
+
+  const [month, year] = date.split("/")
+  const currentDate = new Date()
+  const currentYear = currentDate.getFullYear() % 100 // Get last two digits
+  const currentMonth = currentDate.getMonth() + 1 // January is 0
+
+  // Convert to numbers
+  const monthNum = Number.parseInt(month, 10)
+  const yearNum = Number.parseInt(year, 10)
+
+  // Validate month
+  if (monthNum < 1 || monthNum > 12) {
+    return "Invalid month"
+  }
+
+  // Check if card is expired
+  if (yearNum < currentYear || (yearNum === currentYear && monthNum < currentMonth)) {
+    return "Card has expired"
+  }
+
+  return null
+}
+
+function validateAddress(address) {
+  if (!address || address.trim().length < 5) {
+    return "Address must be at least 5 characters"
+  }
+  return null
+}
+
+function validateCity(city) {
+  if (!city || city.trim().length < 2) {
+    return "City name is required"
+  }
+  return null
+}
+
+function validateState(state) {
+  if (!state || state.trim().length < 2) {
+    return "State is required"
+  }
+  return null
+}
+
+function validateZip(zip) {
+  // Basic US zip code validation
+  if (!zip || !zip.match(/^\d{5}(-\d{4})?$/)) {
+    return "Enter a valid ZIP code (e.g., 12345 or 12345-6789)"
+  }
+  return null
+}
+
+function validateCountry(country) {
+  if (!country || country.trim().length < 2) {
+    return "Country is required"
+  }
+  return null
+}
+
+function validateRoutingNumber(number) {
+  // US routing numbers are 9 digits
+  if (!number || !number.match(/^\d{9}$/)) {
+    return "Routing number must be 9 digits"
+  }
+  return null
+}
+
+function validateAccountNumber(number) {
+  // Account numbers are typically 8-12 digits
+  if (!number || !number.match(/^\d{8,17}$/)) {
+    return "Account number must be 8-17 digits"
+  }
+  return null
+}
+
+function validateNotes(notes) {
+  if (!notes || notes.trim().length < 5) {
+    return "Please provide payment details (minimum 5 characters)"
+  }
+  return null
+}
+
+const PaymentForm = ({ modalIsOpen, setModalIsOpen, customer, amountP, orderId, orders, payNow = false }) => {
+  const [paymentType, setPaymentType] = useState("credit_card")
+  const { toast } = useToast()
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+  const { loadOrders } = useOrderManagement()
 
   const [formData, setFormData] = useState({
     amount: 0,
@@ -54,10 +175,25 @@ const PaymentForm = ({
     zip: "",
     country: "",
     notes: "",
-  });
+  })
+
+  const [errors, setErrors] = useState({
+    cardNumber: null,
+    cvv: null,
+    expirationDate: null,
+    cardholderName: null,
+    address: null,
+    city: null,
+    state: null,
+    zip: null,
+    country: null,
+    routingNumber: null,
+    accountNumber: null,
+    nameOnAccount: null,
+    notes: null,
+  })
 
   useEffect(() => {
-    console.log(orders);
     if (customer) {
       setFormData((prevData) => ({
         ...prevData,
@@ -70,520 +206,797 @@ const PaymentForm = ({
         email: customer.email || "",
         phone: customer.phone || "",
         amount: amountP || 0,
-      }));
+      }))
     }
-  }, [customer]);
+  }, [customer])
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    const { name, value } = e.target
+
+    // Clear error when user starts typing
+    setErrors({
+      ...errors,
+      [name]: null,
+    })
+
+    if (name === "expirationDate") {
+      let formattedValue = value.replace(/[^0-9]/g, "")
+
+      // Add separator after month (after 2 digits)
+      if (formattedValue.length > 2) {
+        formattedValue = formattedValue.slice(0, 2) + "/" + formattedValue.slice(2)
+      }
+
+      // Limit to MM/YY format (5 characters total)
+      if (formattedValue.length <= 5) {
+        setFormData({ ...formData, [name]: formattedValue })
+      }
+    } else if (name === "cardNumber") {
+      // Only allow numbers and limit to 16 digits
+      const formattedValue = value.replace(/\D/g, "").slice(0, 16)
+      setFormData({ ...formData, [name]: formattedValue })
+    } else if (name === "cvv") {
+      // Only allow numbers and limit to 3 digits
+      const formattedValue = value.replace(/\D/g, "").slice(0, 3)
+      setFormData({ ...formData, [name]: formattedValue })
+    } else if (name === "zip") {
+      // Allow only numbers and hyphen for ZIP codes
+      const formattedValue = value.replace(/[^0-9-]/g, "").slice(0, 10)
+      setFormData({ ...formData, [name]: formattedValue })
+    } else if (name === "routingNumber" || name === "accountNumber") {
+      // Only allow numbers for banking information
+      const formattedValue = value.replace(/\D/g, "")
+      setFormData({ ...formData, [name]: formattedValue })
+    } else {
+      setFormData({ ...formData, [name]: value })
+    }
+  }
+
+  const handleSelectChange = (name, value) => {
+    setFormData({ ...formData, [name]: value })
+  }
+
+  useEffect(() => {
+    console.log("Current payment type:", paymentType)
+  }, [paymentType])
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
+
+    // Initialize validation errors
+    const newErrors = {}
+    let hasErrors = false
+
+    // Validate fields based on payment type
+    if (paymentType === "credit_card") {
+      newErrors.cardNumber = validateCardNumber(formData.cardNumber)
+      newErrors.cvv = validateCVV(formData.cvv)
+      newErrors.expirationDate = validateExpirationDate(formData.expirationDate)
+      newErrors.cardholderName = validateCardholderName(formData.cardholderName)
+      newErrors.address = validateAddress(formData.address)
+      newErrors.city = validateCity(formData.city)
+      newErrors.state = validateState(formData.state)
+      newErrors.zip = validateZip(formData.zip)
+      newErrors.country = validateCountry(formData.country)
+    } else if (paymentType === "manaul_payemnt") {
+      newErrors.notes = validateNotes(formData.notes)
+    } else if (paymentType === "ach") {
+      newErrors.routingNumber = validateRoutingNumber(formData.routingNumber)
+      newErrors.accountNumber = validateAccountNumber(formData.accountNumber)
+      newErrors.nameOnAccount = validateCardholderName(formData.nameOnAccount)
+      newErrors.address = validateAddress(formData.address)
+      newErrors.city = validateCity(formData.city)
+      newErrors.state = validateState(formData.state)
+      newErrors.zip = validateZip(formData.zip)
+      newErrors.country = validateCountry(formData.country)
+    }
+
+    // Check if there are any validation errors
+    for (const key in newErrors) {
+      if (newErrors[key]) {
+        hasErrors = true
+        break
+      }
+    }
+
+    // Update errors state
+    setErrors(newErrors)
+
+    // If any errors, don't proceed
+    if (hasErrors) {
+      return
+    }
+
     setLoading(true)
 
     if (paymentType === "manaul_payemnt") {
-      const { data:dateOrder , error: updateError } = await supabase
+      const { data: dateOrder, error: updateError } = await supabase
         .from("orders")
         .update({
-          payment_status: "paid", // Use correct column name
-          notes: formData.notes, // Use correct column name
-
+          payment_status: "paid",
+          notes: formData.notes,
           updated_at: new Date().toISOString(),
         })
         .eq("id", orderId)
         .select("*")
-        .maybeSingle(); 
-        
+        .maybeSingle()
 
-      if (updateError) throw updateError;
+      if (updateError) throw updateError
 
       const { data, error } = await supabase
         .from("invoices")
         .update({
-          payment_status: "paid", // Use correct column name
+          payment_status: "paid",
           updated_at: new Date().toISOString(),
           payment_method: "manual",
-          payment_notes: formData.notes, // Use correct column name
-
-
+          payment_notes: formData.notes,
         })
         .eq("order_id", orderId)
-        .select("*"); 
-
+        .select("*")
 
       if (error) {
-        console.error('Error creating invoice:', error);
-        throw error;
+        console.error("Error creating invoice:", error)
+        throw error
       }
 
-      console.log('Invoice created successfully:', data);
+      console.log("Invoice created successfully:", data)
       setModalIsOpen(false)
       toast({
-        title: "Payment Successfull",
+        title: "Payment Successful",
         description: "",
-      });
-      window.location.reload();
+      })
+      window.location.reload()
 
       return
     }
 
-    const { data, error } = await supabase
-  .from("invoices")
-  .select("*")
-  .eq("order_id", orderId)
-  .single();
+    const { data, error } = await supabase.from("invoices").select("*").eq("order_id", orderId).single()
 
-
-  console.log(data)
-  
     const paymentData =
       paymentType === "credit_card"
         ? {
-          paymentType,
-          amount: formData.amount,
-          cardNumber: formData.cardNumber,
-          expirationDate: formData.expirationDate,
-          cvv: formData.cvv,
-          cardholderName: formData.cardholderName,
-          address: formData.address,
-          city: formData.city,
-          state: formData.state,
-          zip: formData.zip,
-          country: formData.country,
-          invoiceNumber:data.invoice_number
-        }
+            paymentType,
+            amount: formData.amount,
+            cardNumber: formData.cardNumber,
+            expirationDate: formData.expirationDate,
+            cvv: formData.cvv,
+            cardholderName: formData.cardholderName,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            zip: formData.zip,
+            country: formData.country,
+            invoiceNumber: data.invoice_number,
+          }
         : {
-          paymentType,
-          amount: formData.amount,
-          accountType: formData.accountType,
-          routingNumber: formData.routingNumber,
-          accountNumber: formData.accountNumber,
-          nameOnAccount: formData.nameOnAccount,
-          address: formData.address,
-          city: formData.city,
-          state: formData.state,
-          zip: formData.zip,
-          country: formData.country,
-          invoiceNumber:data.invoice_number
-
-        };
+            paymentType,
+            amount: formData.amount,
+            accountType: formData.accountType,
+            routingNumber: formData.routingNumber,
+            accountNumber: formData.accountNumber,
+            nameOnAccount: formData.nameOnAccount,
+            address: formData.address,
+            city: formData.city,
+            state: formData.state,
+            zip: formData.zip,
+            country: formData.country,
+            invoiceNumber: data.invoice_number,
+          }
 
     try {
-      const response = await axios.post("/pay", paymentData);
-      // const response = {
-      //   status:200,
-      //   data:{
-      //     transactionId:23456789,
-      //     message:"hello"
-      //   }
-      // }
+      const response = await axios.post("/pay", paymentData)
+
       if (response.status === 200) {
-
-
-     
-        
-        
-        const { data:dateOrder, error: updateError } = await supabase
+        const { data: dateOrder, error: updateError } = await supabase
           .from("orders")
           .update({
-            payment_status: "paid", // Use correct column name
+            payment_status: "paid",
             updated_at: new Date().toISOString(),
-         
           })
           .eq("id", orderId)
           .select("*")
-        .maybeSingle(); 
-          
+          .maybeSingle()
 
-        if (updateError) throw updateError;
-
+        if (updateError) throw updateError
 
         try {
-        
-            
           const response2 = await axios.post("/pay-successfull", {
             name: customer.name || "N/A",
             email: customer.email,
-            orderNumber:dateOrder.order_number ,
-            transactionId:response?.data.transactionId || "1234"
-            
-          });
-        
-          console.log("Payment Successful:", response2.data);
-      
-         
+            orderNumber: dateOrder.order_number,
+            transactionId: response?.data.transactionId || "1234",
+          })
+
+          console.log("Payment Successful:", response2.data)
         } catch (error) {
-          console.error("Error in user verification:", error.response?.data || error.message);
+          console.error("Error in user verification:", error.response?.data || error.message)
         }
 
         const { data, error } = await supabase
           .from("invoices")
           .update({
-            payment_status: "paid", // Use correct column name
+            payment_status: "paid",
             updated_at: new Date().toISOString(),
-               payment_transication:response?.data?.transactionId || "",
-            payment_method: "card"
+            payment_transication: response?.data?.transactionId || "",
+            payment_method: "card",
           })
-          .eq("order_id", orderId);
-
+          .eq("order_id", orderId)
 
         if (error) {
-          console.error('Error creating invoice:', error);
-          throw error;
+          console.error("Error creating invoice:", error)
+          throw error
         }
 
-        console.log('Invoice created successfully:', data);
-
+        console.log("Invoice created successfully:", data)
 
         if (payNow) {
-          navigate("/pharmacy/orders");
-
+          navigate("/pharmacy/orders")
         }
 
         setModalIsOpen(false)
         toast({
-          title: "Payment Successfull",
+          title: "Payment Successful",
           description: response.data.message,
-        });
-        window.location.reload();
+        })
+        window.location.reload()
 
         setTimeout(() => {
           if (payNow) {
-            navigate("/pharmacy/orders");
-
-          };
-        }, 500);
-
-
-
+            navigate("/pharmacy/orders")
+          }
+        }, 500)
       } else {
         console.log(response)
         setLoading(false)
-
       }
     } catch (error) {
       setLoading(false)
-
-      console.log(error);
+      console.log(error)
       toast({
         title: "Payment failed",
         description: error.response.data.message || "Failed ",
-        variant:"destructive"
-      });
+        variant: "destructive",
+      })
     }
-  };
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen z-[99999]">
       <Modal
         isOpen={modalIsOpen}
-        shouldCloseOnOverlayClick={false} // ✅ Yahan false karein
+        shouldCloseOnOverlayClick={false}
         onRequestClose={() => setModalIsOpen(false)}
-        className="bg-white p-6 rounded-lg shadow-lg w-96 mx-auto mt-20 z-[99] max-h-[80vh] overflow-y-scroll "
-        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[99] pointer-events-auto" // <-- Yaha change karein
+        className="bg-white p-0 rounded-lg shadow-xl w-[450px] mx-auto mt-20 z-[99] max-h-[85vh] overflow-y-auto"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[99] pointer-events-auto"
       >
-        <button
-          onClick={() => setModalIsOpen(false)}
-          className="absolute top-3 right-3 bg-gray-300 hover:bg-gray-400 text-black rounded-full w-8 h-8 flex items-center justify-center"
-        >
-          ✕
-        </button>
-
-        <h2 className="text-xl font-semibold mb-4">Make a Payment</h2>
-        <select
-          onChange={(e) => setPaymentType(e.target.value)}
-          value={paymentType}
-          className="border p-2 w-full mb-3 rounded"
-        >
-          <option value="credit_card">Credit Card</option>
-          {
-  sessionStorage.getItem('userType')?.toLocaleLowerCase() === "admin" &&
-
-            <option value="manaul_payemnt">Manual Payment</option>
-          }
-          {/* <option value="ach">Bank Transfer</option> */}
-        </select>
-
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-              $
-            </span>
-            <input
-              type="number"
-              readOnly
-              name="amount"
-              placeholder="Amount"
-              onChange={handleChange}
-              value={formData.amount}
-              required
-              className="border p-2 w-full rounded pl-10 cursor-not-allowed"
-            />
-          </div>
-
-          {paymentType === "credit_card" ? (
-            <>
-              <div className="relative">
-                <CreditCard className="absolute left-3 top-3 text-gray-500" />
-                <input
-                  type="text"
-                  name="cardNumber"
-                  placeholder="Card Number"
-                  onChange={handleChange}
-                  value={formData.cardNumber}
-                  required
-                  className="border p-2 w-full rounded pl-10 bg-white text-black"
-                />
-              </div>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  name="expirationDate"
-                  placeholder="MMYY"
-                  onChange={handleChange}
-                  value={formData.expirationDate}
-                  required
-                  className="border p-2 w-full rounded"
-                />
-                <input
-                  type="text"
-                  name="cvv"
-                  placeholder="CVV"
-                  onChange={handleChange}
-                  value={formData.cvv}
-                  required
-                  className="border p-2 w-full rounded"
-                />
-              </div>
-              <div className="relative">
-                <User className="absolute left-3 top-3 text-gray-500" />
-                <input
-                  type="text"
-                  name="cardholderName"
-                  placeholder="Cardholder Name"
-                  onChange={handleChange}
-                  value={formData.cardholderName}
-                  required
-                  className="border p-2 w-full rounded pl-10"
-                />
-              </div>
-
-              <div className="relative">
-                <MapPin className="absolute left-3 top-3 text-gray-500" />
-                <input
-                  type="text"
-                  name="address"
-                  placeholder="Address"
-                  onChange={handleChange}
-                  value={formData.address}
-                  required
-                  className="border p-2 w-full rounded pl-10"
-                />
-              </div>
-              <div className="relative">
-                <Building className="absolute left-3 top-3 text-gray-500" />
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="City"
-                  onChange={handleChange}
-                  value={formData.city}
-                  required
-                  className="border p-2 w-full rounded pl-10"
-                />
-              </div>
-              <div className="relative">
-                <Globe className="absolute left-3 top-3 text-gray-500" />
-                <input
-                  type="text"
-                  name="state"
-                  placeholder="State"
-                  onChange={handleChange}
-                  value={formData.state}
-                  required
-                  className="border p-2 w-full rounded pl-10"
-                />
-              </div>
-              <input
-                type="text"
-                name="zip"
-                placeholder="ZIP Code"
-                onChange={handleChange}
-                value={formData.zip}
-                required
-                className="border p-2 w-full rounded"
-              />
-              <input
-                type="text"
-                name="country"
-                placeholder="Country"
-                onChange={handleChange}
-                value={formData.country}
-                required
-                className="border p-2 w-full rounded"
-              />
-            </>
-          ) : (
-            paymentType === "manaul_payemnt" ? (<>
-
-              <div className="relative">
-
-                <input
-                  type="text"
-                  name="notes"
-                  placeholder="Notes"
-                  onChange={handleChange}
-                  value={formData.notes}
-                  required
-                  className="border p-2 w-full rounded pl-10"
-                />
-              </div>
-
-            </>) : (
-              <>
-                <select
-                  name="accountType"
-                  onChange={handleChange}
-                  value={formData.accountType}
-                  className="border p-2 w-full rounded"
-                >
-                  <option value="checking">Checking</option>
-                  <option value="savings">Savings</option>
-                </select>
-                <div className="relative">
-                  <Landmark className="absolute left-3 top-3 text-gray-500" />
-                  <input
-                    type="text"
-                    name="routingNumber"
-                    placeholder="Routing Number"
-                    onChange={handleChange}
-                    value={formData.routingNumber}
-                    required
-                    className="border p-2 w-full rounded pl-10"
-                  />
-                </div>
-                <div className="relative">
-                  <Hash className="absolute left-3 top-3 text-gray-500" />
-                  <input
-                    type="text"
-                    name="accountNumber"
-                    placeholder="Account Number"
-                    onChange={handleChange}
-                    value={formData.accountNumber}
-                    required
-                    className="border p-2 w-full rounded pl-10"
-                  />
-                </div>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 text-gray-500" />
-                  <input
-                    type="text"
-                    name="nameOnAccount"
-                    placeholder="Name on Account"
-                    onChange={handleChange}
-                    value={formData.nameOnAccount}
-                    required
-                    className="border p-2 w-full rounded pl-10"
-                  />
-                </div>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-3 text-gray-500" />
-                  <input
-                    type="text"
-                    name="address"
-                    placeholder="Address"
-                    onChange={handleChange}
-                    value={formData.address}
-                    required
-                    className="border p-2 w-full rounded pl-10"
-                  />
-                </div>
-                <div className="relative">
-                  <Building className="absolute left-3 top-3 text-gray-500" />
-                  <input
-                    type="text"
-                    name="city"
-                    placeholder="City"
-                    onChange={handleChange}
-                    value={formData.city}
-                    required
-                    className="border p-2 w-full rounded pl-10"
-                  />
-                </div>
-                <div className="relative">
-                  <Globe className="absolute left-3 top-3 text-gray-500" />
-                  <input
-                    type="text"
-                    name="state"
-                    placeholder="State"
-                    onChange={handleChange}
-                    value={formData.state}
-                    required
-                    className="border p-2 w-full rounded pl-10"
-                  />
-                </div>
-                <input
-                  type="text"
-                  name="zip"
-                  placeholder="ZIP Code"
-                  onChange={handleChange}
-                  value={formData.zip}
-                  required
-                  className="border p-2 w-full rounded"
-                />
-                <input
-                  type="text"
-                  name="country"
-                  placeholder="Country"
-                  onChange={handleChange}
-                  value={formData.country}
-                  required
-                  className="border p-2 w-full rounded"
-                />
-              </>
-            )
-          )}
-          <div className="flex gap-2 justify-between px-2">
-            <button
-              type="submit"
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition w-full flex items-center justify-center"
-              disabled={loading} // Disable button when loading
+        <Card className="border-0 shadow-none">
+          <CardHeader className="pb-4 relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-2 top-2 rounded-full h-8 w-8"
+              onClick={() => setModalIsOpen(false)}
             >
+              <span className="sr-only">Close</span>✕
+            </Button>
+            <CardTitle className="text-xl font-semibold">Make a Payment</CardTitle>
+            <CardDescription>Complete your payment securely</CardDescription>
+          </CardHeader>
+
+          <CardContent className="px-6">
+            <div className="mb-4">
+              <Label htmlFor="paymentType">Payment Method</Label>
+              <div className="mt-1">
+                <select
+                  id="paymentType"
+                  value={paymentType}
+                  onChange={(e) => setPaymentType(e.target.value)}
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  <option value="credit_card">Credit Card</option>
+                  {sessionStorage.getItem("userType")?.toLocaleLowerCase() === "admin" && (
+                    <option value="manaul_payemnt">Manual Payment</option>
+                  )}
+                  {/* <option value="ach">Bank Transfer</option> */}
+                </select>
+              </div>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="amount">Amount</Label>
+                <div className="relative">
+                  <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <Input
+                    id="amount"
+                    type="number"
+                    name="amount"
+                    readOnly
+                    value={formData.amount}
+                    className="pl-9 cursor-not-allowed bg-gray-50"
+                  />
+                </div>
+              </div>
+
+              {paymentType === "credit_card" ? (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="cardNumber" className={cn(errors.cardNumber && "text-destructive")}>
+                      Card Number
+                    </Label>
+                    <div className="relative">
+                      <CreditCard
+                        className={cn(
+                          "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                          errors.cardNumber && "text-destructive",
+                        )}
+                      />
+                      <Input
+                        id="cardNumber"
+                        type="text"
+                        name="cardNumber"
+                        placeholder="1234 5678 9012 3456"
+                        value={formData.cardNumber}
+                        onChange={handleChange}
+                        className={cn("pl-9", errors.cardNumber && "border-destructive focus-visible:ring-destructive")}
+                        required
+                      />
+                    </div>
+                    {errors.cardNumber && <p className="text-sm font-medium text-destructive">{errors.cardNumber}</p>}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="expirationDate" className={cn(errors.expirationDate && "text-destructive")}>
+                        Expiration Date
+                      </Label>
+                      <div className="relative">
+                        <Calendar
+                          className={cn(
+                            "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                            errors.expirationDate && "text-destructive",
+                          )}
+                        />
+                        <Input
+                          id="expirationDate"
+                          type="text"
+                          name="expirationDate"
+                          placeholder="MM/YY"
+                          value={formData.expirationDate}
+                          onChange={handleChange}
+                          className={cn(
+                            "pl-9",
+                            errors.expirationDate && "border-destructive focus-visible:ring-destructive",
+                          )}
+                          required
+                        />
+                      </div>
+                      {errors.expirationDate && (
+                        <p className="text-sm font-medium text-destructive">{errors.expirationDate}</p>
+                      )}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="cvv" className={cn(errors.cvv && "text-destructive")}>
+                        CVV
+                      </Label>
+                      <div className="relative">
+                        <KeyRound
+                          className={cn(
+                            "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                            errors.cvv && "text-destructive",
+                          )}
+                        />
+                        <Input
+                          id="cvv"
+                          type="text"
+                          name="cvv"
+                          placeholder="123"
+                          value={formData.cvv}
+                          onChange={handleChange}
+                          className={cn("pl-9", errors.cvv && "border-destructive focus-visible:ring-destructive")}
+                          required
+                        />
+                      </div>
+                      {errors.cvv && <p className="text-sm font-medium text-destructive">{errors.cvv}</p>}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="cardholderName" className={cn(errors.cardholderName && "text-destructive")}>
+                      Cardholder Name
+                    </Label>
+                    <div className="relative">
+                      <User
+                        className={cn(
+                          "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                          errors.cardholderName && "text-destructive",
+                        )}
+                      />
+                      <Input
+                        id="cardholderName"
+                        type="text"
+                        name="cardholderName"
+                        placeholder="John Doe"
+                        value={formData.cardholderName}
+                        onChange={handleChange}
+                        className={cn(
+                          "pl-9",
+                          errors.cardholderName && "border-destructive focus-visible:ring-destructive",
+                        )}
+                        required
+                      />
+                    </div>
+                    {errors.cardholderName && (
+                      <p className="text-sm font-medium text-destructive">{errors.cardholderName}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="address" className={cn(errors.address && "text-destructive")}>
+                      Address
+                    </Label>
+                    <div className="relative">
+                      <MapPin
+                        className={cn(
+                          "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                          errors.address && "text-destructive",
+                        )}
+                      />
+                      <Input
+                        id="address"
+                        type="text"
+                        name="address"
+                        placeholder="123 Main St"
+                        value={formData.address}
+                        onChange={handleChange}
+                        className={cn("pl-9", errors.address && "border-destructive focus-visible:ring-destructive")}
+                        required
+                      />
+                    </div>
+                    {errors.address && <p className="text-sm font-medium text-destructive">{errors.address}</p>}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="city" className={cn(errors.city && "text-destructive")}>
+                        City
+                      </Label>
+                      <div className="relative">
+                        <Building
+                          className={cn(
+                            "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                            errors.city && "text-destructive",
+                          )}
+                        />
+                        <Input
+                          id="city"
+                          type="text"
+                          name="city"
+                          placeholder="New York"
+                          value={formData.city}
+                          onChange={handleChange}
+                          className={cn("pl-9", errors.city && "border-destructive focus-visible:ring-destructive")}
+                          required
+                        />
+                      </div>
+                      {errors.city && <p className="text-sm font-medium text-destructive">{errors.city}</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state" className={cn(errors.state && "text-destructive")}>
+                        State
+                      </Label>
+                      <div className="relative">
+                        <Globe
+                          className={cn(
+                            "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                            errors.state && "text-destructive",
+                          )}
+                        />
+                        <Input
+                          id="state"
+                          type="text"
+                          name="state"
+                          placeholder="NY"
+                          value={formData.state}
+                          onChange={handleChange}
+                          className={cn("pl-9", errors.state && "border-destructive focus-visible:ring-destructive")}
+                          required
+                        />
+                      </div>
+                      {errors.state && <p className="text-sm font-medium text-destructive">{errors.state}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="zip" className={cn(errors.zip && "text-destructive")}>
+                        ZIP Code
+                      </Label>
+                      <Input
+                        id="zip"
+                        type="text"
+                        name="zip"
+                        placeholder="10001"
+                        value={formData.zip}
+                        onChange={handleChange}
+                        className={cn(errors.zip && "border-destructive focus-visible:ring-destructive")}
+                        required
+                      />
+                      {errors.zip && <p className="text-sm font-medium text-destructive">{errors.zip}</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="country" className={cn(errors.country && "text-destructive")}>
+                        Country
+                      </Label>
+                      <Input
+                        id="country"
+                        type="text"
+                        name="country"
+                        placeholder="USA"
+                        value={formData.country}
+                        onChange={handleChange}
+                        className={cn(errors.country && "border-destructive focus-visible:ring-destructive")}
+                        required
+                      />
+                      {errors.country && <p className="text-sm font-medium text-destructive">{errors.country}</p>}
+                    </div>
+                  </div>
+                </>
+              ) : paymentType === "manaul_payemnt" ? (
+                <div className="space-y-2">
+                  <Label htmlFor="notes" className={cn(errors.notes && "text-destructive")}>
+                    Payment Notes
+                  </Label>
+                  <Textarea
+                    id="notes"
+                    name="notes"
+                    placeholder="Enter payment details or reference number"
+                    value={formData.notes}
+                    onChange={handleChange}
+                    className={cn("min-h-[100px]", errors.notes && "border-destructive focus-visible:ring-destructive")}
+                    required
+                  />
+                  {errors.notes && <p className="text-sm font-medium text-destructive">{errors.notes}</p>}
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="accountType">Account Type</Label>
+                    <Select
+                      value={formData.accountType}
+                      onValueChange={(value) => handleSelectChange("accountType", value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select account type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="checking">Checking</SelectItem>
+                        <SelectItem value="savings">Savings</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="routingNumber" className={cn(errors.routingNumber && "text-destructive")}>
+                      Routing Number
+                    </Label>
+                    <div className="relative">
+                      <Landmark
+                        className={cn(
+                          "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                          errors.routingNumber && "text-destructive",
+                        )}
+                      />
+                      <Input
+                        id="routingNumber"
+                        type="text"
+                        name="routingNumber"
+                        placeholder="123456789"
+                        value={formData.routingNumber}
+                        onChange={handleChange}
+                        className={cn(
+                          "pl-9",
+                          errors.routingNumber && "border-destructive focus-visible:ring-destructive",
+                        )}
+                        required
+                      />
+                    </div>
+                    {errors.routingNumber && (
+                      <p className="text-sm font-medium text-destructive">{errors.routingNumber}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="accountNumber" className={cn(errors.accountNumber && "text-destructive")}>
+                      Account Number
+                    </Label>
+                    <div className="relative">
+                      <Hash
+                        className={cn(
+                          "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                          errors.accountNumber && "text-destructive",
+                        )}
+                      />
+                      <Input
+                        id="accountNumber"
+                        type="text"
+                        name="accountNumber"
+                        placeholder="987654321"
+                        value={formData.accountNumber}
+                        onChange={handleChange}
+                        className={cn(
+                          "pl-9",
+                          errors.accountNumber && "border-destructive focus-visible:ring-destructive",
+                        )}
+                        required
+                      />
+                    </div>
+                    {errors.accountNumber && (
+                      <p className="text-sm font-medium text-destructive">{errors.accountNumber}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="nameOnAccount" className={cn(errors.nameOnAccount && "text-destructive")}>
+                      Name on Account
+                    </Label>
+                    <div className="relative">
+                      <User
+                        className={cn(
+                          "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                          errors.nameOnAccount && "text-destructive",
+                        )}
+                      />
+                      <Input
+                        id="nameOnAccount"
+                        type="text"
+                        name="nameOnAccount"
+                        placeholder="John Doe"
+                        value={formData.nameOnAccount}
+                        onChange={handleChange}
+                        className={cn(
+                          "pl-9",
+                          errors.nameOnAccount && "border-destructive focus-visible:ring-destructive",
+                        )}
+                        required
+                      />
+                    </div>
+                    {errors.nameOnAccount && (
+                      <p className="text-sm font-medium text-destructive">{errors.nameOnAccount}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="address" className={cn(errors.address && "text-destructive")}>
+                      Address
+                    </Label>
+                    <div className="relative">
+                      <MapPin
+                        className={cn(
+                          "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                          errors.address && "text-destructive",
+                        )}
+                      />
+                      <Input
+                        id="address"
+                        type="text"
+                        name="address"
+                        placeholder="123 Main St"
+                        value={formData.address}
+                        onChange={handleChange}
+                        className={cn("pl-9", errors.address && "border-destructive focus-visible:ring-destructive")}
+                        required
+                      />
+                    </div>
+                    {errors.address && <p className="text-sm font-medium text-destructive">{errors.address}</p>}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="city" className={cn(errors.city && "text-destructive")}>
+                        City
+                      </Label>
+                      <div className="relative">
+                        <Building
+                          className={cn(
+                            "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                            errors.city && "text-destructive",
+                          )}
+                        />
+                        <Input
+                          id="city"
+                          type="text"
+                          name="city"
+                          placeholder="New York"
+                          value={formData.city}
+                          onChange={handleChange}
+                          className={cn("pl-9", errors.city && "border-destructive focus-visible:ring-destructive")}
+                          required
+                        />
+                      </div>
+                      {errors.city && <p className="text-sm font-medium text-destructive">{errors.city}</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state" className={cn(errors.state && "text-destructive")}>
+                        State
+                      </Label>
+                      <div className="relative">
+                        <Globe
+                          className={cn(
+                            "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
+                            errors.state && "text-destructive",
+                          )}
+                        />
+                        <Input
+                          id="state"
+                          type="text"
+                          name="state"
+                          placeholder="NY"
+                          value={formData.state}
+                          onChange={handleChange}
+                          className={cn("pl-9", errors.state && "border-destructive focus-visible:ring-destructive")}
+                          required
+                        />
+                      </div>
+                      {errors.state && <p className="text-sm font-medium text-destructive">{errors.state}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="zip" className={cn(errors.zip && "text-destructive")}>
+                        ZIP Code
+                      </Label>
+                      <Input
+                        id="zip"
+                        type="text"
+                        name="zip"
+                        placeholder="10001"
+                        value={formData.zip}
+                        onChange={handleChange}
+                        className={cn(errors.zip && "border-destructive focus-visible:ring-destructive")}
+                        required
+                      />
+                      {errors.zip && <p className="text-sm font-medium text-destructive">{errors.zip}</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="country" className={cn(errors.country && "text-destructive")}>
+                        Country
+                      </Label>
+                      <Input
+                        id="country"
+                        type="text"
+                        name="country"
+                        placeholder="USA"
+                        value={formData.country}
+                        onChange={handleChange}
+                        className={cn(errors.country && "border-destructive focus-visible:ring-destructive")}
+                        required
+                      />
+                      {errors.country && <p className="text-sm font-medium text-destructive">{errors.country}</p>}
+                    </div>
+                  </div>
+                </>
+              )}
+            </form>
+          </CardContent>
+
+          <CardFooter className="px-6 pb-6 pt-2">
+            <Button type="submit" className="w-full" onClick={handleSubmit} disabled={loading}>
               {loading ? (
                 <>
-                  <svg
-                    className="animate-spin h-5 w-5 mr-2 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8v8H4z"
-                    ></path>
-                  </svg>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Processing...
                 </>
               ) : (
                 "Confirm Payment"
               )}
-            </button>
-          </div>
-
-        </form>
+            </Button>
+          </CardFooter>
+        </Card>
       </Modal>
     </div>
-  );
-};
+  )
+}
 
-export default PaymentForm;
+export default PaymentForm

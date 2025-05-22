@@ -6,7 +6,8 @@ export const fetchDashboardData = async () => {
     const { data: revenueData, error: revenueError } = await supabase
       .from("orders")
       .select("total_amount")
-      .eq("status", "shipped");
+      .eq("status", "shipped")
+  .or("void.eq.false,void.is.null"); // ✅ include void = false or null
 
     const totalRevenue = revenueData?.reduce(
       (acc: number, order: any) => acc + parseFloat(order.total_amount),
@@ -19,6 +20,7 @@ export const fetchDashboardData = async () => {
     .select("*")
     .eq("status", "processing")
     .eq("poAccept", true)
+.eq("void", false)
    
   if (error) {
     console.error("Error fetching data:", error);
@@ -30,7 +32,8 @@ export const fetchDashboardData = async () => {
     const { data: pendingInvoicesData } = await supabase
       .from("invoices")
       .select("*")
-      .eq("payment_status", "unpaid");
+      .eq("payment_status", "unpaid")
+.eq("void", false)
 
     // Fix the low stock query using a proper comparison
     const { data: lowStockProducts } = await supabase

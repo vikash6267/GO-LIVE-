@@ -69,7 +69,8 @@ interface OrdersContainerProps {
   onProcessOrder?: (orderId: string) => void;
   onShipOrder?: (orderId: string) => void;
   onConfirmOrder?: (orderId: string) => void;
-  onDeleteOrder?: (orderId: string) => Promise<void>;
+  onDeleteOrder?: (orderId: string, reason?: string) => Promise<void>
+
   poIs?: boolean;
 }
 

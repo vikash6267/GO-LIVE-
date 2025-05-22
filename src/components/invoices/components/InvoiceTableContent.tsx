@@ -11,6 +11,8 @@ import { InvoiceRowActions } from "./InvoiceRowActions";
 import { InvoiceTableHeader } from "./InvoiceTableHeader";
 import { SortConfig } from "../types/table.types";
 import { motion } from "framer-motion";
+import { Ban } from "lucide-react"
+
 
 interface InvoiceTableContentProps {
   invoices: Invoice[];
@@ -43,13 +45,24 @@ export function InvoiceTableContent({
     >
       <TableCell className="text-center">{invoice.invoice_number}</TableCell>
       <TableCell className="text-center">{invoice.orders?.order_number}</TableCell>
-      <TableCell className="text-center">
-        {typeof invoice.customer_info === "object" &&
-        invoice.customer_info !== null &&
-        "name" in invoice.customer_info
-          ? invoice.customer_info.name
-          : `${invoice.profiles?.first_name ?? ""} ${invoice.profiles?.last_name ?? ""}`.trim()}
-      </TableCell>
+   <TableCell className="text-center">
+  <div className="flex flex-col items-center justify-center">
+    <span className="text-base font-semibold text-gray-800">
+      {typeof invoice.customer_info === "object" &&
+      invoice.customer_info !== null &&
+      "name" in invoice.customer_info
+        ? invoice.customer_info.name
+        : `${invoice.profiles?.first_name ?? ""} ${invoice.profiles?.last_name ?? ""}`.trim()}
+    </span>
+
+    {invoice.void && (
+      <div className="mt-1 flex items-center gap-1 text-red-600 text-xs font-medium bg-red-100 px-2 py-1 rounded-full">
+        <Ban size={14} className="stroke-[2.5]" />
+        Voided
+      </div>
+    )}
+  </div>
+</TableCell>
       <TableCell className="text-center">${invoice.amount.toFixed(2)}</TableCell>
       <TableCell className="text-center">
         <InvoiceStatusBadge status={invoice.payment_status} />

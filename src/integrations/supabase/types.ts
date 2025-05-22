@@ -452,6 +452,7 @@ export type Database = {
           id: string;
           notes: string | null;
           order_number: string;
+          void?: string;
           profile_id: string | null;
           shipping_cost: number | null;
           quickBooksID: number | null;
@@ -471,6 +472,7 @@ export type Database = {
           id?: string;
           quickBooksID: number | null;
           notes?: string | null;
+          void?: string;
           order_number: string;
           profile_id?: string | null;
           shipping_cost?: number | null;
@@ -488,6 +490,7 @@ export type Database = {
           deleted_at?: string | null;
           estimated_delivery?: string | null;
           id?: string;
+          void?: string;
           quickBooksID: number | null;
           notes?: string | null;
           order_number?: string;

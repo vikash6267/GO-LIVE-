@@ -36,7 +36,8 @@ const AdminDashboard = () => {
     const fetchOrders = async () => {
       const { data: orders, error } = await supabase
         .from("orders")
-        .select("total_amount, shipping_cost, tax_amount, created_at");
+        .select("total_amount, shipping_cost, tax_amount, created_at")
+  .eq("void", false); 
 
       if (error) {
         console.error("Error fetching orders:", error);

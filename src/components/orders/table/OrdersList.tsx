@@ -25,7 +25,7 @@ import { useState } from "react";
 import PaymentForm from "@/components/PaymentModal";
 import axios from "../../../../axiosconfig";
 import { InvoiceStatus, PaymentMethod } from "@/components/invoices/types/invoice.types";
-
+import { Ban } from "lucide-react"
 import { useCart } from "@/hooks/use-cart";
 
 interface OrdersListProps {
@@ -37,7 +37,8 @@ interface OrdersListProps {
   onProcessOrder?: (orderId: string) => void;
   onShipOrder?: (orderId: string) => void;
   onConfirmOrder?: (orderId: string) => void;
-  onDeleteOrder?: (orderId: string) => Promise<void>;
+   onDeleteOrder?: (orderId: string, reason?: string) => Promise<void>
+
   isLoading?: boolean;
   poIs?: boolean;
   userRole?: "admin" | "pharmacy" | "group" | "hospital";
@@ -467,9 +468,29 @@ export function OrdersList({
                   />
                 </TableCell>
               )}
-              <TableCell onClick={async() => {onOrderClick(order) ;await clearCart()}} className="font-medium text-center border-gray-300">
-                {order.customerInfo?.name || "N/A"} 
-              </TableCell>
+          
+
+<TableCell
+  onClick={async () => {
+    onOrderClick(order);
+    await clearCart();
+  }}
+  className="font-medium text-center border-gray-300 cursor-pointer hover:bg-gray-50 transition"
+>
+  <div className="flex flex-col items-center justify-center">
+    <span className="text-base font-semibold text-gray-800">
+      {order.customerInfo?.name || "N/A"}
+    </span>
+
+    {order.void && (
+      <div className="mt-1 flex items-center gap-1 text-red-600 text-xs font-medium bg-red-100 px-2 py-1 rounded-full">
+        <Ban size={14} className="stroke-[2.5]" />
+        Voided
+      </div>
+    )}
+  </div>
+</TableCell>
+
               <TableCell className="text-center border-gray-300">
                 {(() => {
                   const dateObj = new Date(order.date);

@@ -75,6 +75,7 @@ export const useOrderManagement = () => {
 
       const { data, error } = await query;
 
+      console.log(data)
       if (error) throw error;
 
       const formattedOrders: OrderFormValues[] = (data as any[]).map(
@@ -93,6 +94,8 @@ export const useOrderManagement = () => {
             shipping_cost: order.shipping_cost,
             quickBooksID: order.quickBooksID,
             tax_amount: order.tax_amount,
+            void: order.void,
+            voidReason: order.voidReason,
             customerInfo: order.customerInfo || {
               name:
                 profileData.first_name && profileData.last_name
@@ -173,46 +176,99 @@ export const useOrderManagement = () => {
     setIsSheetOpen(true);
   };
 
-  const handleDeleteOrder = async (orderId: string): Promise<void> => {
-    try {
-      const { error: invoiceDeleteError } = await supabase
-        .from("invoices")
-        .delete()
-        .eq("order_id", orderId);
+  // const handleDeleteOrder = async (orderId: string,reason: string): Promise<void> => {
+  //   try {
+  //     console.log(reason)
+      
+  //     const { error: invoiceDeleteError } = await supabase
+  //       .from("invoices")
+  //       .delete()
+  //       .eq("order_id", orderId);
 
-      if (invoiceDeleteError) throw invoiceDeleteError;
+  //     if (invoiceDeleteError) throw invoiceDeleteError;
 
-      const { error } = await supabase
-        .from("orders")
-        .delete()
-        .eq("id", orderId);
+  //     const { error } = await supabase
+  //       .from("orders")
+  //       .delete()
+  //       .eq("id", orderId);
 
-      if (error) throw error;
+  //     if (error) throw error;
 
-      // Update the local state by removing the deleted order
-      setOrders((prevOrders) =>
-        prevOrders.filter((order) => order.id !== orderId)
-      );
+  //     // Update the local state by removing the deleted order
+  //     setOrders((prevOrders) =>
+  //       prevOrders.filter((order) => order.id !== orderId)
+  //     );
 
-      toast({
-        title: "Success",
-        description: "Order deleted successfully",
-      });
+  //     toast({
+  //       title: "Success",
+  //       description: "Order deleted successfully",
+  //     });
 
-      // Close sheet if the deleted order was selected
-      if (selectedOrder?.id === orderId) {
-        setIsSheetOpen(false);
-        setSelectedOrder(null);
-      }
-    } catch (error) {
-      console.error("Error deleting order:", error);
-      toast({
-        title: "Error",
-        description: "Failed to delete order",
-        variant: "destructive",
-      });
+  //     // Close sheet if the deleted order was selected
+  //     if (selectedOrder?.id === orderId) {
+  //       setIsSheetOpen(false);
+  //       setSelectedOrder(null);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error deleting order:", error);
+  //     toast({
+  //       title: "Error",
+  //       description: "Failed to delete order",
+  //       variant: "destructive",
+  //     });
+  //   }
+  // };
+
+
+const handleDeleteOrder = async (orderId: string, reason: string): Promise<void> => {
+  try {
+    console.log("Void Reason:", reason);
+
+    // Step 1: Update the invoices table (set void = true, voidReason = reason)
+    const { error: invoiceUpdateError } = await supabase
+      .from("invoices")
+      .update({ void: true, voidReason: reason })
+      .eq("order_id", orderId);
+
+    if (invoiceUpdateError) throw invoiceUpdateError;
+
+    // Step 2: Update the orders table (set void = true, voidReason = reason)
+    const { error: orderUpdateError } = await supabase
+      .from("orders")
+      .update({ void: true, voidReason: reason })
+      .eq("id", orderId);
+
+    if (orderUpdateError) throw orderUpdateError;
+
+    // Step 3: Update local state to reflect voided order
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.id === orderId ? { ...order, void: true, voidReason: reason } : order
+      )
+    );
+
+    toast({
+      title: "Success",
+      description: "Order voided successfully",
+    });
+
+    // Step 4: Close sheet if the voided order was selected
+    if (selectedOrder?.id === orderId) {
+      setIsSheetOpen(false);
+      setSelectedOrder(null);
     }
-  };
+  } catch (error) {
+    console.error("Error voiding order:", error);
+    toast({
+      title: "Error",
+      description: "Failed to void order",
+      variant: "destructive",
+    });
+  }
+};
+
+
+
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     console.log(newStatus);

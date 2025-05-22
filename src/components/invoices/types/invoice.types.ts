@@ -13,6 +13,8 @@ export interface CustomerInfo {
   name: any;
   phone: string;
   email: string;
+  street?: string;
+  city?: string;
 }
 
 export const InvoiceStatusEnum = {
@@ -141,7 +143,7 @@ export interface Invoice {
   id: string;
   invoice_number: string;
   order_number?: string;
-  void?: string;
+  void?: boolean;
   order_id?: string | null;
   profile_id?: string | null;
   payment_transication?: string | null;

@@ -39,6 +39,7 @@ const exportToCSV = (orders: OrderFormValues[]) => {
   if (!orders || orders.length === 0) {
     return { data: [], headers: [], filename: "orders.csv" };
   }
+  const filteredOrders = orders.filter((order) => order.void === false);
 
   const headers = [
     { label: "Order Number", key: "order_number" },
@@ -61,7 +62,8 @@ const exportToCSV = (orders: OrderFormValues[]) => {
     { label: "Zip Code", key: "shippingAddress.address.zip_code" },
   ];
 
-  return { data: orders, headers, filename: "orders.csv" };
+  return { data: filteredOrders, headers, filename: "orders.csv" };
+
 };
 
 interface OrdersContainerProps {

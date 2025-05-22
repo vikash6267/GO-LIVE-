@@ -252,25 +252,31 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
   };
 
 
-  const exportInvoicesToCSV = () => {
-    const csvData = invoices?.map((invoice) => ({
-      "Invoice Number": invoice.invoice_number,
-      "Order Number": invoice.orders?.order_number || "",
-      "Customer Name": `${invoice.profiles?.first_name || ""} ${invoice.profiles?.last_name || ""}`,
-      "Email": invoice.profiles?.email || "",
-      "Company Name": (invoice.profiles as any)?.company_name || "",
+const exportInvoicesToCSV = () => {
+  // ✅ Filter out invoices with voided orders
+  const filteredInvoices = invoices?.filter(
+    (invoice) => invoice.void === false
+  );
 
-      "Tax": invoice.tax_amount,
-      "Subtotal": invoice.subtotal,
-      "Payment Status": invoice.payment_status,
-      "Created At": invoice.created_at,
-      "Shipping Address": invoice.shipping_info
-        ? `${invoice.shipping_info.street}, ${invoice.shipping_info.city}, ${invoice.shipping_info.state}, ${invoice.shipping_info.zip_code}`
-        : "",
-    }));
-  
-    return csvData;
-  };  
+  const csvData = filteredInvoices?.map((invoice) => ({
+    "Invoice Number": invoice.invoice_number,
+    "Order Number": invoice.orders?.order_number || "",
+    "Customer Name": `${invoice.profiles?.first_name || ""} ${invoice.profiles?.last_name || ""}`,
+    "Email": invoice.profiles?.email || "",
+    "Company Name": (invoice.profiles as any)?.company_name || "",
+
+    "Tax": invoice.tax_amount,
+    "Subtotal": invoice.subtotal,
+    "Payment Status": invoice.payment_status,
+    "Created At": invoice.created_at,
+    "Shipping Address": invoice.shipping_info
+      ? `${invoice.shipping_info.street}, ${invoice.shipping_info.city}, ${invoice.shipping_info.state}, ${invoice.shipping_info.zip_code}`
+      : "",
+  }));
+
+  return csvData;
+};
+
 
 
   return (

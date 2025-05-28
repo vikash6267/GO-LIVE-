@@ -300,11 +300,25 @@ const CreateOrderPaymentForm = ({
 
           console.log("Invoice created successfully:", invoicedata2);
 
-          try {
-            await axios.post("/order-place", newOrder);
-            console.log("Order status sent successfully to backend.");
-          } catch (apiError) {
-            console.error("Failed to send order status to backend:", apiError);
+
+              const { data:profileData, error:profileEror } = await supabase
+                    .from("profiles")
+                    .select()
+                    .eq("id", newOrder.profile_id)
+                    .maybeSingle();
+          
+                  if (error) {
+                    console.error("🚨 Supabase Fetch Error:", error);
+                    return;
+                  }
+          if(profileData.email_notifaction){
+
+            try {
+              await axios.post("/order-place", newOrder);
+              console.log("Order status sent successfully to backend.");
+            } catch (apiError) {
+              console.error("Failed to send order status to backend:", apiError);
+            }
           }
           // Prepare and save order items
           const orderItemsData = data.items.map((item) => ({

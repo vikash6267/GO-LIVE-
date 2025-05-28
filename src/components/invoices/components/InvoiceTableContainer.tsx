@@ -30,112 +30,135 @@ export function InvoiceTableContainer({ filterStatus }: DataTableProps) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const fetchInvoices = async () => {
-    setLoading(true);
-    const role = sessionStorage.getItem('userType');
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
+ const fetchInvoices = async () => {
+  setLoading(true);
+  const role = sessionStorage.getItem('userType');
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session) {
+    toast({
+      title: "Error",
+      description: "Please log in to view orders",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  try {
+    let query = supabase
+      .from("invoices")
+      .select(`
+        *,
+        payment_status,
+        orders (order_number),
+        profiles (first_name, last_name, email, company_name)
+      `)
+      .order("created_at", { ascending: false });
+
+    if (role === "pharmacy") {
+      query.eq('profile_id', session.user.id);
+    }
+
+    if (role === "group") {
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("group_id", session.user.id);
+
+      if (profileError) {
+        console.error("Failed to fetch customer information:", profileError);
+        throw new Error("Failed to fetch customer information: " + profileError.message);
+      }
+
+      if (!profileData || profileData.length === 0) {
+        throw new Error("No customer information found.");
+      }
+
+      const userIds = profileData.map(user => user.id);
+      query.in("profile_id", userIds);
+    }
+
+    // Remove search filter from query — it will be applied client-side
+    if (filters.status && filters.status !== "all") {
+      let payStatus = filters.status === "pending" ? "unpaid" : filters.status;
+      query = query.eq("payment_status", payStatus);
+    }
+
+    if (filters.dateFrom) {
+      query = query.gte("due_date", filters.dateFrom);
+    }
+
+    if (filters.dateTo) {
+      query = query.lte("due_date", filters.dateTo);
+    }
+
+    if (filters.amountMin) {
+      query = query.gte("amount", filters.amountMin);
+    }
+
+    if (filters.amountMax) {
+      query = query.lte("amount", filters.amountMax);
+    }
+
+    const { data, error } = await query;
+    console.log("Raw Data from Supabase:", data);
+
+    if (error) {
       toast({
         title: "Error",
-        description: "Please log in to view orders",
+        description: "Failed to fetch invoices.",
         variant: "destructive",
       });
+      console.error("Error fetching invoices:", error);
       return;
     }
-    try {
-      let query = supabase
-        .from("invoices")
-        .select(`
-          *,
-          payment_status,
-          orders (order_number),
-          profiles (first_name, last_name, email,company_name)
-        `).order("created_at", { ascending: false });
-      if (role === "pharmacy") {
-        // If user is not admin, fetch orders for their profile only
-        query.eq('profile_id', session.user.id);
-      }
-      if (role === "group") {
-        const { data, error } = await supabase
-            .from("profiles")
-            .select("id")
-            .eq("group_id", session.user.id);
-    
-        if (error) {
-            console.error("Failed to fetch customer information:", error);
-            throw new Error("Failed to fetch customer information: " + error.message);
-        }
-    
-        if (!data || data.length === 0) {
-            throw new Error("No customer information found.");
-        }
-    
-        console.log("Data", data);
-    
-        // Extract user IDs from the data array
-        const userIds = data.map(user => user.id);
-    
-        // Fetch orders where profile id is in the list of userIds
-        query.in("profile_id", userIds);
-    }
-   
 
-      if (filters.search) {
-        query = query.ilike("invoice_number", `%${filters.search}%`);
-      }
-      if (filters.status && filters.status !== "all" ) {
-       console.log(filters.status)
-        let payStatus = filters.status
-        payStatus === "pending" ? payStatus = "unpaid" : payStatus = filters.status
-      
-        query = query.eq("payment_status", filters.status);
-      }
-      if (filters.dateFrom) {
-        query = query.gte("due_date", filters.dateFrom);
-      }
-      if (filters.dateTo) {
-        query = query.lte("due_date", filters.dateTo);
-      }
-      if (filters.amountMin) {
-        query = query.gte("amount", filters.amountMin);
-      }
-      if (filters.amountMax) {
-        query = query.lte("amount", filters.amountMax);
-      }
+    // Apply client-side search filter
+    let filteredInvoices = data || [];
 
-      const { data, error } = await query;
-      console.log("Raw Data from Supabase:", data);
+    if (filters.search) {
+      const searchQuery = filters.search.toLowerCase();
 
-      if (error) {
-        toast({
-          title: "Error",
-          description: "Failed to fetch invoices.",
-          variant: "destructive",
-        });
-        console.error("Error fetching invoices:", error);
-        return;
-      }
+      filteredInvoices = filteredInvoices.filter((invoice) => {
+        const invoiceNumber = invoice.invoice_number?.toLowerCase() || "";
+        const orderNumber = invoice.orders?.order_number?.toLowerCase() || "";
+        const firstName = invoice.profiles?.first_name?.toLowerCase() || "";
+        const lastName = invoice.profiles?.last_name?.toLowerCase() || "";
+        const email = invoice.profiles?.email?.toLowerCase() || "";
+        const company = invoice.profiles?.company_name?.toLowerCase() || "";
 
-      // Validate the response data
-      const validInvoices = (data || []).filter(isInvoice);
-      if (validInvoices.length !== data?.length) {
-        console.warn("Some invoices failed validation:",
-          data?.filter((invoice) => !isInvoice(invoice))
+        return (
+          invoiceNumber.includes(searchQuery) ||
+          orderNumber.includes(searchQuery) ||
+          firstName.includes(searchQuery) ||
+          lastName.includes(searchQuery) ||
+          email.includes(searchQuery) ||
+          company.includes(searchQuery)
         );
-      }
-
-      setInvoices(validInvoices);
-    } catch (error) {
-      console.error("Error in fetchInvoices:", error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred while fetching invoices.",
-        variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
-  };
+
+    // Validate the response data
+    const validInvoices = filteredInvoices.filter(isInvoice);
+    if (validInvoices.length !== filteredInvoices.length) {
+      console.warn("Some invoices failed validation:",
+        filteredInvoices.filter((invoice) => !isInvoice(invoice))
+      );
+    }
+
+    setInvoices(validInvoices);
+  } catch (error) {
+    console.error("Error in fetchInvoices:", error);
+    toast({
+      title: "Error",
+      description: "An unexpected error occurred while fetching invoices.",
+      variant: "destructive",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     const channel = supabase

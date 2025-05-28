@@ -63,7 +63,7 @@ export const useEditUserForm = ({
       paymentTerms: "DueOnReceipt",
       enablePortal: false,
       portalLanguage: "English",
-      email_notifaction:true
+      email_notifaction:false
     },
   });
 

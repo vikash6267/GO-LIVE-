@@ -109,6 +109,7 @@ export function AddUserModal({
       // console.log('Starting customer creation with data:', values);
       setIsSubmitting(true);
 
+
       // First check if we have an authenticated session
       // const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 
@@ -210,7 +211,7 @@ export function AddUserModal({
         credit_limit: values.creditLimit || null,
         payment_method: values.paymentMethod || null,
         account_status: "active",
-        email_notifaction:values.email_notifaction,
+        email_notifaction:values.email_notifaction || false,
 
       };
 
@@ -219,7 +220,7 @@ export function AddUserModal({
       const { error } = await supabase.from("profiles").upsert(userData);
 
 
-      if(userData.status==="active"){
+      if(userData.status==="active" && userData.email_notifaction){
         try {
           const response = await axios.post("/active-admin", {
             name: `${userData.first_name} ${userData.last_name}`,

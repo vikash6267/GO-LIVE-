@@ -79,6 +79,7 @@ export function OrderTotals({
 
   useEffect(() => {
     const calculateSubtotal = (items: any[]) =>
+      
       items.reduce((total, item) => total + (parseFloat(item.price) || 0), 0);
 
     const calculateShipping = (items: any[]) => {

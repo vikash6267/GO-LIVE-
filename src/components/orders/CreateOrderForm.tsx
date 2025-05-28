@@ -205,6 +205,7 @@ export function CreateOrderForm({
         return `PO-${timestamp}${random}`; // Total 8 digits after 'PO-'
       };
       
+      // const orderNumber = "DEV-0091234";
       const orderNumber = poIs ? generateUniqueOrderNumber() : await generateOrderId();
       
       if (!userProfile?.id) return
@@ -213,6 +214,19 @@ export function CreateOrderForm({
       sessionStorage.getItem('userType') === "admin" ? profileID = data.customer : userProfile?.id
       sessionStorage.getItem('userType') === "group" ? profileID = pId : userProfile?.id
       console.log(profileID)
+
+      //  const { data:profileData1, error:profileEror1 } = await supabase
+      //               .from("profiles")
+      //               .select()
+      //               .eq("id", profileID)
+      //               .maybeSingle();
+          
+      //             if (profileEror1) {
+      //               console.error("🚨 Supabase Fetch Error:", profileEror1);
+      //               return;
+      //             }
+      //             console.log(profileData1)
+      //             return
       // Prepare order data
       const orderData = {
         order_number: orderNumber,
@@ -278,6 +292,7 @@ export function CreateOrderForm({
 
 
         const invoiceNumber = `${invoiceStart}-${year}${newInvNo.toString().padStart(6, "0")}`;
+        // const invoiceNumber = "DEV-0091234";
 
 
 
@@ -390,6 +405,17 @@ export function CreateOrderForm({
         }
 
 
+              const { data:profileData, error:profileEror } = await supabase
+                    .from("profiles")
+                    .select()
+                    .eq("id", newOrder.profile_id)
+                    .maybeSingle();
+          
+                  if (profileEror) {
+                    console.error("🚨 Supabase Fetch Error:", profileEror);
+                    return;
+                  }
+          if(profileData.email_notifaction){
         try {
           await axios.post("/order-place", newOrder);
           console.log("Order status sent successfully to backend.");
@@ -397,7 +423,7 @@ export function CreateOrderForm({
           console.error("Failed to send order status to backend:", apiError);
         }
 
-      }
+      }}
 
       // Reset form and local state
     window.location.reload();

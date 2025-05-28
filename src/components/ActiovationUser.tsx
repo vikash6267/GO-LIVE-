@@ -22,7 +22,7 @@ function ActivationUser() {
         const { data, error } = await supabase
         .from("profiles")
         .select(
-          "first_name, last_name, email, mobile_phone, type, company_name, display_name ,billing_address "
+          "first_name, last_name, email, mobile_phone, type, company_name, display_name ,billing_address, email_notifaction "
         )
         .eq("email", email)
         .single(); // Fetch only one record for simplicity
@@ -35,12 +35,14 @@ function ActivationUser() {
       }
 
 
-        const response = await axios.post("/active", {
+      if(data.email_notifaction){
+          const response = await axios.post("/active", {
             name: `${data.first_name} ${data.last_name}`,
             email: data.email,
           });
+      }
         
-          console.log("Verification Successful:", response.data);
+       
 
       async function sendResetPasswordLink(email) {
         const { data, error } = await supabase.auth.resetPasswordForEmail(email);

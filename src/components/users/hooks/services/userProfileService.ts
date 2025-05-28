@@ -114,13 +114,18 @@ if(profileData.status==="active" && sessionStorage.getItem('userType') === "admi
   try {
 
     console.log("enter the aactive")
-    const response = await axios.post("/active", {
-      name: `${data.first_name} ${data.last_name}`,
-      email: data.email,
-      admin: true
-    });
-  
-
+    // const response = await axios.post("/active", {
+    //   name: `${data.first_name} ${data.last_name}`,
+    //   email: data.email,
+    // });
+    
+    if(data.email_notifaction){
+      const response = await axios.post("/active", {
+        name: `${data.first_name} ${data.last_name}`,
+        email: data.email,
+        admin: true
+          });
+      }
     const { data: update, error } = await supabase
     .from("profiles")
     .update({ active_notification: true })
@@ -133,7 +138,7 @@ if(profileData.status==="active" && sessionStorage.getItem('userType') === "admi
     console.log("Profile updated successfully:", update);
   
   }
-    console.log("Verification Successful:", response.data);
+ 
 
     // async function sendResetPasswordLink(email) {
     //   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {

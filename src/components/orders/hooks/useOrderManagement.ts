@@ -280,8 +280,8 @@ const handleDeleteOrder = async (orderId: string, reason: string): Promise<void>
           status: newStatus,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", orderId)
-        .select("*") // Returns the updated order
+        .eq("id", orderId).
+      select("*, profile_id(first_name, email_notifaction)")
         .single(); // Ensures only one order is fetched
 
       if (error) throw error;
@@ -290,7 +290,7 @@ const handleDeleteOrder = async (orderId: string, reason: string): Promise<void>
       console.log("Updated Order:", updatedOrder);
 
       // Send the updated order to the backend
-      if (newStatus !== "processing") {
+      if (newStatus !== "processing" && updatedOrder.profile_id.email_notifaction ) {
         try {
           await axios.post("/order-status", updatedOrder);
           console.log("Order status sent successfully to backend.");

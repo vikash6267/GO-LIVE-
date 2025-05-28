@@ -65,6 +65,7 @@ export const OrderDetailsSheet = ({
   // Update currentOrder when order prop changes
   useEffect(() => {
     setCurrentOrder(order);
+    console.log(order)
   }, [order]);
 
   const handleStatusUpdate = async (action: "process" | "ship" | "confirm") => {
@@ -573,7 +574,7 @@ export const OrderDetailsSheet = ({
           </SheetDescription>
         </SheetHeader>
 
-        {false && !currentOrder?.quickBooksID && (
+        {!currentOrder?.quickBooksID && (
           <div className="w-full flex justify-end items-end flex-1">
             <Button
               variant="outline"

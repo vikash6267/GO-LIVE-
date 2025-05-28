@@ -315,23 +315,28 @@ export function OrdersList({
 
 
 
-      const { data: orderResponse2, error: orderError2 } = await supabase
-        .from("orders")
-        .select()
-        .eq("id", newOrder.id);
-
-      if (orderError2) {
-        console.error("Order creation error:", orderError2);
-        throw new Error(orderError2.message);
-      }
+   
 
 
-      try {
-        await axios.post("/order-place", newOrder);
-        console.log("Order status sent successfully to backend.");
-      } catch (apiError) {
-        console.error("Failed to send order status to backend:", apiError);
-      }
+         const { data:profileData, error:profileEror } = await supabase
+                       .from("profiles")
+                       .select()
+                       .eq("id", newOrder.profile_id)
+                       .maybeSingle();
+             
+                     if (profileEror) {
+                       console.error("🚨 Supabase Fetch Error:", profileEror);
+                       return;
+                     }
+             if(profileData.email_notifaction){
+           try {
+             await axios.post("/order-place", newOrder);
+             console.log("Order status sent successfully to backend.");
+           } catch (apiError) {
+             console.error("Failed to send order status to backend:", apiError);
+           }
+   
+         }
 
 
 

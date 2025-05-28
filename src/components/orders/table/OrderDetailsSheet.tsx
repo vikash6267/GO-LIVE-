@@ -574,7 +574,7 @@ export const OrderDetailsSheet = ({
           </SheetDescription>
         </SheetHeader>
 
-        {!currentOrder?.quickBooksID && (
+        {false && !currentOrder?.quickBooksID && (
           <div className="w-full flex justify-end items-end flex-1">
             <Button
               variant="outline"

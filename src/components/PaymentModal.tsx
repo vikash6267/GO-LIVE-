@@ -237,7 +237,7 @@ const PaymentForm = ({ modalIsOpen, setModalIsOpen, customer, amountP, orderId, 
       setFormData({ ...formData, [name]: formattedValue })
     } else if (name === "cvv") {
       // Only allow numbers and limit to 3 digits
-      const formattedValue = value.replace(/\D/g, "").slice(0, 3)
+      const formattedValue = value.replace(/\D/g, "").slice(0, 4)
       setFormData({ ...formData, [name]: formattedValue })
     } else if (name === "zip") {
       // Allow only numbers and hyphen for ZIP codes

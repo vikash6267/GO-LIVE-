@@ -10,8 +10,8 @@ export const getCustomerName = (order: OrderFormValues) => {
   return order.customer || 'N/A';
 };
 
-export const formatTotal = (total: string | undefined) => {
-  if (!total) return "$0.00";
-  const numericTotal = parseFloat(total);
+export const formatTotal = (total: string | number | undefined) => {
+  if (total === undefined || total === null) return "$0.00";
+  const numericTotal = typeof total === "number" ? total : parseFloat(total);
   return isNaN(numericTotal) ? "$0.00" : `$${numericTotal.toFixed(2)}`;
 };

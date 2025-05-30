@@ -69,6 +69,7 @@ const shippingAddressSchema = z.object({
 export const orderFormSchema = z.object({
   id: z.string(),
   customer: z.string(),
+  tax_amount: z.number(),
   date: z.string(),
   total: z.string(),
   status: z.string(),

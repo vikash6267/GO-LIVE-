@@ -37,7 +37,7 @@ interface OrdersListProps {
   onProcessOrder?: (orderId: string) => void;
   onShipOrder?: (orderId: string) => void;
   onConfirmOrder?: (orderId: string) => void;
-   onDeleteOrder?: (orderId: string, reason?: string) => Promise<void>
+  onDeleteOrder?: (orderId: string, reason?: string) => Promise<void>
 
   isLoading?: boolean;
   poIs?: boolean;
@@ -198,7 +198,7 @@ export function OrdersList({
     }
   };
 
-
+console.log(orders)
   const acceptPO = async (orderId: string) => {
     setLoadingPO(true)
     try {
@@ -315,28 +315,28 @@ export function OrdersList({
 
 
 
-   
 
 
-         const { data:profileData, error:profileEror } = await supabase
-                       .from("profiles")
-                       .select()
-                       .eq("id", newOrder.profile_id)
-                       .maybeSingle();
-             
-                     if (profileEror) {
-                       console.error("🚨 Supabase Fetch Error:", profileEror);
-                       return;
-                     }
-             if(profileData.email_notifaction){
-           try {
-             await axios.post("/order-place", newOrder);
-             console.log("Order status sent successfully to backend.");
-           } catch (apiError) {
-             console.error("Failed to send order status to backend:", apiError);
-           }
-   
-         }
+
+      const { data: profileData, error: profileEror } = await supabase
+        .from("profiles")
+        .select()
+        .eq("id", newOrder.profile_id)
+        .maybeSingle();
+
+      if (profileEror) {
+        console.error("🚨 Supabase Fetch Error:", profileEror);
+        return;
+      }
+      if (profileData.email_notifaction) {
+        try {
+          await axios.post("/order-place", newOrder);
+          console.log("Order status sent successfully to backend.");
+        } catch (apiError) {
+          console.error("Failed to send order status to backend:", apiError);
+        }
+
+      }
 
 
 
@@ -453,7 +453,7 @@ export function OrdersList({
             </>
           }
           {
-           false && poIs &&
+            false && poIs &&
             <TableHead className="font-semibold text-center border-gray-300">
               Actions
             </TableHead>
@@ -469,32 +469,32 @@ export function OrdersList({
                 <TableCell onClick={(e) => e.stopPropagation()} className="text-center border-gray-300">
                   <Checkbox
                     checked={selectedOrders.includes(orderId)}
-                    onCheckedChange={() => {onOrderSelect(orderId)  }}
+                    onCheckedChange={() => { onOrderSelect(orderId) }}
                   />
                 </TableCell>
               )}
-          
 
-<TableCell
-  onClick={async () => {
-    onOrderClick(order);
-    await clearCart();
-  }}
-  className="font-medium text-center border-gray-300 cursor-pointer hover:bg-gray-50 transition"
->
-  <div className="flex flex-col items-center justify-center">
-    <span className="text-base font-semibold text-gray-800">
-      {order.customerInfo?.name || "N/A"}
-    </span>
 
-    {order.void && (
-      <div className="mt-1 flex items-center gap-1 text-red-600 text-xs font-medium bg-red-100 px-2 py-1 rounded-full">
-        <Ban size={14} className="stroke-[2.5]" />
-        Voided
-      </div>
-    )}
-  </div>
-</TableCell>
+              <TableCell
+                onClick={async () => {
+                  onOrderClick(order);
+                  await clearCart();
+                }}
+                className="font-medium text-center border-gray-300 cursor-pointer hover:bg-gray-50 transition"
+              >
+                <div className="flex flex-col items-center justify-center">
+                  <span className="text-base font-semibold text-gray-800">
+                    {order.customerInfo?.name || "N/A"}
+                  </span>
+
+                  {order.void && (
+                    <div className="mt-1 flex items-center gap-1 text-red-600 text-xs font-medium bg-red-100 px-2 py-1 rounded-full">
+                      <Ban size={14} className="stroke-[2.5]" />
+                      Voided
+                    </div>
+                  )}
+                </div>
+              </TableCell>
 
               <TableCell className="text-center border-gray-300">
                 {(() => {
@@ -517,7 +517,13 @@ export function OrdersList({
                   );
                 })()}
               </TableCell>
-              <TableCell className="text-center border-gray-300">{formatTotal(order.total)}</TableCell>
+             <TableCell className="text-center border-gray-300">
+  {formatTotal(parseFloat(order.total ?? "0") - (order.tax_amount ?? 0))}
+  {order.tax_amount > 0 && (
+    <> + {formatTotal(order.tax_amount)}</>
+  )}
+</TableCell>
+
               {
                 !poIs && <>
                   <TableCell className="text-center border-gray-300">

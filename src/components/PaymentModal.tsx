@@ -44,13 +44,11 @@ function validateCardNumber(cardNumber) {
   return null
 }
 
-function validateCVV(cvv) {
-  // Remove non-numeric characters
+function validateCVV(cvv, expectedLength = 3) {
   const cleaned = cvv.replace(/\D/g, "")
 
-  // CVV should be exactly 3 digits (4 for Amex, but we'll stick with 3 for simplicity)
-  if (cleaned.length !== 3) {
-    return "CVV must be 3 digits"
+  if (cleaned.length !== expectedLength) {
+    return `CVV must be ${expectedLength} digits`
   }
 
   return null
@@ -152,12 +150,60 @@ function validateNotes(notes) {
   return null
 }
 
+function detectCardType(cardNumber) {
+  const cleaned = cardNumber.replace(/\D/g, "")
+
+  // Visa: starts with 4
+  if (/^4/.test(cleaned)) {
+    return { type: "visa", name: "Visa", cvvLength: 3 }
+  }
+
+  // Mastercard: starts with 5 or 2221-2720
+  if (/^5[1-5]/.test(cleaned) || /^2(22[1-9]|2[3-9]|[3-6]|7[0-1]|720)/.test(cleaned)) {
+    return { type: "mastercard", name: "Mastercard", cvvLength: 3 }
+  }
+
+  // American Express: starts with 34 or 37
+  if (/^3[47]/.test(cleaned)) {
+    return { type: "amex", name: "American Express", cvvLength: 4 }
+  }
+
+  return { type: "unknown", name: "Credit Card", cvvLength: 3 }
+}
+
+function getCardIcon(cardType) {
+  switch (cardType.type) {
+    case "visa":
+      return (
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-6 bg-blue-600 text-white text-xs font-bold flex items-center justify-center rounded">
+          VISA
+        </div>
+      )
+    case "mastercard":
+      return (
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-6 flex items-center justify-center">
+          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+          <div className="w-2 h-2 bg-yellow-500 rounded-full -ml-1"></div>
+        </div>
+      )
+    case "amex":
+      return (
+        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-6 bg-blue-500 text-white text-xs font-bold flex items-center justify-center rounded">
+          AMEX
+        </div>
+      )
+    default:
+      return <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+  }
+}
+
 const PaymentForm = ({ modalIsOpen, setModalIsOpen, customer, amountP, orderId, orders, payNow = false }) => {
   const [paymentType, setPaymentType] = useState("credit_card")
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const { loadOrders } = useOrderManagement()
+  const [cardType, setCardType] = useState({ type: "unknown", name: "Credit Card", cvvLength: 3 })
 
   const [formData, setFormData] = useState({
     amount: 0,
@@ -235,9 +281,13 @@ const PaymentForm = ({ modalIsOpen, setModalIsOpen, customer, amountP, orderId, 
       // Only allow numbers and limit to 16 digits
       const formattedValue = value.replace(/\D/g, "").slice(0, 16)
       setFormData({ ...formData, [name]: formattedValue })
+
+      // Detect card type
+      const detectedCardType = detectCardType(formattedValue)
+      setCardType(detectedCardType)
     } else if (name === "cvv") {
-      // Only allow numbers and limit to 3 digits
-      const formattedValue = value.replace(/\D/g, "").slice(0, 4)
+      // Only allow numbers and limit based on card type
+      const formattedValue = value.replace(/\D/g, "").slice(0, cardType.cvvLength)
       setFormData({ ...formData, [name]: formattedValue })
     } else if (name === "zip") {
       // Allow only numbers and hyphen for ZIP codes
@@ -270,7 +320,7 @@ const PaymentForm = ({ modalIsOpen, setModalIsOpen, customer, amountP, orderId, 
     // Validate fields based on payment type
     if (paymentType === "credit_card") {
       newErrors.cardNumber = validateCardNumber(formData.cardNumber)
-      newErrors.cvv = validateCVV(formData.cvv)
+      newErrors.cvv = validateCVV(formData.cvv, cardType.cvvLength)
       newErrors.expirationDate = validateExpirationDate(formData.expirationDate)
       newErrors.cardholderName = validateCardholderName(formData.cardholderName)
       newErrors.address = validateAddress(formData.address)
@@ -522,15 +572,10 @@ const PaymentForm = ({ modalIsOpen, setModalIsOpen, customer, amountP, orderId, 
                 <>
                   <div className="space-y-2">
                     <Label htmlFor="cardNumber" className={cn(errors.cardNumber && "text-destructive")}>
-                      Card Number
+                      Card Number ({cardType.name})
                     </Label>
                     <div className="relative">
-                      <CreditCard
-                        className={cn(
-                          "absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500",
-                          errors.cardNumber && "text-destructive",
-                        )}
-                      />
+                      {getCardIcon(cardType)}
                       <Input
                         id="cardNumber"
                         type="text"
@@ -577,7 +622,7 @@ const PaymentForm = ({ modalIsOpen, setModalIsOpen, customer, amountP, orderId, 
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="cvv" className={cn(errors.cvv && "text-destructive")}>
-                        CVV
+                        CVV ({cardType.cvvLength} digits)
                       </Label>
                       <div className="relative">
                         <KeyRound
@@ -590,7 +635,7 @@ const PaymentForm = ({ modalIsOpen, setModalIsOpen, customer, amountP, orderId, 
                           id="cvv"
                           type="text"
                           name="cvv"
-                          placeholder="123"
+                          placeholder={cardType.cvvLength === 4 ? "1234" : "123"}
                           value={formData.cvv}
                           onChange={handleChange}
                           className={cn("pl-9", errors.cvv && "border-destructive focus-visible:ring-destructive")}

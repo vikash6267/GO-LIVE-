@@ -157,7 +157,7 @@ export function CreateOrderForm({
   }, [form, validateForm]);
 
   const onSubmit = async (data: OrderFormValues) => {
-    console.log(poIs);
+    console.log("hellllo");
 
 
 
@@ -204,10 +204,10 @@ export function CreateOrderForm({
         const random = Math.floor(100 + Math.random() * 900); // 3 digit random number
         return `PO-${timestamp}${random}`; // Total 8 digits after 'PO-'
       };
-      
+
       // const orderNumber = "DEV-0091234";
       const orderNumber = poIs ? generateUniqueOrderNumber() : await generateOrderId();
-      
+
       if (!userProfile?.id) return
       let profileID = userProfile?.id
 
@@ -220,7 +220,7 @@ export function CreateOrderForm({
       //               .select()
       //               .eq("id", profileID)
       //               .maybeSingle();
-          
+
       //             if (profileEror1) {
       //               console.error("🚨 Supabase Fetch Error:", profileEror1);
       //               return;
@@ -249,7 +249,7 @@ export function CreateOrderForm({
         poAccept: !poIs
       };
 
-      
+
 
       // Save order to Supabase
       const { data: orderResponse, error: orderError } = await supabase
@@ -341,7 +341,7 @@ export function CreateOrderForm({
             parseFloat(calculatedTotal + newtax + (isCus ? 0.5 : 0)),
         };
 
-      
+
         const { invoicedata2, error } = await supabase
           .from("invoices")
           .insert(invoiceData)
@@ -353,7 +353,7 @@ export function CreateOrderForm({
           throw error;
         }
 
-       
+
 
         // Prepare and save order items
         const orderItemsData = data.items.map((item) => ({
@@ -373,7 +373,7 @@ export function CreateOrderForm({
           throw new Error(itemsError.message);
         }
 
-   
+
 
         // Update product stock
         for (const item of data.items) {
@@ -390,7 +390,7 @@ export function CreateOrderForm({
           }
         }
 
-     
+
 
 
 
@@ -405,28 +405,29 @@ export function CreateOrderForm({
         }
 
 
-              const { data:profileData, error:profileEror } = await supabase
-                    .from("profiles")
-                    .select()
-                    .eq("id", newOrder.profile_id)
-                    .maybeSingle();
-          
-                  if (profileEror) {
-                    console.error("🚨 Supabase Fetch Error:", profileEror);
-                    return;
-                  }
-          if(profileData.email_notifaction){
-        try {
-          await axios.post("/order-place", newOrder);
-          console.log("Order status sent successfully to backend.");
-        } catch (apiError) {
-          console.error("Failed to send order status to backend:", apiError);
-        }
+        const { data: profileData, error: profileEror } = await supabase
+          .from("profiles")
+          .select()
+          .eq("id", newOrder.profile_id)
+          .maybeSingle();
 
-      }}
+        if (profileEror) {
+          console.error("🚨 Supabase Fetch Error:", profileEror);
+          return;
+        }
+        if (profileData.email_notifaction) {
+          try {
+            await axios.post("/order-place", newOrder);
+            console.log("Order status sent successfully to backend.");
+          } catch (apiError) {
+            console.error("Failed to send order status to backend:", apiError);
+          }
+
+        }
+      }
 
       // Reset form and local state
-    window.location.reload();
+      window.location.reload();
 
       localStorage.removeItem("cart");
 
